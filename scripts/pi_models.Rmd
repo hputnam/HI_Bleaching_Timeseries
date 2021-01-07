@@ -1,0 +1,377 @@
+---
+title: "pi_models"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# load packages
+library(ggplot2)
+library(rjags)
+library(snowfall)
+library(dplyr)
+library(coda)
+library(reshape)
+library(reshape2)
+library(scales)
+library(zoo)
+library(pipeR)
+library(lubridate)
+library(readr)
+library(tidyverse)
+library(ggpubr)
+library(patchwork)
+```
+
+# Import and format data
+```{r}
+rm(list = ls())
+set.seed(3593)
+
+# Import data
+PISeries <- do.call(rbind, lapply(list.files(pattern = "final*"), read.csv))
+PISeries$Date <- as.Date(PISeries$Date, format = "%m/%d/%Y")
+PISeries$Date <- as.Date(gsub("0019", "2019", PISeries$Date))
+
+## Subset by timepoint
+one <- subset(PISeries, Date == "2019-09-16")
+two <- subset(PISeries, Date == "2019-10-02")
+three <- subset(PISeries, Date == "2019-10-16")
+four <- subset(PISeries, Date == "2019-10-30")
+```
+
+# Set up the model
+```{r}
+## BUGS code
+bugs.model <- "
+model {
+  ## Likelihood
+  for(k in 1:N) {
+    P[k] ~ dnorm(mu[k],tau)
+    mu[k] <- Pmax*(1-exp(-a*I[k]/Pmax))*exp(-b*I[k]/Pmax)+R
+  }
+
+  ## Priors
+  tau ~ dgamma(100,1)
+  Pmax ~ dnorm(0,1)T(0,)
+  a ~ dnorm(0,10)T(0,)
+  b ~ dnorm(0,10)T(0,)
+  R ~ dnorm(0,1)
+
+  ## Prediction
+  for(k in 1:N.pr) {
+    mu.pr[k] <- Pmax*(1-exp(-a*I.pr[k]/Pmax))*exp(-b*I.pr[k]/Pmax)+R
+  }
+  
+  ## Transformations
+  sigma <- 1/sqrt(tau)
+  alpha <- a/100
+  beta <- b/100
+}
+"
+
+## JAGS
+n.cores <- parallel::detectCores()-1
+jags.snowfall <- function(file,data,inits,vars,n.samp,n.thin=1,
+                          n.cores=4,n.chains=2,
+                          n.adapt=1000,n.update=1000,
+                          modules=c("glm")) {
+  stopifnot(require(snowfall),require(rjags))
+  seeds <- sample(1:1e6, n.cores)
+  if (inherits(file, "connection")) {
+    model.code <- readLines(file, warn = FALSE)
+    file <- tempfile()
+    writeLines(model.code, file)
+  }
+  sfInit(parallel = TRUE, cpus = n.cores)
+  sfLibrary(rjags)
+  sfExport("file","data","inits","vars","n.thin","n.samp","n.adapt","n.update","modules","seeds")
+  on.exit(sfStop())
+  s <- sfLapply(1:n.cores, function(i) {
+    set.seed(seeds[i])
+    inits <- lapply(sample(1:1e6, n.chains),
+                    function(s) c(inits,list(.RNG.name="base::Wichmann-Hill",.RNG.seed=s)))
+    for(m in modules) load.module(m)
+    model <- jags.model(file=file,data=data,inits=inits,
+                        n.chains=n.chains,n.adapt=n.adapt)
+    update(model,n.update)
+    jags.samples(model,var=vars,thin=n.thin,n.iter=n.samp*n.thin)
+  })
+  lapply(setNames(vars,vars),
+         function(v) {
+           a <- lapply(s,`[[`,v)
+           dm <- dim(a[[1]])
+           dm[length(dm)] <- length(a)*dm[length(dm)]
+           structure(do.call(c,a),
+                     dim=dm,
+                     varname=attr(a[[1]],"varname"),
+                     class="mcarray")
+         })
+}
+```
+
+# T1
+## Plot data
+```{r}
+ggplot(one, aes(x = rad, y = coefficients.x1, group = ID)) +
+  geom_line() +
+  facet_wrap(~ ID)
+```
+
+## Prep model
+```{r}
+## Split into separate datasets
+ds1 <- split(one, one$ID)
+
+# Set parameters
+I.pr <- seq(0, 800, 10)
+```
+
+## Run the model
+```{r}
+### lapply
+model.one <- lapply(ds1, function(x) {
+  jags.snowfall(textConnection(bugs.model),
+                data = list(P = x$coefficients.x1,
+                            I = x$rad/100,
+                            N = nrow(x),
+                            I.pr = I.pr/100,
+                            N.pr = length(I.pr)),
+                n.chains = 4,
+                inits = list(a = 0.1, b = 0.1, Pmax = 1, R = -0.4),
+                vars = c("alpha", "beta", "Pmax", "R", "mu", "sigma", "mu.pr"),
+                n.samp = 2000, n.thin = 20)
+}) 
+```
+
+## Convert to coda format
+```{r}
+coda.one <- lapply(model.one, function(x) {
+  mcmc.list(lapply(1:dim(x$alpha)[3], function(ch) mcmc(sapply(x[c("alpha","beta","Pmax","R")], function(x) x[,,ch]))))
+})
+```
+
+## Convert to dataframe
+```{r}
+one.summary <- lapply(coda.one, function(x) {
+  t(as.data.frame(rbind(colMeans(as.data.frame(as.matrix(x)))))) 
+})
+summary.first <- as.data.frame(one.summary)
+summary.first$variable <- c("alpha", "beta", "Pmax", "R")
+summary.first <- summary.first %>%
+  select(variable, everything())
+summary.first <- as.data.frame(t(summary.first))
+summary.first <- summary.first[-1,]
+summary.first$frag <- gsub("X", "", rownames(summary.first))
+summary.first$Date <- "2019-09-16"
+```
+
+## Posterior predicted mean and credible intervals plots
+```{r}
+lapply(ds1, function(x) {
+  plot(coefficients.x1 ~ rad, x, pch = 16)
+  matlines(I.pr, t(apply(model.one$mu.pr, 1, function(x) c(mean(x), quantile(x, c(0.025, 0.975))))), lty = 1)
+})
+
+plot(coefficients.x1 ~ rad, ds1[[32]], pch = 16)
+matlines(I.pr, t(apply(model.one[[32]]$mu.pr, 1, function(x) c(mean(x), quantile(x, c(0.025, 0.975))))), lty = 1)
+```
+
+# T2
+## Plot data
+```{r}
+ggplot(two, aes(x = rad, y = coefficients.x1, group = ID)) +
+  geom_line() +
+  facet_wrap(~ ID)
+```
+
+## Prep model
+```{r}
+## Split into separate datasets
+ds2 <- split(two, two$ID)
+
+# Set parameters
+I.pr <- seq(0, 800, 10)
+```
+
+## Run the model
+```{r}
+### lapply
+model.two <- lapply(ds2, function(x) {
+  jags.snowfall(textConnection(bugs.model),
+                data = list(P = x$coefficients.x1,
+                            I = x$rad/100,
+                            N = nrow(x),
+                            I.pr = I.pr/100,
+                            N.pr = length(I.pr)),
+                n.chains = 4,
+                inits = list(a = 0.1, b = 0.1, Pmax = 1, R = -0.4),
+                vars = c("alpha", "beta", "Pmax", "R", "mu", "sigma", "mu.pr"),
+                n.samp = 2000, n.thin = 20)
+}) 
+```
+
+## Convert to coda format
+```{r}
+coda.two <- lapply(model.two, function(x) {
+  mcmc.list(lapply(1:dim(x$alpha)[3], function(ch) mcmc(sapply(x[c("alpha","beta","Pmax","R")], function(x) x[,,ch]))))
+})
+```
+
+## Convert to dataframe
+```{r}
+two.summary <- lapply(coda.two, function(x) {
+  t(as.data.frame(rbind(colMeans(as.data.frame(as.matrix(x)))))) 
+})
+summary.second <- as.data.frame(two.summary)
+summary.second$variable <- c("alpha", "beta", "Pmax", "R")
+summary.second <- summary.second %>%
+  select(variable, everything())
+summary.second <- as.data.frame(t(summary.second))
+summary.second <- summary.second[-1,]
+summary.second$frag <- gsub("X", "", rownames(summary.second))
+summary.second$Date <- "2019-10-02"
+```
+
+## Posterior predicted mean and credible intervals plots
+```{r}
+lapply(ds2, function(x) {
+  plot(coefficients.x1 ~ rad, data = x, pch = 16)
+  matlines(I.pr, t(lapply(model.one$mu.pr, 1, function(x) c(mean(x), quantile(x, c(0.025, 0.975))))), lty = 1)
+})
+```
+
+# T3
+## Plot data
+```{r}
+ggplot(three, aes(x = rad, y = coefficients.x1, group = ID)) +
+  geom_line() +
+  facet_wrap(~ ID)
+```
+
+# Prep model
+```{r}
+## Split into separate datasets
+ds3 <- split(three, three$ID)
+
+# Set parameters
+I.pr <- seq(0, 800, 10)
+```
+
+## Run the model
+```{r}
+### lapply
+model.three <- lapply(ds3, function(x) {
+  jags.snowfall(textConnection(bugs.model),
+                data = list(P = x$coefficients.x1,
+                            I = x$rad/100,
+                            N = nrow(x),
+                            I.pr = I.pr/100,
+                            N.pr = length(I.pr)),
+                n.chains = 4,
+                inits = list(a = 0.1, b = 0.1, Pmax = 1, R = -0.4),
+                vars = c("alpha", "beta", "Pmax", "R", "mu", "sigma", "mu.pr"),
+                n.samp = 2000, n.thin = 20)
+}) 
+```
+
+## Convert to coda format
+```{r}
+coda.three <- lapply(model.three, function(x) {
+  mcmc.list(lapply(1:dim(x$alpha)[3], function(ch) mcmc(sapply(x[c("alpha","beta","Pmax","R")], function(x) x[,,ch]))))
+})
+```
+
+## Convert to dataframe
+```{r}
+three.summary <- lapply(coda.three, function(x) {
+  t(as.data.frame(rbind(colMeans(as.data.frame(as.matrix(x)))))) 
+})
+summary.third <- as.data.frame(three.summary)
+summary.third$variable <- c("alpha", "beta", "Pmax", "R")
+summary.third <- summary.third %>%
+  select(variable, everything())
+summary.third <- as.data.frame(t(summary.third))
+summary.third <- summary.third[-1,]
+summary.third$frag <- gsub("X", "", rownames(summary.third))
+summary.third$Date <- "2019-10-16"
+```
+
+## Posterior predicted mean and credible intervals plots
+```{r}
+lapply(ds3, function(x) {
+  plot(coefficients.x1 ~ rad, data = x, pch = 16)
+  matlines(I.pr, t(lapply(model.one$mu.pr, 1, function(x) c(mean(x), quantile(x, c(0.025, 0.975))))), lty = 1)
+})
+```
+
+# T4
+## Plot data
+```{r}
+ggplot(four, aes(x = rad, y = coefficients.x1, group = ID)) +
+  geom_line() +
+  facet_wrap(~ ID)
+```
+
+## Prep model
+```{r}
+## Split into separate datasets
+ds4 <- split(four, four$ID)
+
+# Set parameters
+I.pr <- seq(0, 800, 10)
+```
+
+## Run the model
+```{r}
+### lapply
+model.four <- lapply(ds4, function(x) {
+  jags.snowfall(textConnection(bugs.model),
+                data = list(P = x$coefficients.x1,
+                            I = x$rad/100,
+                            N = nrow(x),
+                            I.pr = I.pr/100,
+                            N.pr = length(I.pr)),
+                n.chains = 4,
+                inits = list(a = 0.1, b = 0.1, Pmax = 1, R = -0.4),
+                vars = c("alpha", "beta", "Pmax", "R", "mu", "sigma", "mu.pr"),
+                n.samp = 2000, n.thin = 20)
+}) 
+```
+
+## Convert to coda format
+```{r}
+coda.four <- lapply(model.four, function(x) {
+  mcmc.list(lapply(1:dim(x$alpha)[3], function(ch) mcmc(sapply(x[c("alpha","beta","Pmax","R")], function(x) x[,,ch]))))
+})
+```
+
+## Convert to dataframe
+```{r}
+four.summary <- lapply(coda.four, function(x) {
+  t(as.data.frame(rbind(colMeans(as.data.frame(as.matrix(x)))))) 
+})
+summary.fourth <- as.data.frame(four.summary)
+summary.fourth$variable <- c("alpha", "beta", "Pmax", "R")
+summary.fourth <- summary.fourth %>%
+  select(variable, everything())
+summary.fourth <- as.data.frame(t(summary.fourth))
+summary.fourth <- summary.fourth[-1,]
+summary.fourth$frag <- gsub("X", "", rownames(summary.fourth))
+summary.fourth$Date <- "2019-10-30"
+```
+
+## Posterior predicted mean and credible intervals plots
+```{r}
+lapply(ds4, function(x) {
+  plot(coefficients.x1 ~ rad, data = x, pch = 16)
+  matlines(I.pr, t(lapply(model.one$mu.pr, 1, function(x) c(mean(x), quantile(x, c(0.025, 0.975))))), lty = 1)
+})
+```
+
+# Summary
+```{r}
+coda.summary <- as.data.frame(rbind(summary.first, summary.second, summary.third, summary.fourth))
+coda.summary$Date <- as.Date(coda.summary$Date)
+```

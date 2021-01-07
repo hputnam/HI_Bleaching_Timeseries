@@ -1,0 +1,348 @@
+---
+title: "mixedmodels"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# load packages
+library(lme4)
+library(ggplot2)
+library(MuMIn)
+library(car)
+library(lmerTest)
+library(emmeans)
+library(multcomp)
+library(lattice)
+library(effects)
+library(sjPlot)
+```
+
+# Import and format data
+```{r}
+rm(list = ls())
+
+Master <- read.csv("data/PhysData.csv")
+Master$ColonyID <- as.factor(Master$ColonyID)
+Master$Date <- as.Date(Master$Date, format = "%m/%d/%y")
+bleachseries <- subset(Master, Date >= "2019-09-16" & Date <= "2019-10-30")
+
+set.seed(3593)
+```
+
+# All 2019 data
+```{r}
+Master <- subset(Master, Date < "2020-02-01")
+```
+
+## Bleaching score
+```{r}
+allscores <- Master[complete.cases(Master$BleachScore),]
+ggplot(allscores, aes(x = Date, y = BleachScore, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+mcapallscores <- subset(allscores, Species == "Montipora capitata")
+mcapallscores$Date <- as.factor(mcapallscores$Date)
+mcap.bleach.all <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = mcapallscores)
+summary(mcap.bleach.all)
+anova(mcap.bleach.all, type = 3) 
+plot_model(mcap.bleach.all, type = "diag")
+qqPlot(residuals(mcap.bleach.all))
+cld(emmeans(mcap.bleach.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+pcomallscores <- subset(allscores, Species == "Porites compressa")
+pcomallscores$Date <- as.factor(pcomallscores$Date)
+pcom.bleach.all <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
+summary(pcom.bleach.all)
+anova(pcom.bleach.all, type = 3) 
+plot_model(pcom.bleach.all, type = "diag")
+qqPlot(residuals(pcom.bleach.all)) # transform? log and sqrt don't change results - keep 
+cld(emmeans(pcom.bleach.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+# Timeseries
+## Color
+```{r}
+colorseries <- bleachseries[complete.cases(bleachseries$BleachScore), ]
+ggplot(colorseries, aes(x = Date, y = BleachScore, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+colormcap <- subset(colorseries, Species == "Montipora capitata")
+colormcap$Date <- as.factor(colormcap$Date)
+mcap.color <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = colormcap)
+summary(mcap.color)
+anova(mcap.color, type = 3) 
+qqPlot(residuals(mcap.color))
+cld(emmeans(mcap.color, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+colorpcom <- subset(colorseries, Species == "Porites compressa")
+colorpcom$Date <- as.factor(colorpcom$Date)
+pcom.color <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = colorpcom)
+summary(pcom.color)
+anova(pcom.color, type = 3)
+qqPlot(residuals(pcom.color))
+cld(emmeans(pcom.color, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## PAM 
+```{r}
+pamseries <- bleachseries[complete.cases(bleachseries$Yield), ]
+ggplot(pamseries, aes(x = Date, y = Yield, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+pammcap <- subset(pamseries, Species == "Montipora capitata")
+pammcap$Date <- as.factor(pammcap$Date)
+mcap.pam <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = pammcap)
+summary(mcap.pam)
+anova(mcap.pam, type = 3) 
+qqPlot(residuals(mcap.pam)) 
+cld(emmeans(mcap.pam, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+pampcom <- subset(pamseries, Species == "Porites compressa")
+pampcom$Date <- as.factor(pampcom$Date)
+pcom.pam <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = pampcom)
+summary(pcom.pam)
+anova(pcom.pam, type = 3) 
+qqPlot(residuals(pcom.pam)) 
+cld(emmeans(pcom.pam, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Gross photosynthesis
+```{r}
+gpseries <- bleachseries[complete.cases(bleachseries$GP.umolcm2hr), ]
+ggplot(gpseries, aes(x = Date, y = GP.umolcm2hr, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+gpmcap <- subset(gpseries, Species == "Montipora capitata")
+gpmcap$Date <- as.factor(gpmcap$Date)
+mcap.gp <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = gpmcap)
+summary(mcap.gp)
+anova(mcap.gp, type = 3) 
+qqPlot(residuals(mcap.gp))
+cld(emmeans(mcap.gp, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+gppcom <- subset(gpseries, Species == "Porites compressa")
+gppcom$Date <- as.factor(gppcom$Date)
+pcom.gp <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = gppcom)
+summary(pcom.gp)
+anova(pcom.gp, type = 3)
+qqPlot(residuals(pcom.gp))
+cld(emmeans(pcom.gp, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Respiration
+```{r}
+Rseries <- bleachseries[complete.cases(bleachseries$R.umolcm2hr), ]
+ggplot(Rseries, aes(x = Date, y = R.umolcm2hr, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+rmcap <- subset(Rseries, Species == "Montipora capitata")
+rmcap$Date <- as.factor(rmcap$Date)
+mcap.r <- lmer(R.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = rmcap)
+summary(mcap.r)
+anova(mcap.r, type = 3) 
+qqPlot(residuals(mcap.r))
+cld(emmeans(mcap.r, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+rpcom <- subset(Rseries, Species == "Porites compressa")
+rpcom$Date <- as.factor(rpcom$Date)
+pcom.r <- lmer(R.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = rpcom)
+summary(pcom.r)
+anova(pcom.r, type = 3) 
+qqPlot(residuals(pcom.r))
+cld(emmeans(pcom.r, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Symbiont density
+```{r}
+symseries <- bleachseries[complete.cases(bleachseries$SymSA.cellcm2), ]
+ggplot(symseries, aes(x = Date, y = SymSA.cellcm2, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+symmcap <- subset(symseries, Species == "Montipora capitata")
+symmcap$Date <- as.factor(symmcap$Date)
+mcap.sym <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = symmcap)
+summary(mcap.sym)
+anova(mcap.sym, type = 3) 
+qqPlot(residuals(mcap.sym))
+cld(emmeans(mcap.sym, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+sympcom <- subset(symseries, Species == "Porites compressa")
+sympcom$Date <- as.factor(sympcom$Date)
+pcom.sym <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = sympcom)
+summary(pcom.sym)
+anova(pcom.sym, type = 3) 
+qqPlot(residuals(pcom.sym))
+cld(emmeans(pcom.sym, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Chlorophyll content
+```{r}
+chlseries <- bleachseries[complete.cases(bleachseries$ChlSA.ugcm2), ]
+ggplot(chlseries, aes(x = Date, y = ChlSA.ugcm2, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+chlmcap <- subset(chlseries, Species == "Montipora capitata")
+chlmcap$Date <- as.factor(chlmcap$Date)
+mcap.chl <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = chlmcap)
+summary(mcap.chl)
+anova(mcap.chl, type = 3) 
+qqPlot(residuals(mcap.chl))
+cld(emmeans(mcap.chl, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+chlpcom <- subset(chlseries, Species == "Porites compressa")
+chlpcom$Date <- as.factor(chlpcom$Date)
+pcom.chl <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = chlpcom)
+summary(pcom.chl)
+anova(pcom.chl, type = 3) 
+qqPlot(residuals(pcom.chl))
+cld(emmeans(pcom.chl, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Protein content
+```{r}
+proseries <- bleachseries[complete.cases(bleachseries$ProtSA.mgcm2), ]
+ggplot(proseries, aes(x = Date, y = ProtSA.mgcm2, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+promcap <- subset(proseries, Species == "Montipora capitata")
+promcap$Date <- as.factor(promcap$Date)
+mcap.pro <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = promcap)
+summary(mcap.pro)
+anova(mcap.pro, type = 3) 
+qqPlot(residuals(mcap.pro))
+cld(emmeans(mcap.pro, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+propcom <- subset(proseries, Species == "Porites compressa")
+propcom$Date <- as.factor(propcom$Date)
+pcom.pro <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = propcom)
+summary(pcom.pro)
+anova(pcom.pro, type = 3) 
+qqPlot(residuals(pcom.pro))
+cld(emmeans(pcom.pro, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Antioxidant capacity
+```{r}
+tacseries <- bleachseries[complete.cases(bleachseries$TACProt.uMug), ]
+ggplot(tacseries, aes(x = Date, y = TACProt.uMug, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+tacmcap <- subset(tacseries, Species == "Montipora capitata")
+tacmcap$Date <- as.factor(tacmcap$Date)
+mcap.tac <- lmer(TACProt.uMug ~ Bleach * Date + (1|ColonyID), data = tacmcap)
+summary(mcap.tac)
+anova(mcap.tac, type = 3) 
+qqPlot(residuals(mcap.tac))
+cld(emmeans(mcap.tac, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+tacpcom <- subset(tacseries, Species == "Porites compressa")
+tacpcom$Date <- as.factor(tacpcom$Date)
+pcom.tac <- lmer(TACProt.uMug ~ Bleach * Date + (1|ColonyID), data = tacpcom)
+summary(pcom.tac)
+anova(pcom.tac, type = 3) 
+qqPlot(residuals(pcom.tac))
+cld(emmeans(pcom.tac, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Biomass
+```{r}
+bmseries <- bleachseries[complete.cases(bleachseries$BM.mgcm2), ]
+ggplot(bmseries, aes(x = Date, y = BM.mgcm2, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+bmmcap <- subset(bmseries, Species == "Montipora capitata")
+bmmcap$Date <- as.factor(bmmcap$Date)
+mcap.bm <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = bmmcap)
+summary(mcap.bm)
+anova(mcap.bm, type = 3) 
+qqPlot(residuals(mcap.bm))
+cld(emmeans(mcap.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+bmpcom <- subset(bmseries, Species == "Porites compressa")
+bmpcom$Date <- as.factor(bmpcom$Date)
+pcom.bm <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = bmpcom)
+summary(pcom.bm)
+anova(pcom.bm, type = 3) 
+qqPlot(residuals(pcom.bm))
+cld(emmeans(pcom.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```
+
+## Ash-free dry weight
+```{r}
+afdwseries <- bleachseries[complete.cases(bleachseries$AFDW.g), ]
+ggplot(afdwseries, aes(x = Date, y = AFDW.g, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+afdwmcap <- subset(afdwseries, Species == "Montipora capitata")
+afdwmcap$Date <- as.factor(afdwmcap$Date)
+mcap.afdw <- lmer(AFDW.g ~ Bleach * Date + (1|ColonyID), data = afdwmcap)
+summary(mcap.afdw)
+anova(mcap.afdw, type = 3) 
+qqPlot(residuals(mcap.bm))
+cld(emmeans(mcap.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+# PCOM
+afdwpcom <- subset(afdwseries, Species == "Porites compressa")
+afdwpcom$Date <- as.factor(afdwpcom$Date)
+pcom.afdw <- lmer(AFDW.g ~ Bleach * Date + (1|ColonyID), data = afdwpcom)
+summary(pcom.afdw)
+anova(pcom.afdw, type = 3) 
+qqPlot(residuals(pcom.bm))
+cld(emmeans(pcom.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+```

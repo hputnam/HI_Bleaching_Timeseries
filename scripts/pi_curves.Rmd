@@ -1,0 +1,1225 @@
+---
+title: "pi_curves"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# load packages
+library(tools)
+library(reshape2)
+library(roll)
+library(purrr)
+library(tidyverse)
+library(readxl)
+library(rawDiag)
+library(ggplot2)
+```
+
+# T1
+## Import and format data
+```{r}
+# Import data in a list
+T1 <- list.files(path = c("9.20.19", "9.19.19 (2)", "9.19.19 (1)", "9.18.19", "9.17.19"), pattern = "*.xlsx", full.names = T)
+
+# Remove extensions from file names
+names_T1 <- file_path_sans_ext(list.files(path = c("9.20.19", "9.19.19 (2)", "9.19.19 (1)", "9.18.19", "9.17.19"), pattern = "*.xlsx", full.names = F))
+
+# Format data for loop
+for(i in 1:length(T1))
+{
+  data <- read_excel(T1[i]) 
+  df <- data[, c(3,9,11)]
+  colnames(df) <- c("RunTime", "O2", "Temp") 
+  df[1:3] <- sapply(df[1:3], as.numeric) 
+  make.names(assign(paste(names_T1[i], sep = ""), df))
+}
+```
+
+## Summarize each run
+```{r}
+Sum_9.20 <- as.data.frame(mget(ls(pattern = "9.20.19-TI*"))) 
+Sum_9.20 <- Sum_9.20[ ,c(1:2,5,8,11,14)]
+names(Sum_9.20) <- c("RunTime", "229", "35", "230", "36", "Blank")
+
+Sum_9.19_2 <- as.data.frame(mget(ls(pattern = "9.19.19_2-TI*"))) 
+Sum_9.19_2 <- Sum_9.19_2[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_9.19_2) <- c("RunTime", "204", "Blank", "201", "202", "20", "3", "4", "41", "238", "237")
+
+Sum_9.19_1 <- as.data.frame(mget(ls(pattern = "9.19.19_1-TI*"))) 
+Sum_9.19_1 <- Sum_9.19_1[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_9.19_1) <- c("RunTime", "211", "Blank", "212", "12", "210", "209", "247", "239", "27", "26")
+
+Sum_9.18 <- as.data.frame(mget(ls(pattern = "9.18.19-TI*"))) 
+Sum_9.18 <- Sum_9.18[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_9.18) <- c("RunTime", "222", "Blank", "217", "218", "220", "43", "46", "45", "243", "248")
+
+Sum_9.17 <- as.data.frame(mget(ls(pattern = "9.17.19-TI*"))) 
+Sum_9.17 <- Sum_9.17[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_9.17) <- c("RunTime", "221", "Blank", "44", "219", "244", "11", "240", "203", "42", "19")
+```
+
+## Create light key data frames
+```{r}
+tp1 <- grep("TI-1.xlsx", T1, value = T) 
+kfnames1 <- c("kf17", "kf18", "kf19_1", "kf19_2", "kf20") 
+
+for(i in 1:length(tp1))
+{
+  kf <- read_excel(tp1[i], 6)
+  RunTime <- kf$`Delta T [min]` 
+  percent <- kf$Annotation 
+  light <- data.frame(RunTime, percent) 
+  light$rad[grepl("10%", light$percent, ignore.case=F)] <- 112 
+  light$rad[grepl("20%", light$percent, ignore.case=F)] <- 180
+  light$rad[grepl("30%", light$percent, ignore.case=F)] <- 272
+  light$rad[grepl("40%", light$percent, ignore.case=F)] <- 351
+  light$rad[grepl("50%", light$percent, ignore.case=F)] <- 430
+  light$rad[grepl("60%", light$percent, ignore.case=F)] <- 482
+  light$rad[grepl("70%", light$percent, ignore.case=F)] <- 541
+  light$rad[grepl("80%", light$percent, ignore.case=F)] <- 609
+  light$rad[grepl("90%", light$percent, ignore.case=F)] <- 668
+  light$rad[grepl("100%", light$percent, ignore.case=F)] <- 726
+  light$rad[grepl("off", light$percent, ignore.case=T)] <- 0
+  make.names(assign(paste(kfnames1[i], sep = ""), light))
+}
+
+# Adjust for annotation errors
+kf19_2 <- kf19_2[-8,] 
+kf18 <- kf18[-8,] 
+
+# Merge summary and light intensities
+rfT1 <- rbind(melt(merge(kf17, Sum_9.17, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf18, Sum_9.18, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf19_1, Sum_9.19_1, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf19_2, Sum_9.19_2, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf20, Sum_9.20, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")))
+
+rfT1 <- rfT1 %>%
+  group_by(variable) %>%
+  mutate(rad = fillNAgaps(rad)) %>%
+  ungroup()
+
+rfT1$ID <- rfT1$variable
+rfT1 <- select(rfT1, -c("percent","variable"))  
+rfT1 <- filter(rfT1, ID != "Blank") 
+rfT1 <- drop_na(rfT1, "value") 
+rfT1$ID <- as.numeric(as.character(rfT1$ID)) 
+rfT1 <- arrange(rfT1, ID) 
+rfT1$ID <- as.factor(rfT1$ID) 
+```
+
+## Run rolling regression
+```{r}
+list <- split(rfT1, rfT1$ID) 
+rollreg <- lapply(list, function(df) {
+  roll_lm(df$RunTime, df$value, width = 100)
+}) 
+names(rollreg) <- names(list) 
+
+regT1 <- map_df(rollreg, ~as.data.frame(.x), .id = "ID") 
+
+regT1 <- cbind(rfT1[,c("RunTime","rad","value")], regT1) 
+
+# photosynthesis - irradiance > 0
+photoT1 <- regT1 %>% 
+  na.omit(regT1) %>%
+  group_by(ID, rad) %>% 
+  slice(99:n()) %>%
+  slice(which.max(R.squared)[rad != 0]) 
+
+# respiration - irradiance = 0
+respT1 <- regT1 %>%
+  na.omit(regT1) %>%
+  subset(coefficients.x1 <= 0 & rad == 0) %>%
+  group_by(ID, rad) %>%
+  slice(99:n()) %>%
+  slice(which.max(R.squared)) 
+
+# bind photo and resp
+finalT1 <- rbind(photoT1, respT1)
+finalT1$rad <- as.numeric(as.character(finalT1$rad))
+```
+
+## Plot PI curve
+```{r}
+ggplot(finalT1, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(finalT1$rad))
+```
+
+## Check regressions against raw data
+```{r}
+finalT1$rad <- as.numeric(as.character(finalT1$rad))
+finalT1 <- arrange(finalT1, ID, rad) 
+T1merger <- merge(finalT1, rfT1, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+T1merger$rad <- as.factor(T1merger$rad) 
+T1merger <- T1merger[!is.na(T1merger$rad),] 
+
+RadGrp <- subset(T1merger, ID != "222" & ID != "217" & ID != "218" & ID != "220" & ID != "43" & ID != "46" & ID != "45" & ID != "243" & ID != "248")
+
+# Assign group to regression windows
+RadGrp <- RadGrp %>% 
+  group_by(ID, rad) %>% 
+  mutate(grp = replace(rep(NA_character_, n()), which(!is.na(R.squared)) + -99:0, "yes"))
+
+# Iterate over entire data.frame: 
+frag.graph <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad) 
+  frag_list <- unique(df$ID) 
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$ID==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T1_Plots")
+    ggsave(filename = file.path("T1_Plots", paste("Frag", frag_list[i], "Full Plot.png", sep = " "))) 
+  }
+} 
+frag.graph(T1merger)
+```
+
+## Plot each regression individually to check for fit
+```{r}
+frag.rad <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad)
+  frag_list <- unique(df$IDrad)
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$IDrad==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value, color = grp)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T1_Plots")
+    ggsave(filename = file.path("T1_Plots", paste("Frag", frag_list[i], "Zoomed Plot.png", sep = " ")))
+  }
+} 
+
+RadGrp$IDrad <- paste(RadGrp$ID, RadGrp$rad) 
+unique(RadGrp$ID)
+frag.rad(RadGrp)
+```
+
+## Select the frag and irradiance which have an odd regression
+```{r}
+frag11_112 <- T1merger[T1merger$ID == 11 & T1merger$rad == "112",]
+frag11_180 <- T1merger[T1merger$ID == 11 & T1merger$rad == "180",]
+frag11_272 <- T1merger[T1merger$ID == 11 & T1merger$rad == "272",]
+frag11_430 <- T1merger[T1merger$ID == 11 & T1merger$rad == "430",]
+frag11_482 <- T1merger[T1merger$ID == 11 & T1merger$rad == "482",]
+frag11_541 <- T1merger[T1merger$ID == 11 & T1merger$rad == "541",]
+frag11_609 <- T1merger[T1merger$ID == 11 & T1merger$rad == "609",]
+frag19_112 <- T1merger[T1merger$ID == 19 & T1merger$rad == "112",]
+frag19_180 <- T1merger[T1merger$ID == 19 & T1merger$rad == "180",]
+frag219_180 <- T1merger[T1merger$ID == 219 & T1merger$rad == "180",]
+frag219_272 <- T1merger[T1merger$ID == 219 & T1merger$rad == "272",]
+frag219_351 <- T1merger[T1merger$ID == 219 & T1merger$rad == "351",]
+frag219_430 <- T1merger[T1merger$ID == 219 & T1merger$rad == "430",]
+frag219_482 <- T1merger[T1merger$ID == 219 & T1merger$rad == "482",]
+frag244_112 <- T1merger[T1merger$ID == 244 & T1merger$rad == "112",]
+frag3_112 <- T1merger[T1merger$ID == 3 & T1merger$rad == "112",]
+
+# specify the lower bound first, and then the upper bound numerically in the line below
+reg11_112 <- lm(value ~ RunTime, frag11_112)
+reg11_180 <- lm(value ~ RunTime, frag11_180)
+reg11_272 <- lm(value ~ RunTime, frag11_272)
+reg11_430 <- lm(value ~ RunTime, frag11_430)
+reg11_482 <- lm(value ~ RunTime, frag11_482)
+reg11_541 <- lm(value ~ RunTime, frag11_541)
+reg11_609 <- lm(value ~ RunTime, frag11_609)
+reg19_112 <- lm(value ~ RunTime, frag19_112)
+reg19_180 <- lm(value ~ RunTime, frag19_180)
+reg219_180 <- lm(value ~ RunTime, frag219_180)
+reg219_272 <- lm(value ~ RunTime, frag219_272)
+reg219_351 <- lm(value ~ RunTime, frag219_351)
+reg219_430 <- lm(value ~ RunTime, frag219_430)
+reg219_482 <- lm(value ~ RunTime, frag219_482)
+reg244_112 <- lm(value ~ RunTime, frag244_112)
+reg3_112 <- lm(value ~ RunTime, frag3_112)
+
+# slope and intercept will be stored from the linear model output: 
+slope11_112 <- as.numeric(reg11_112$coefficients[2])
+intercept11_112 <- as.numeric(reg11_112$coefficients[1]) 
+slope11_180 <- as.numeric(reg11_180$coefficients[2])
+intercept11_180 <- as.numeric(reg11_180$coefficients[1]) 
+slope11_272 <- as.numeric(reg11_272$coefficients[2])
+intercept11_272 <- as.numeric(reg11_272$coefficients[1]) 
+slope11_430 <- as.numeric(reg11_430$coefficients[2])
+intercept11_430 <- as.numeric(reg11_430$coefficients[1]) 
+slope11_482 <- as.numeric(reg11_482$coefficients[2])
+intercept11_482 <- as.numeric(reg11_482$coefficients[1]) 
+slope11_541 <- as.numeric(reg11_541$coefficients[2])
+intercept11_541 <- as.numeric(reg11_541$coefficients[1]) 
+slope11_609 <- as.numeric(reg11_609$coefficients[2])
+intercept11_609 <- as.numeric(reg11_609$coefficients[1]) 
+slope19_112 <- as.numeric(reg19_112$coefficients[2])
+intercept19_112 <- as.numeric(reg19_112$coefficients[1]) 
+slope19_180 <- as.numeric(reg19_180$coefficients[2])
+intercept19_180 <- as.numeric(reg19_180$coefficients[1]) 
+slope219_180 <- as.numeric(reg219_180$coefficients[2])
+intercept219_180 <- as.numeric(reg219_180$coefficients[1]) 
+slope219_272 <- as.numeric(reg219_272$coefficients[2])
+intercept219_272 <- as.numeric(reg219_272$coefficients[1]) 
+slope219_351 <- as.numeric(reg219_351$coefficients[2])
+intercept219_351 <- as.numeric(reg219_351$coefficients[1]) 
+slope219_430 <- as.numeric(reg219_430$coefficients[2])
+intercept219_430 <- as.numeric(reg219_430$coefficients[1]) 
+slope219_482 <- as.numeric(reg219_482$coefficients[2])
+intercept219_482 <- as.numeric(reg219_482$coefficients[1]) 
+slope244_112 <- as.numeric(reg244_112$coefficients[2])
+intercept244_112 <- as.numeric(reg244_112$coefficients[1]) 
+slope3_112 <- as.numeric(reg3_112$coefficients[2])
+intercept3_112 <- as.numeric(reg3_112$coefficients[1]) 
+
+# Plot to check how well this edited range works: 
+ggplot(reg11_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_112, slope = slope11_112)) 
+ggplot(reg11_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_180, slope = slope11_180)) 
+ggplot(reg11_272, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_272, slope = slope11_272)) 
+ggplot(reg11_430, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_430, slope = slope11_430)) 
+ggplot(reg11_482, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_482, slope = slope11_482)) 
+ggplot(reg11_541, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_541, slope = slope11_541)) 
+ggplot(reg11_609, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept11_609, slope = slope11_609)) 
+ggplot(reg19_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept19_112, slope = slope19_112)) 
+ggplot(reg19_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept19_180, slope = slope19_180)) 
+ggplot(reg219_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_180, slope = slope219_180)) 
+ggplot(reg219_272, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_272, slope = slope219_272)) 
+ggplot(reg219_351, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_351, slope = slope219_351)) 
+ggplot(reg219_430, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_430, slope = slope219_430)) 
+ggplot(reg219_482, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_482, slope = slope219_482)) 
+ggplot(reg244_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept244_112, slope = slope244_112)) 
+ggplot(reg3_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept3_112, slope = slope3_112)) 
+```
+
+## Replace and plot adjusted regressions
+```{r}
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "112", slope11_112, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "180", slope11_180, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "272", slope11_272, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "430", slope11_430, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "482", slope11_482, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "541", slope11_541, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 11 & finalT1$rad == "609", slope11_609, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 19 & finalT1$rad == "112", slope19_112, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 19 & finalT1$rad == "180", slope19_180, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 219 & finalT1$rad == "180", slope219_180, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 219 & finalT1$rad == "272", slope219_272, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 219 & finalT1$rad == "351", slope219_351, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 219 & finalT1$rad == "430", slope219_430, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 219 & finalT1$rad == "482", slope219_482, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 244 & finalT1$rad == "112", slope244_112, finalT1$coefficients.x1)
+finalT1$coefficients.x1 <- ifelse(finalT1$ID == 3 & finalT1$rad == "112", slope3_112, finalT1$coefficients.x1)
+
+# Note: The Fragment ID (ID), and irradiance (rad) will have to be specified manually each time this code is applied to a given problem spot
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "112", intercept11_112, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "180", intercept11_180, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "272", intercept11_272, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "430", intercept11_430, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "482", intercept11_482, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "541", intercept11_541, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 11 & finalT1$rad == "609", intercept11_609, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 19 & finalT1$rad == "112", intercept19_112, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 19 & finalT1$rad == "180", intercept19_180, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 219 & finalT1$rad == "180", intercept219_180, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 219 & finalT1$rad == "272", intercept219_272, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 219 & finalT1$rad == "351", intercept219_351, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 219 & finalT1$rad == "430", intercept219_430, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 219 & finalT1$rad == "482", intercept219_482, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 244 & finalT1$rad == "112", intercept244_112, finalT1$coefficients..Intercept.)
+finalT1$coefficients..Intercept. <- ifelse(finalT1$ID == 3 & finalT1$rad == "112", intercept3_112, finalT1$coefficients..Intercept.)
+
+finalT1$Date <- "2019-09-16"
+
+T1merger <- merge(finalT1, rfT1, by = c("ID","RunTime", "rad", "value"), all = TRUE)# merge best regression outputs back with raw sensor outputs
+frag.graph(T1merger)
+
+ggplot(finalT1, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(T1merger$rad))
+```
+
+# T2
+## Import and format data
+```{r}
+T2 <- list.files(path = c("10.04.19", "10.05.19", "10.06.19 (1)", "10.06.19 (2)"), pattern = "*.xlsx", full.names = T)
+names_T2 <- file_path_sans_ext(list.files(path = c("10.04.19", "10.05.19", "10.06.19 (1)", "10.06.19 (2)"), pattern = "*.xlsx", full.names = F))
+
+for(i in 1:length(T2))
+{
+  data <- read_excel(T2[i]) 
+  df <- data[, c(3,9,11)]
+  colnames(df) <- c("RunTime", "O2", "Temp") 
+  df[1:3] <- sapply(df[1:3], as.numeric) 
+  make.names(assign(paste(names_T2[i], sep = ""), df))
+}
+```
+
+## Summarize each run
+```{r}
+Sum_10.04 <- as.data.frame(mget(ls(pattern = "10.04_TI*"))) 
+Sum_10.04 <- Sum_10.04[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_10.04) <- c("RunTime", "221","220", "222", "43", "44", "217","218","45","46","219")
+
+Sum_10.05 <- as.data.frame(mget(ls(pattern = "10.05-TI*"))) 
+Sum_10.05 <- Sum_10.05[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_10.05) <- c("RunTime", "243", "240", "244", "211", "212", "247", "248", "11", "12", "239")
+
+Sum_10.06_1 <- as.data.frame(mget(ls(pattern =  "10.06\\(1\\)-TI*"))) 
+Sum_10.06_1 <- Sum_10.06_1[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_10.06_1) <- c("RunTime", "209", "202", "210", "26", "27", "203", "204", "41", "42", "201")
+
+Sum_10.06_2<- as.data.frame(mget(ls(pattern = "10.06\\(2\\)-TI*"))) 
+Sum_10.06_2 <- Sum_10.06_2[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_10.06_2) <- c("RunTime", "237", "36", "238", "19", "20", "229", "230", "3", "4", "35")
+```
+
+## Create light key data frames
+```{r}
+tp2 <- grep("TI-1.xlsx", T2, value = T) 
+kfnames2 <- c("kf4", "kf5", "kf6_1", "kf6_2") 
+
+for(i in 1:length(tp2))
+{
+  kf <- read_excel(tp2[i], 6)
+  RunTime <- kf$`Delta T [min]` 
+  percent <- kf$Annotation 
+  light <- data.frame(RunTime, percent) 
+  light$rad[grepl("10%", light$percent, ignore.case=F)] <- 112 
+  light$rad[grepl("20%", light$percent, ignore.case=F)] <- 180
+  light$rad[grepl("30%", light$percent, ignore.case=F)] <- 272
+  light$rad[grepl("40%", light$percent, ignore.case=F)] <- 351
+  light$rad[grepl("50%", light$percent, ignore.case=F)] <- 430
+  light$rad[grepl("60%", light$percent, ignore.case=F)] <- 482
+  light$rad[grepl("70%", light$percent, ignore.case=F)] <- 541
+  light$rad[grepl("80%", light$percent, ignore.case=F)] <- 609
+  light$rad[grepl("90%", light$percent, ignore.case=F)] <- 668
+  light$rad[grepl("100%", light$percent, ignore.case=F)] <- 726
+  light$rad[grepl("off", light$percent, ignore.case=T)] <- 0
+  make.names(assign(paste(kfnames2[i], sep = ""), light))
+}
+
+rfT2 <- rbind(melt(merge(kf4, Sum_10.04, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf5, Sum_10.05, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf6_1, Sum_10.06_1, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf6_2, Sum_10.06_2, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")))
+
+rfT2 <- rfT2 %>%
+  group_by(variable) %>%
+  mutate(rad = fillNAgaps(rad)) %>%
+  ungroup()
+
+rfT2$ID <- rfT2$variable 
+rfT2 <- select(rfT2, -c("percent","variable"))  
+rfT2 <- filter(rfT2, ID != "Blank") 
+rfT2 <- drop_na(rfT2, "value") 
+rfT2$ID <- as.numeric(as.character(rfT2$ID)) 
+rfT2 <- arrange(rfT2, ID) 
+rfT2$ID <- as.factor(rfT2$ID) 
+```
+
+## Run rolling regression
+```{r}
+list <- split(rfT2, rfT2$ID) 
+rollreg <- lapply(list, function(df) {
+  roll_lm(df$RunTime, df$value, width = 100)
+}) 
+names(rollreg) <- names(list) 
+
+regT2 <- map_df(rollreg, ~as.data.frame(.x), .id = "ID") 
+
+regT2 <- cbind(rfT2[,c("RunTime","rad","value")], regT2) 
+
+photoT2 <- regT2 %>% 
+  na.omit(regT2) %>%
+  group_by(ID, rad) %>% 
+  slice(99:n()) %>%
+  slice(which.max(R.squared)[rad != 0]) 
+
+respT2 <- regT2 %>%
+  na.omit(regT2) %>%
+  subset(coefficients.x1 <= 0 & rad == 0) %>%
+  group_by(ID, rad) %>%
+  slice(99:n()) %>%
+  slice(which.max(R.squared)) 
+
+finalT2 <- rbind(photoT2, respT2)
+finalT2$rad <- as.numeric(as.character(finalT2$rad))
+```
+
+## Plot PI curve
+```{r}
+ggplot(finalT2, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(finalT2$rad))
+```
+
+## Check regressions against raw data
+```{r}
+finalT2$rad <- as.numeric(as.character(finalT2$rad))
+finalT2 <- arrange(finalT2, ID, rad) 
+T2merger <- merge(finalT2, rfT2, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+T2merger$rad <- as.factor(T2merger$rad) 
+T2merger <- T2merger[!is.na(T2merger$rad),] 
+
+RadGrp2 <- subset(T2merger, ID != "237" & ID != "238" & ID != "19" & ID != "20" & ID != "229" & ID != "230" & ID != "3" & ID != "4" & ID != "35" & ID != "36")
+
+RadGrp2 <- RadGrp2 %>% 
+  group_by(ID, rad) %>% 
+  mutate(grp = replace(rep(NA_character_, n()), which(!is.na(R.squared)) + -99:0, "yes"))
+
+frag.graph <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad) 
+  frag_list <- unique(df$ID) 
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$ID==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T2_Plots")
+    ggsave(filename = file.path("T2_Plots", paste("Frag", frag_list[i], "Full Plot.png", sep = " "))) 
+  }
+} 
+frag.graph(T2merger)
+```
+
+## Plot each regression individually to check for fit
+```{r}
+frag.rad <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad)
+  frag_list <- unique(df$IDrad)
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$IDrad==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value, color = grp)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T2_Plots")
+    ggsave(filename = file.path("T2_Plots", paste("Frag", frag_list[i], "Zoomed Plot.png", sep = " ")))
+  }
+} 
+
+RadGrp2$IDrad <- paste(RadGrp2$ID, RadGrp2$rad) 
+frag.rad(RadGrp2)
+```
+
+## Select the frag and irradiance which have an odd regression
+```{r}
+frag44_180 <- T2merger[T2merger$ID == 44 & T2merger$rad == "180",]
+frag43_180 <- T2merger[T2merger$ID == 43 & T2merger$rad == "180",]
+frag27_112 <- T2merger[T2merger$ID == 27 & T2merger$rad == "112",]
+frag239_112 <- T2merger[T2merger$ID == 239 & T2merger$rad == "112",]
+frag221_180 <- T2merger[T2merger$ID == 221 & T2merger$rad == "180",]
+frag219_541 <- T2merger[T2merger$ID == 219 & T2merger$rad == "541",]
+frag218_541 <- T2merger[T2merger$ID == 218 & T2merger$rad == "541",]
+frag218_112 <- T2merger[T2merger$ID == 218 & T2merger$rad == "112",]
+frag217_0 <- T2merger[T2merger$ID == 217 & T2merger$rad == "0",]
+frag217_272 <- T2merger[T2merger$ID == 217 & T2merger$rad == "272",]
+frag217_180 <- T2merger[T2merger$ID == 217 & T2merger$rad == "180",]
+frag201_0 <- T2merger[T2merger$ID == 201 & T2merger$rad == "0",]
+frag201_180 <- T2merger[T2merger$ID == 201 & T2merger$rad == "180",]
+frag201_112 <- T2merger[T2merger$ID == 201 & T2merger$rad == "112",]
+
+reg44_180 <- lm(value ~ RunTime, frag44_180)
+reg43_180 <- lm(value ~ RunTime, subset(frag43_180, RunTime >= 20 & RunTime <= 30))
+reg27_112 <- lm(value ~ RunTime, frag27_112)
+reg239_112 <- lm(value ~ RunTime, frag239_112)
+reg221_180 <- lm(value ~ RunTime, frag221_180)
+reg219_541 <- lm(value ~ RunTime, frag219_541)
+reg218_541 <- lm(value ~ RunTime, frag218_541)
+reg218_112 <- lm(value ~ RunTime, frag218_112)
+reg217_0 <- lm(value ~ RunTime, frag217_0)
+reg217_272 <- lm(value ~ RunTime, frag217_272)
+reg217_180 <- lm(value ~ RunTime, frag217_180)
+reg201_0 <- lm(value ~ RunTime, frag201_0)
+reg201_180 <- lm(value ~ RunTime, frag201_180)
+reg201_112 <- lm(value ~ RunTime, frag201_112)
+
+slope44_180 <- as.numeric(reg44_180$coefficients[2])
+intercept44_180 <- as.numeric(reg44_180$coefficients[1]) 
+slope43_180 <- as.numeric(reg43_180$coefficients[2])
+intercept43_180 <- as.numeric(reg43_180$coefficients[1]) 
+slope27_112 <- as.numeric(reg27_112$coefficients[2])
+intercept27_112 <- as.numeric(reg27_112$coefficients[1]) 
+slope239_112 <- as.numeric(reg239_112$coefficients[2])
+intercept239_112 <- as.numeric(reg239_112$coefficients[1]) 
+slope221_180 <- as.numeric(reg221_180$coefficients[2])
+intercept221_180 <- as.numeric(reg221_180$coefficients[1]) 
+slope219_541 <- as.numeric(reg219_541$coefficients[2])
+intercept219_541 <- as.numeric(reg219_541$coefficients[1]) 
+slope218_541 <- as.numeric(reg218_541$coefficients[2])
+intercept218_541 <- as.numeric(reg218_541$coefficients[1]) 
+slope218_112 <- as.numeric(reg218_112$coefficients[2])
+intercept218_112 <- as.numeric(reg218_112$coefficients[1]) 
+slope217_0 <- as.numeric(reg217_0$coefficients[2])
+intercept217_0 <- as.numeric(reg217_0$coefficients[1]) 
+slope217_272 <- as.numeric(reg217_272$coefficients[2])
+intercept217_272 <- as.numeric(reg217_272$coefficients[1]) 
+slope217_180 <- as.numeric(reg217_180$coefficients[2])
+intercept217_180 <- as.numeric(reg217_180$coefficients[1]) 
+slope201_0 <- as.numeric(reg201_0$coefficients[2])
+intercept201_0 <- as.numeric(reg201_0$coefficients[1]) 
+slope201_180 <- as.numeric(reg201_180$coefficients[2])
+intercept201_180 <- as.numeric(reg201_180$coefficients[1]) 
+slope201_112 <- as.numeric(reg201_112$coefficients[2])
+intercept201_112 <- as.numeric(reg201_112$coefficients[1]) 
+
+ggplot(reg44_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept44_180, slope = slope44_180))
+ggplot(reg43_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept43_180, slope = slope43_180))
+ggplot(reg27_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept27_112, slope = slope27_112))
+ggplot(reg239_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept239_112, slope = slope239_112))
+ggplot(reg221_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept221_180, slope = slope221_180))
+ggplot(reg219_541, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_541, slope = slope219_541))
+ggplot(reg218_541, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept218_541, slope = slope218_541))
+ggplot(reg218_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept218_112, slope = slope218_112))
+ggplot(reg217_0, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept217_0, slope = slope217_0))
+ggplot(reg217_272, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept217_272, slope = slope217_272))
+ggplot(reg217_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept217_180, slope = slope217_180))
+ggplot(reg201_0, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept201_0, slope = slope201_0))
+ggplot(reg201_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept201_180, slope = slope201_180))
+ggplot(reg201_112, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept201_112, slope = slope201_112))
+```
+
+## Replace and plot adjusted regressions
+```{r}
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 44 & finalT2$rad == "180", slope44_180, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 44 & finalT2$rad == "180", intercept44_180, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 43 & finalT2$rad == "180", slope43_180, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 43 & finalT2$rad == "180", intercept43_180, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 27 & finalT2$rad == "112", slope27_112, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 27 & finalT2$rad == "112", intercept27_112, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 239 & finalT2$rad == "112", slope239_112, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 239 & finalT2$rad == "112", intercept239_112, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 221 & finalT2$rad == "180", slope221_180, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 221 & finalT2$rad == "180", intercept221_180, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 219 & finalT2$rad == "541", slope219_541, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 219 & finalT2$rad == "541", intercept219_541, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 218 & finalT2$rad == "541", slope218_541, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 218 & finalT2$rad == "541", intercept218_541, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 218 & finalT2$rad == "112", slope218_112, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 218 & finalT2$rad == "112", intercept218_112, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 217 & finalT2$rad == "0", slope217_0, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 217 & finalT2$rad == "0", intercept217_0, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 217 & finalT2$rad == "272", slope217_272, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 217 & finalT2$rad == "272", intercept217_272, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 217 & finalT2$rad == "180", slope217_180, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 217 & finalT2$rad == "180", intercept217_180, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 201 & finalT2$rad == "0", slope201_0, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 201 & finalT2$rad == "0", intercept201_0, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 201 & finalT2$rad == "180", slope201_180, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 201 & finalT2$rad == "180", intercept201_180, finalT2$coefficients..Intercept.)
+finalT2$coefficients.x1 <- ifelse(finalT2$ID == 201 & finalT2$rad == "112", slope201_112, finalT2$coefficients.x1)
+finalT2$coefficients..Intercept. <- ifelse(finalT2$ID == 201 & finalT2$rad == "112", intercept201_112, finalT2$coefficients..Intercept.)
+
+finalT2$Date <- "2019-10-02"
+
+T2merger <- merge(finalT2, rfT2, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+frag.graph(T2merger)
+
+ggplot(finalT2, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(T2merger$rad))
+```
+
+# T3
+## Import and format data
+```{r}
+T3 <- list.files(path = c("10.19.19(1)", "10.19.19(2)", "10.20.19(1)", "10.20.19(2)", "10.22.19"), pattern = "*.xlsx", full.names = T)
+names_T3 <- file_path_sans_ext(list.files(path = c("10.19.19(1)", "10.19.19(2)", "10.20.19(1)", "10.20.19(2)", "10.22.19"), pattern = "*.xlsx", full.names = F))
+
+for(i in 1:length(T3))
+{
+  data <- read_excel(T3[i]) 
+  df <- data[, c(3,9,11)]
+  colnames(df) <- c("RunTime", "O2", "Temp") 
+  df[1:3] <- sapply(df[1:3], as.numeric) 
+  make.names(assign(paste(names_T3[i], sep = ""), df))
+}
+```
+
+## Summarize each run
+```{r}
+Sum_10.19_1 <- as.data.frame(mget(ls(pattern = "10.19\\(1\\)*"))) 
+Sum_10.19_1 <- Sum_10.19_1[ ,c(1:2,5,8,11,14,17,23,26,29)]
+names(Sum_10.19_1) <- c("RunTime", "221", "44", "222", "217", "218", "219", "3", "4", "43")
+
+Sum_10.19_2 <- as.data.frame(mget(ls(pattern = "10.19\\(2\\)*"))) 
+Sum_10.19_2 <- Sum_10.19_2[ ,c(1:2,5,8,11,14,17,23,26,29)]
+names(Sum_10.19_2) <- c("RunTime", "211", "248", "212", "11", "12", "45", "243", "244", "247")
+
+Sum_10.20_1 <- as.data.frame(mget(ls(pattern = "10.20\\(1\\)*"))) 
+Sum_10.20_1 <- Sum_10.20_1[ ,c(1:2,5,8,11,14,17,23,26,29)]
+names(Sum_10.20_1) <- c("RunTime", "209", "27", "210", "203", "204", "201", "239", "240", "26")
+
+Sum_10.20_2 <- as.data.frame(mget(ls(pattern = "10.20\\(2\\)*"))) 
+Sum_10.20_2 <- Sum_10.20_2[ ,c(1:2,5,8,11,14,17,23,26,29)]
+names(Sum_10.20_2) <- c("RunTime", "35", "230", "36", "19", "20", "41", "237", "238", "229")
+
+Sum_10.22 <- as.data.frame(mget(ls(pattern = "10.22-*"))) 
+Sum_10.22 <- Sum_10.22[ ,c(1:2,5,8,11)]
+names(Sum_10.22) <- c("RunTime", "220", "46", "202", "42")
+```
+
+## Create light key data frames
+```{r}
+tp3 <- grep("-1.xlsx", T3, value = T) 
+kfnames3 <- c("kf19_1", "kf19_2", "kf20_1", "kf20_2", "kf22") 
+
+for(i in 1:length(tp3))
+{
+  kf <- read_excel(tp3[i], 6)
+  RunTime <- kf$`Delta T [min]` 
+  percent <- kf$Annotation 
+  light <- data.frame(RunTime, percent) 
+  light$rad[grepl("10%", light$percent, ignore.case=F)] <- 112 
+  light$rad[grepl("20%", light$percent, ignore.case=F)] <- 180
+  light$rad[grepl("30%", light$percent, ignore.case=F)] <- 272
+  light$rad[grepl("40%", light$percent, ignore.case=F)] <- 351
+  light$rad[grepl("50%", light$percent, ignore.case=F)] <- 430
+  light$rad[grepl("60%", light$percent, ignore.case=F)] <- 482
+  light$rad[grepl("70%", light$percent, ignore.case=F)] <- 541
+  light$rad[grepl("80%", light$percent, ignore.case=F)] <- 609
+  light$rad[grepl("90%", light$percent, ignore.case=F)] <- 668
+  light$rad[grepl("100%", light$percent, ignore.case=F)] <- 726
+  light$rad[grepl("off", light$percent, ignore.case=T)] <- 0
+  make.names(assign(paste(kfnames3[i], sep = ""), light))
+}
+
+rfT3 <- rbind(melt(merge(kf19_1, Sum_10.19_1, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf19_2, Sum_10.19_2, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf20_1, Sum_10.20_1, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf20_2, Sum_10.20_2, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf22, Sum_10.22, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")))
+
+rfT3 <- rfT3 %>%
+  group_by(variable) %>%
+  mutate(rad = fillNAgaps(rad)) %>%
+  ungroup()
+
+rfT3$ID <- rfT3$variable 
+rfT3 <- select(rfT3, -c("percent","variable"))  
+rfT3 <- filter(rfT3, ID != "Blank") 
+rfT3 <- drop_na(rfT3, "value") 
+rfT3$ID <- as.numeric(as.character(rfT3$ID)) 
+rfT3 <- arrange(rfT3, ID) 
+rfT3$ID <- as.factor(rfT3$ID) 
+```
+
+## Run rolling regression
+```{r}
+list <- split(rfT3, rfT3$ID) 
+rollreg <- lapply(list, function(df) {
+  roll_lm(df$RunTime, df$value, width = 100)
+}) 
+names(rollreg) <- names(list) 
+
+regT3 <- map_df(rollreg, ~as.data.frame(.x), .id = "ID") 
+
+regT3 <- cbind(rfT3[,c("RunTime","rad","value")], regT3) 
+
+photoT3 <- regT3 %>% 
+  na.omit(regT3) %>%
+  group_by(ID, rad) %>% 
+  slice(99:n()) %>%
+  slice(which.max(R.squared)[rad != 0]) 
+
+respT3 <- regT3 %>%
+  na.omit(regT3) %>%
+  subset(coefficients.x1 <= 0 & rad == 0) %>%
+  group_by(ID, rad) %>%
+  slice(99:n()) %>%
+  slice(which.max(R.squared)) 
+
+finalT3 <- rbind(photoT3, respT3)
+finalT3$rad <- as.numeric(as.character(finalT3$rad))
+```
+
+## Plot PI curve
+```{r}
+ggplot(finalT3, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(finalT3$rad))
+```
+
+## Check regressions against raw data
+```{r}
+finalT3$rad <- as.numeric(as.character(finalT3$rad))
+finalT3 <- arrange(finalT3, ID, rad) 
+T3merger <- merge(finalT3, rfT3, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+T3merger$rad <- as.factor(T3merger$rad) 
+T3merger <- T3merger[!is.na(T3merger$rad),] 
+
+RadGrp3 <- subset(T3merger, ID != "35" & ID != "36" & ID != "19" & ID != "20" & ID != "41" & ID != "42" & ID != "237" & ID != "238" & ID != "229" & ID != "230")
+
+RadGrp3 <- RadGrp3 %>% 
+  group_by(ID, rad) %>% 
+  mutate(grp = replace(rep(NA_character_, n()), which(!is.na(R.squared)) + -99:0, "yes"))
+
+frag.graph <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad) 
+  frag_list <- unique(df$ID) 
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$ID==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T3_Plots")
+    ggsave(filename = file.path("T3_Plots", paste("Frag", frag_list[i], "Full Plot.png", sep = " "))) 
+  }
+} 
+frag.graph(T3merger)
+```
+
+## Plot each regression individually to check for fit
+```{r}
+frag.rad <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad)
+  frag_list <- unique(df$IDrad)
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$IDrad==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value, color = grp)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen")
+    dir.create("T3_Plots")
+    ggsave(filename = file.path("T3_Plots", paste("Frag", frag_list[i], "Zoomed Plot.png", sep = " ")))
+  }
+} 
+
+RadGrp3$IDrad <- paste(RadGrp3$ID, RadGrp3$rad) 
+frag.rad(RadGrp3)
+```
+
+## Select the frag and irradiance which have an odd regression
+```{r}
+frag45_351 <- T3merger[T3merger$ID == 45 & T3merger$rad == "351",]
+frag44_180 <- T3merger[T3merger$ID == 44 & T3merger$rad == "180",]
+frag221_180 <- T3merger[T3merger$ID == 221 & T3merger$rad == "180",]
+frag220_0 <- T3merger[T3merger$ID == 220 & T3merger$rad == "0",]
+frag220_541 <- T3merger[T3merger$ID == 220 & T3merger$rad == "541",]
+frag219_351 <- T3merger[T3merger$ID == 219 & T3merger$rad == "351",]
+frag211_0 <- T3merger[T3merger$ID == 211 & T3merger$rad == "0",]
+frag204_180 <- T3merger[T3merger$ID == 204 & T3merger$rad == "180",]
+frag201_482 <- T3merger[T3merger$ID == 201 & T3merger$rad == "482",]
+
+reg45_351 <- lm(value ~ RunTime, frag45_351)
+reg44_180 <- lm(value ~ RunTime, frag44_180)
+reg221_180 <- lm(value ~ RunTime, frag221_180)
+reg220_0 <- lm(value ~ RunTime, frag220_0)
+reg220_541 <- lm(value ~ RunTime, frag220_541)
+reg219_351 <- lm(value ~ RunTime, frag219_351)
+reg211_0 <- lm(value ~ RunTime, frag211_0)
+reg204_180 <- lm(value ~ RunTime, frag204_180)
+reg201_482 <- lm(value ~ RunTime, frag201_482)
+
+slope45_351 <- as.numeric(reg45_351$coefficients[2])
+intercept45_351 <- as.numeric(reg45_351$coefficients[1]) 
+slope44_180 <- as.numeric(reg44_180$coefficients[2])
+intercept44_180 <- as.numeric(reg44_180$coefficients[1]) 
+slope221_180 <- as.numeric(reg221_180$coefficients[2])
+intercept221_180 <- as.numeric(reg221_180$coefficients[1]) 
+slope220_0 <- as.numeric(reg220_0$coefficients[2])
+intercept220_0 <- as.numeric(reg220_0$coefficients[1]) 
+slope220_541 <- as.numeric(reg220_541$coefficients[2])
+intercept220_541 <- as.numeric(reg220_541$coefficients[1]) 
+slope219_351 <- as.numeric(reg219_351$coefficients[2])
+intercept219_351 <- as.numeric(reg219_351$coefficients[1]) 
+slope211_0 <- as.numeric(reg211_0$coefficients[2])
+intercept211_0 <- as.numeric(reg211_0$coefficients[1]) 
+slope204_180 <- as.numeric(reg204_180$coefficients[2])
+intercept204_180 <- as.numeric(reg204_180$coefficients[1]) 
+slope201_482 <- as.numeric(reg201_482$coefficients[2])
+intercept201_482 <- as.numeric(reg201_482$coefficients[1]) 
+
+ggplot(reg45_351, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept45_351, slope = slope45_351))
+ggplot(reg44_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept44_180, slope = slope44_180))
+ggplot(reg221_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept221_180, slope = slope221_180))
+ggplot(reg220_0, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept220_0, slope = slope220_0))
+ggplot(reg220_541, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept220_541, slope = slope220_541))
+ggplot(reg219_351, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept219_351, slope = slope219_351))
+ggplot(reg211_0, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept211_0, slope = slope211_0))
+ggplot(reg204_180, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept204_180, slope = slope204_180))
+ggplot(reg201_482, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept201_482, slope = slope201_482))
+```
+
+## Replace and plot adjusted regressions
+```{r}
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 45 & finalT3$rad == "351", slope45_351, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 45 & finalT3$rad == "351", intercept45_351, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 44 & finalT3$rad == "180", slope44_180, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 44 & finalT3$rad == "180", intercept44_180, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 221 & finalT3$rad == "180", slope221_180, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 221 & finalT3$rad == "180", intercept221_180, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 220 & finalT3$rad == "0", slope220_0, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 220 & finalT3$rad == "0", intercept220_0, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 220 & finalT3$rad == "541", slope220_541, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 220 & finalT3$rad == "541", intercept220_541, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 219 & finalT3$rad == "351", slope219_351, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 219 & finalT3$rad == "351", intercept219_351, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 211 & finalT3$rad == "0", slope211_0, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 211 & finalT3$rad == "0", intercept211_0, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 204 & finalT3$rad == "180", slope204_180, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 204 & finalT3$rad == "180", intercept204_180, finalT3$coefficients..Intercept.)
+finalT3$coefficients.x1 <- ifelse(finalT3$ID == 201 & finalT3$rad == "482", slope201_482, finalT3$coefficients.x1)
+finalT3$coefficients..Intercept. <- ifelse(finalT3$ID == 201 & finalT3$rad == "482", intercept201_482, finalT3$coefficients..Intercept.)
+
+finalT3$Date <- "2019-10-16"
+
+T3merger <- merge(finalT3, rfT3, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+frag.graph(T3merger)
+
+ggplot(finalT3, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(T3merger$rad))
+```
+
+# T4
+## Import and format data
+```{r}
+T4 <- list.files(path = c("11.1.19 (1)", "11.1.19 (2)", "11.1.19 (3)", "11.1.19 (4)"), pattern = "*.xlsx", full.names = T)
+names_T4 <- file_path_sans_ext(list.files(path = c("11.1.19 (1)", "11.1.19 (2)", "11.1.19 (3)", "11.1.19 (4)"), pattern = "*.xlsx", full.names = F))
+
+for(i in 1:length(T4))
+{
+  data <- read_excel(T4[i]) 
+  df <- data[, c(3,9,11)]
+  colnames(df) <- c("RunTime", "O2", "Temp") 
+  df[1:3] <- sapply(df[1:3], as.numeric) 
+  make.names(assign(paste(names_T4[i], sep = ""), df))
+}
+```
+
+## Summarize each run
+```{r}
+Sum_11.1_1 <- as.data.frame(mget(ls(pattern = "11.1.1-*"))) 
+Sum_11.1_1 <- Sum_11.1_1[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_11.1_1) <- c("RunTime", "221", "220", "222", "43", "44", "217", "218", "45", "46", "219")
+
+Sum_11.1_2 <- as.data.frame(mget(ls(pattern = "11.1.2-*"))) 
+Sum_11.1_2 <- Sum_11.1_2[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_11.1_2) <- c("RunTime", "243", "240", "244", "211", "212", "247", "248", "11", "12", "239")
+
+Sum_11.1_3 <- as.data.frame(mget(ls(pattern = "11.1.3-*"))) 
+Sum_11.1_3 <- Sum_11.1_3[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_11.1_3) <- c("RunTime", "210", "202", "209", "26", "27", "203", "204", "41", "42", "201")
+
+Sum_11.1_4 <- as.data.frame(mget(ls(pattern = "11.1.4-*"))) 
+Sum_11.1_4 <- Sum_11.1_4[ ,c(1:2,5,8,11,14,17,20,23,26,29)]
+names(Sum_11.1_4) <- c("RunTime", "237", "36", "238", "19", "20", "229", "230", "3", "4", "35")
+```
+
+## Create light key data frames
+```{r}
+tp4 <- grep("-1.xlsx", T4, value = T) 
+kfnames4 <- c("kf1_1", "kf1_2", "kf1_3", "kf1_4") 
+
+for(i in 1:length(tp4))
+{
+  kf <- read_excel(tp4[i], 6)
+  RunTime <- kf$`Delta T [min]` 
+  percent <- kf$Annotation 
+  light <- data.frame(RunTime, percent) 
+  light$rad[grepl("10%", light$percent, ignore.case=F)] <- 112 
+  light$rad[grepl("20%", light$percent, ignore.case=F)] <- 180
+  light$rad[grepl("30%", light$percent, ignore.case=F)] <- 272
+  light$rad[grepl("40%", light$percent, ignore.case=F)] <- 351
+  light$rad[grepl("50%", light$percent, ignore.case=F)] <- 430
+  light$rad[grepl("60%", light$percent, ignore.case=F)] <- 482
+  light$rad[grepl("70%", light$percent, ignore.case=F)] <- 541
+  light$rad[grepl("80%", light$percent, ignore.case=F)] <- 609
+  light$rad[grepl("90%", light$percent, ignore.case=F)] <- 668
+  light$rad[grepl("100%", light$percent, ignore.case=F)] <- 726
+  light$rad[grepl("off", light$percent, ignore.case=T)] <- 0
+  make.names(assign(paste(kfnames4[i], sep = ""), light))
+}
+
+rfT4 <- rbind(melt(merge(kf1_1, Sum_11.1_1, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf1_2, Sum_11.1_2, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf1_3, Sum_11.1_3, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")),
+              melt(merge(kf1_4, Sum_11.1_4, by.x = "RunTime", all = T), id.vars = c("RunTime", "percent", "rad")))
+
+rfT4 <- rfT4 %>%
+  group_by(variable) %>%
+  mutate(rad = fillNAgaps(rad)) %>%
+  ungroup()
+
+rfT4$ID <- rfT4$variable 
+rfT4 <- select(rfT4, -c("percent","variable"))  
+rfT4 <- filter(rfT4, ID != "Blank") 
+rfT4 <- drop_na(rfT4, "value") 
+rfT4$ID <- as.numeric(as.character(rfT4$ID)) 
+rfT4 <- arrange(rfT4, ID) 
+rfT4$ID <- as.factor(rfT4$ID) 
+```
+
+## Run rolling regression
+```{r}
+list <- split(rfT4, rfT4$ID) 
+rollreg <- lapply(list, function(df) {
+  roll_lm(df$RunTime, df$value, width = 100)
+}) 
+names(rollreg) <- names(list) 
+
+regT4 <- map_df(rollreg, ~as.data.frame(.x), .id = "ID") 
+
+regT4 <- cbind(rfT4[,c("RunTime","rad","value")], regT4) 
+
+photoT4 <- regT4 %>% 
+  na.omit(regT4) %>%
+  group_by(ID, rad) %>% 
+  slice(99:n()) %>%
+  slice(which.max(R.squared)[rad != 0]) 
+
+respT4 <- regT4 %>%
+  na.omit(regT4) %>%
+  subset(coefficients.x1 <= 0 & rad == 0) %>%
+  group_by(ID, rad) %>%
+  slice(99:n()) %>%
+  slice(which.max(R.squared)) 
+
+finalT4 <- rbind(photoT4, respT4)
+finalT4$rad <- as.numeric(as.character(finalT4$rad))
+```
+
+## Plot PI curve
+```{r}
+ggplot(finalT4, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(finalT4$rad))
+```
+
+## Check regressions against raw data
+```{r}
+finalT4$rad <- as.numeric(as.character(finalT4$rad))
+finalT4 <- arrange(finalT4, ID, rad) 
+T4merger <- merge(finalT4, rfT4, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+T4merger$rad <- as.factor(T4merger$rad) 
+T4merger <- T4merger[!is.na(T4merger$rad),] 
+
+RadGrp4 <- T4merger %>% 
+  group_by(ID, rad) %>% 
+  mutate(grp = replace(rep(NA_character_, n()), which(!is.na(R.squared)) + -85:0, "yes"))
+
+frag.graph <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad) 
+  frag_list <- unique(df$ID) 
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$ID==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen") 
+    dir.create("T4_Plots")
+    ggsave(filename = file.path("T4_Plots", paste("Frag", frag_list[i], "Full Plot.png", sep = " "))) 
+  }
+} 
+frag.graph(T4merger)
+```
+
+## Plot each regression individually to check for fit
+```{r}
+frag.rad <- function(df, na.rm = TRUE, ...){
+  df$rad <- as.factor(df$rad)
+  frag_list <- unique(df$IDrad)
+  for (i in seq_along(frag_list)) {  
+    plot <- 
+      ggplot(subset(df, df$IDrad==frag_list[i]),
+             aes(x = RunTime, color = rad)) +
+      geom_point(aes(y=value, color = grp)) +
+      geom_abline(aes(intercept = coefficients..Intercept., slope = coefficients.x1, color=rad)) +
+      ggtitle(paste('Frag ', frag_list[i], ' timecourse with regression lines', sep='')) +
+      labs(color="Irradiance") + xlab("time (min)") + ylab("Oxygen")
+    dir.create("T4_Plots")
+    ggsave(filename = file.path("T4_Plots", paste("Frag", frag_list[i], "Zoomed Plot.png", sep = " ")))
+  }
+} 
+
+RadGrp4$IDrad <- paste(RadGrp4$ID, RadGrp4$rad) 
+frag.rad(RadGrp4)
+```
+
+## Select the frag and irradiance which have an odd regression
+```{r}
+frag44_609 <- T4merger[T4merger$ID == 44 & T4merger$rad == "609",]
+frag44_351 <- T4merger[T4merger$ID == 44 & T4merger$rad == "351",]
+frag27_726 <- T4merger[T4merger$ID == 27 & T4merger$rad == "726",]
+frag27_609 <- T4merger[T4merger$ID == 27 & T4merger$rad == "609",]
+frag237_0 <- T4merger[T4merger$ID == 237 & T4merger$rad == "0",]
+frag229_430 <- T4merger[T4merger$ID == 229 & T4merger$rad == "430",]
+frag212_482 <- T4merger[T4merger$ID == 212 & T4merger$rad == "482",]
+frag203_609 <- T4merger[T4merger$ID == 203 & T4merger$rad == "609",]
+
+reg44_609 <- lm(value ~ RunTime, frag44_609)
+reg44_351 <- lm(value ~ RunTime, frag44_351)
+reg27_726 <- lm(value ~ RunTime, frag27_726)
+reg27_609 <- lm(value ~ RunTime, frag27_609)
+reg237_0 <- lm(value ~ RunTime, frag237_0)
+reg229_430 <- lm(value ~ RunTime, frag229_430)
+reg212_482 <- lm(value ~ RunTime, frag212_482)
+reg203_609 <- lm(value ~ RunTime, frag203_609)
+
+slope44_609 <- as.numeric(reg44_609$coefficients[2])
+intercept44_609 <- as.numeric(reg44_609$coefficients[1]) 
+slope44_351 <- as.numeric(reg44_351$coefficients[2])
+intercept44_351 <- as.numeric(reg44_351$coefficients[1]) 
+slope27_726 <- as.numeric(reg27_726$coefficients[2])
+intercept27_726 <- as.numeric(reg27_726$coefficients[1])
+slope27_609 <- as.numeric(reg27_609$coefficients[2])
+intercept27_609 <- as.numeric(reg27_609$coefficients[1]) 
+slope237_0 <- as.numeric(reg237_0$coefficients[2])
+intercept237_0 <- as.numeric(reg237_0$coefficients[1]) 
+slope229_430 <- as.numeric(reg229_430$coefficients[2])
+intercept229_430 <- as.numeric(reg229_430$coefficients[1]) 
+slope212_482 <- as.numeric(reg212_482$coefficients[2])
+intercept212_482 <- as.numeric(reg212_482$coefficients[1]) 
+slope203_609 <- as.numeric(reg203_609$coefficients[2])
+intercept203_609 <- as.numeric(reg203_609$coefficients[1]) 
+
+ggplot(reg44_609, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept44_609, slope = slope44_609))
+ggplot(reg44_351, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept44_351, slope = slope44_351))
+ggplot(reg27_726, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept27_726, slope = slope27_726))
+ggplot(reg27_609, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept27_609, slope = slope27_609))
+ggplot(reg237_0, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept237_0, slope = slope237_0))
+ggplot(reg229_430, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept229_430, slope = slope229_430))
+ggplot(reg212_482, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept212_482, slope = slope212_482))
+ggplot(reg203_609, aes(x = RunTime)) +
+  geom_point(aes(y=value)) +
+  geom_abline(aes(intercept = intercept203_609, slope = slope203_609))
+```
+
+## Replace and plot adjusted regressions
+```{r}
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 44 & finalT4$rad == "609", slope44_609, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 44 & finalT4$rad == "609", intercept44_609, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 44 & finalT4$rad == "351", slope44_351, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 44 & finalT4$rad == "351", intercept44_351, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 27 & finalT4$rad == "726", slope27_726, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 27 & finalT4$rad == "726", intercept27_726, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 27 & finalT4$rad == "609", slope27_609, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 27 & finalT4$rad == "609", intercept27_609, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 237 & finalT4$rad == "0", slope237_0, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 237 & finalT4$rad == "0", intercept237_0, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 229 & finalT4$rad == "430", slope229_430, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 229 & finalT4$rad == "430", intercept229_430, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 212 & finalT4$rad == "482", slope212_482, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 212 & finalT4$rad == "482", intercept212_482, finalT4$coefficients..Intercept.)
+finalT4$coefficients.x1 <- ifelse(finalT4$ID == 203 & finalT4$rad == "609", slope203_609, finalT4$coefficients.x1)
+finalT4$coefficients..Intercept. <- ifelse(finalT4$ID == 203 & finalT4$rad == "609", intercept203_609, finalT4$coefficients..Intercept.)
+
+finalT4$Date <- "2019-10-30"
+
+T4merger <- merge(finalT4, rfT4, by = c("ID","RunTime", "rad", "value"), all = TRUE)
+frag.graph(T4merger)
+
+ggplot(finalT4, aes(x = rad, color = ID)) +
+  geom_line(aes(y = coefficients.x1)) +
+  scale_x_continuous(breaks = unique(T4merger$rad))
+```

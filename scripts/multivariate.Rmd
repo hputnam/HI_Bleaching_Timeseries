@@ -1,0 +1,148 @@
+---
+title: "multivariate"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# load packages
+library(vegan)
+library(tidyverse)
+library(reshape2)
+```
+
+# Import and format data
+```{r}
+# Clear environment
+rm(list = ls())
+
+# Set seed
+set.seed(54321)
+
+# Import data
+Master <- read.csv("data/PhysData.csv")
+Master$ColonyID <- as.factor(Master$ColonyID)
+Master$Date <- as.Date(Master$Date, format = "%m/%d/%y")
+Master$group <- paste(Master$Species, Master$Bleach, Master$Date) # Add group name for species, date and phenotype
+Master$spe.bl <- paste(Master$Species, Master$Bleach) # Add group name for species and phenotype
+Master$spe.da <- paste(Master$Species, Master$Date) # Add group name for species and date
+```
+
+# PCA
+## MCAP
+```{r}
+# Subset for timeseries and response variables
+mcap <- na.omit(subset(Master, Date >= "2019-09-16" & Date <= "2019-10-30" & Species == "Montipora capitata")[,c("ColonyID","Bleach","Date","Species","spe.bl","spe.da", "group", "Yield", "BleachScore", "BM.mgcm2", "R.umolcm2hr", "GP.umolcm2hr", "SymSA.cellcm2","ChlSA.ugcm2", "TACProt.uMug", "ProtSA.mgcm2")])
+mcap$identifier <- rownames(mcap)
+
+# Scale and center data
+mcapscaled <- scale(mcap[8:16], center = T, scale = T) 
+
+# Identify Factors 
+fac.mcap <- mcap[1:7]
+
+# PCA
+pca.out.mcap <- prcomp(mcapscaled, center=FALSE, scale=FALSE)
+summary(pca.out.mcap)
+biplot(pca.out.mcap)
+PC1 <- pca.out.mcap$x[,1]
+PC2 <- pca.out.mcap$x[,2]
+
+# PERMANOVA
+mod.mcap <- adonis2(mcapscaled ~ Bleach * Date, data = mcap, method = "euclidian") # PERMANOVA
+mod.mcap
+vec.mcap <- envfit(pca.out.mcap, mcap[8:16], perm = 1000) #fit physiological vectors onto ordination
+vecdf.mcap <- as.data.frame(vec.mcap$vectors$arrows * sqrt(vec.mcap$vectors$r))
+vecdf.mcap$variable <- rownames(vecdf.mcap)
+```
+
+### Format plotting data
+```{r}
+# Gather info for plotting
+pca.df.mcap <- data.frame(pca.out.mcap$x[,1], y = pca.out.mcap$x[,2],
+                        Colony = as.factor(fac.mcap$ColonyID),
+                        Bleach = as.factor(fac.mcap$Bleach),
+                        Date = as.factor(fac.mcap$Date),
+                        Species = as.factor(fac.mcap$Species),
+                        spe.bl = as.factor(fac.mcap$spe.bl),
+                        spe.da = as.factor(fac.mcap$spe.da),
+                        group = as.factor(fac.mcap$group))
+
+# Order levels
+pca.df.mcap$Bleach <- factor(pca.df.mcap$spe.bl, levels = c("Montipora capitata Bleach", "Montipora capitata Non-bleach"))
+pca.df.mcap$Date <- factor(pca.df.mcap$spe.da, levels = c("Montipora capitata 2019-09-16", "Montipora capitata 2019-10-02", "Montipora capitata 2019-10-16", "Montipora capitata 2019-10-30"))
+pca.df.mcap$group <- factor(pca.df.mcap$group, levels = c("Montipora capitata Bleach 2019-09-16", "Montipora capitata Non-bleach 2019-09-16", "Montipora capitata Bleach 2019-10-02", "Montipora capitata Non-bleach 2019-10-02",
+                                                          "Montipora capitata Bleach 2019-10-16", "Montipora capitata Non-bleach 2019-10-16", "Montipora capitata Bleach 2019-10-30", "Montipora capitata Non-bleach 2019-10-30"))
+
+# Set column names
+colnames(pca.df.mcap)[1:2] <- c("PC1", "PC2")
+```
+
+## PCOM
+```{r}
+# Subset for timeseries and response variables
+pcom <- na.omit(subset(Master, Date >= "2019-09-16" & Date <= "2019-10-30" & Species == "Porites compressa")[,c("ColonyID","Bleach","Date","Species","spe.bl","spe.da", "group", "Yield", "BleachScore", "BM.mgcm2", "R.umolcm2hr", "GP.umolcm2hr", "SymSA.cellcm2","ChlSA.ugcm2", "TACProt.uMug", "ProtSA.mgcm2")])
+pcom$identifier <- rownames(pcom)
+
+# Scale and center data
+pcomscaled <- scale(pcom[8:16], center = T, scale = T) 
+
+# Identify Factors 
+fac.pcom <- pcom[1:7]
+
+# PCA
+pca.out.pcom <- prcomp(pcomscaled, center=FALSE, scale=FALSE)
+summary(pca.out.pcom)
+biplot(pca.out.pcom)
+PC1 <- pca.out.pcom$x[,1]
+PC2 <- pca.out.pcom$x[,2]
+
+# PERMANOVA
+mod.pcom <- adonis2(pcomscaled ~ Bleach * Date, data = pcom, method = "euclidian") # PERMANOVA
+mod.pcom
+vec.pcom <- envfit(pca.out.pcom, pcom[8:16], perm = 1000) #fit physiological vectors onto ordination
+vecdf.pcom <- as.data.frame(vec.pcom$vectors$arrows * sqrt(vec.pcom$vectors$r))
+vecdf.pcom$variable <- rownames(vecdf.pcom)
+```
+
+### Format plotting data
+```{r}
+# Gather info for plotting
+pca.df.pcom <- data.frame(pca.out.pcom$x[,1], y = pca.out.pcom$x[,2],
+                          Colony = as.factor(fac.pcom$ColonyID),
+                          Bleach = as.factor(fac.pcom$Bleach),
+                          Date = as.factor(fac.pcom$Date),
+                          Species = as.factor(fac.pcom$Species),
+                          spe.bl = as.factor(fac.pcom$spe.bl),
+                          spe.da = as.factor(fac.pcom$spe.da),
+                          group = as.factor(fac.pcom$group))
+
+# Order levels
+pca.df.pcom$Bleach <- factor(pca.df.pcom$spe.bl, levels = c("Porites compressa Bleach", "Porites compressa Non-bleach"))
+pca.df.pcom$Date <- factor(pca.df.pcom$spe.da, levels = c("Porites compressa 2019-09-16", "Porites compressa 2019-10-02", "Porites compressa 2019-10-16", "Porites compressa 2019-10-30"))
+pca.df.pcom$group <- factor(pca.df.pcom$group, levels = c("Porites compressa Bleach 2019-09-16", "Porites compressa Non-bleach 2019-09-16", "Porites compressa Bleach 2019-10-02", "Porites compressa Non-bleach 2019-10-02",
+                                                          "Porites compressa Bleach 2019-10-16", "Porites compressa Non-bleach 2019-10-16", "Porites compressa Bleach 2019-10-30", "Porites compressa Non-bleach 2019-10-30"))
+
+# Set column names
+colnames(pca.df.pcom)[1:2] <- c("PC1", "PC2")
+```
+
+# Ordination
+```{r}
+# Set colors - p,b,1; p,nb,1; p,b,2... 
+bleachcolors <- c("red", "blue") 
+date.symbols <- c(3, 5, 15, 16) 
+
+par(mfrow=c(1,2))
+PCA.M.plot <- ordiplot(pca.out.mcap, type = "n", display = "sites", ylim=c(-5,5), xlim=c(-5,5), xlab=c("PC1 (31%)"), ylab=c("PC2 (20%)"))
+points(PCA.M.plot, "sites", col = bleachcolors[pca.df.mcap$Bleach], cex=0.8, pch=date.symbols[pca.df.mcap$Date])
+par.new = T
+plot(vec.mcap, col = "black", cex = 0.5)
+title(main = "MCAP")
+PCA.P.plot <- ordiplot(pca.out.pcom, type = "n", display = "sites", ylim=c(-5,5), xlim=c(-5,5), xlab=c("PC1 (29%)"), ylab=c("PC2 (18%)"))
+points(PCA.P.plot, "sites", col = bleachcolors[pca.df.pcom$Bleach], cex=0.8, pch=date.symbols[pca.df.pcom$Date])
+par.new = T
+plot(vec.pcom, col = "black", cex = 0.5)
+title(main = "PCOM")
+```
