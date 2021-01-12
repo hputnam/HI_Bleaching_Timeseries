@@ -6,10 +6,10 @@ DNA RNA Duet Extractions [online notebook post](https://emmastrand.github.io/Emm
 Molecular samples at URI:  
 - "T2" sample date 11/5/20 received shipment on 11/30/20 (black mesh bags - 2 shelves)
 - "T5" sample date 12/4/19 received shipment on 10/01/20 (black mesh bag)  
-- 9/16/19 (yellow mesh bag)
-- 10/2/19 (yellow mesh bag)  
-- 10/16/19 (yellow mesh bag)  
-- 10/30/19 (yellow mesh bag)  
+- 9/16/19 biopsies (yellow mesh bag)
+- 10/2/19 biopsies (yellow mesh bag)  
+- 10/16/19 biopsies (yellow mesh bag)  
+- 10/30/19 biopsies (yellow mesh bag)  
 - 12/4/19 (black mesh bag)  
 - 8/27/20 (black mesh bag)
 
