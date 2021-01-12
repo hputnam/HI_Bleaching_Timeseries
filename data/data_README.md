@@ -17,4 +17,4 @@ Molecular samples at URI:
 2 2020 timepoints confirmed at URI (Nov 2020 and Aug 2020).
 
 Misc notes:  
-2020 timepoints: Oct 2020 = T1; Nov 2020 = T2.
+2020 timepoints: Oct 2020 = T1; Nov 2020 = T2. Only November 2020 corals are at URI.
