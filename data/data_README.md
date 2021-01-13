@@ -7,11 +7,11 @@ Molecular Fragment Locations
 
 | Year  	| Date  	| Biopsy  	| Physio            	| Label                            	| Notes       	|
 |-------	|-------	|---------	|-------------------	|----------------------------------	|-------------	|
-| 2019  	| 7/16  	| @ UPenn 	|                   	|                                  	|             	|
-| 2019  	| 9/16  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #               	| Yellow mesh 	|
-| 2019  	| 10/2  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #               	| Yellow mesh 	|
-| 2019  	| 10/16 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #               	| Yellow mesh 	|
-| 2019  	| 10/30 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #               	| Yellow mesh 	|
+| 2019  	| 7/16  	| @ UPenn 	| N/A                 | Date; ID #; Reef #; Species       | To go to URI  |
+| 2019  	| 9/16  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species | Yellow mesh 	|
+| 2019  	| 10/2  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species | Yellow mesh 	|
+| 2019  	| 10/16 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species | Yellow mesh 	|
+| 2019  	| 10/30 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species | Yellow mesh 	|
 | 2019  	| 12/4  	| @ URI   	|                   	| "T5" and ID #                    	| Black mesh  	|
 | 2020  	| 1/24  	|         	|                   	|                                  	|             	|
 | 2020  	| 8/27  	| @ URI   	|                   	|                                  	|             	|
