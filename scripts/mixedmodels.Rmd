@@ -61,16 +61,26 @@ anova(mcap.bleach.all.2, type = 3)
 Anova(mcap.bleach.all.2, type = 3)
 qqPlot(residuals(mcap.bleach.all.2))
 
-model.sel(mcap.bleach.all, mcap.bleach.all.2) # log10 transform best fit uner AIC but no change to sig
+mcap.bleach.all.3 <- lmer(log(BleachScore) ~ Bleach * Date + (1|ColonyID), data = mcapallscores)
+anova(mcap.bleach.all.3, type = 3)
+Anova(mcap.bleach.all.3, type = 3)
+qqPlot(residuals(mcap.bleach.all.3))
+
+mcap.bleach.all.4 <- lmer(sqrt(BleachScore) ~ Bleach * Date + (1|ColonyID), data = mcapallscores)
+anova(mcap.bleach.all.4, type = 3)
+Anova(mcap.bleach.all.4, type = 3)
+qqPlot(residuals(mcap.bleach.all.4))
+
+model.sel(mcap.bleach.all, mcap.bleach.all.2, mcap.bleach.all.3, mcap.bleach.all.4) # log10 transform best fit uner AIC but no change to sig
 
 # PCOM
 pcomallscores <- subset(allscores, Species == "Porites compressa")
 pcomallscores$Date <- as.factor(pcomallscores$Date)
 pcom.bleach.all <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
 summary(pcom.bleach.all)
-anova(pcom.bleach.all, type = 3)
-Anova(pcom.bleach.all, type = 3)
-qqPlot(residuals(pcom.bleach.all)) 
+anova(pcom.bleach.all, type = 3) # satterthwaite type iii
+Anova(pcom.bleach.all, type = 3) # wald chisq type iii
+qqPlot(residuals(pcom.bleach.all)) # normality of residuals
 cld(emmeans(pcom.bleach.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
 pcom.bleach.all.2 <- lmer(log10(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
@@ -78,17 +88,17 @@ anova(pcom.bleach.all.2, type = 3)
 Anova(pcom.bleach.all.2, type = 3)
 qqPlot(residuals(pcom.bleach.all.2))
 
-pcom.bleach.all.3 <- lmer(sqrt(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
+pcom.bleach.all.3 <- lmer(log(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
 anova(pcom.bleach.all.3, type = 3)
 Anova(pcom.bleach.all.3, type = 3)
 qqPlot(residuals(pcom.bleach.all.3))
 
-pcom.bleach.all.4 <- lmer(log(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
+pcom.bleach.all.4 <- lmer(sqrt(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
 anova(pcom.bleach.all.4, type = 3)
 Anova(pcom.bleach.all.4, type = 3)
 qqPlot(residuals(pcom.bleach.all.4))
 
-model.sel(pcom.bleach.all, pcom.bleach.all.2, pcom.bleach.all.3, pcom.bleach.all.4) # log10 transform best fit under AIC but no change to sig
+model.sel(pcom.bleach.all, pcom.bleach.all.2, pcom.bleach.all.3, pcom.bleach.all.4) # log10 transform best fit uner AIC but no change to sig
 ```
 
 # Timeseries
