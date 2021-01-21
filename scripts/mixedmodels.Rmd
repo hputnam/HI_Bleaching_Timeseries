@@ -51,9 +51,9 @@ mcapallscores <- subset(allscores, Species == "Montipora capitata")
 mcapallscores$Date <- as.factor(mcapallscores$Date)
 mcap.bleach.all <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = mcapallscores)
 summary(mcap.bleach.all)
-anova(mcap.bleach.all, type = 3) # satterthwaite type iii
-Anova(mcap.bleach.all, type = 3) # wald chisq type iii
-qqPlot(residuals(mcap.bleach.all)) # normality of residuals
+anova(mcap.bleach.all, type = 3)
+Anova(mcap.bleach.all, type = 3) 
+qqPlot(residuals(mcap.bleach.all)) 
 cld(emmeans(mcap.bleach.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
 mcap.bleach.all.2 <- lmer(log10(BleachScore) ~ Bleach * Date + (1|ColonyID), data = mcapallscores)
@@ -78,9 +78,9 @@ pcomallscores <- subset(allscores, Species == "Porites compressa")
 pcomallscores$Date <- as.factor(pcomallscores$Date)
 pcom.bleach.all <- lmer(BleachScore ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
 summary(pcom.bleach.all)
-anova(pcom.bleach.all, type = 3) # satterthwaite type iii
-Anova(pcom.bleach.all, type = 3) # wald chisq type iii
-qqPlot(residuals(pcom.bleach.all)) # normality of residuals
+anova(pcom.bleach.all, type = 3) 
+Anova(pcom.bleach.all, type = 3)
+qqPlot(residuals(pcom.bleach.all)) 
 cld(emmeans(pcom.bleach.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
 pcom.bleach.all.2 <- lmer(log10(BleachScore) ~ Bleach * Date + (1|ColonyID), data = pcomallscores)
@@ -112,57 +112,58 @@ ggplot(pamseries, aes(x = Date, y = Yield, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-pammcap <- subset(pamseries, Species == "Montipora capitata")
-pammcap$Date <- as.factor(pammcap$Date)
-mcap.pam <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = pammcap)
-summary(mcap.pam)
-anova(mcap.pam, type = 3) 
-Anova(mcap.pam, type = 3)
-qqPlot(residuals(mcap.pam)) 
-cld(emmeans(mcap.pam, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcappam <- subset(pamseries, Species == "Montipora capitata")
+mcappam$Date <- as.factor(mcappam$Date)
+mcap.pam.all <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = mcappam)
+summary(mcap.pam.all)
+anova(mcap.pam.all, type = 3) 
+Anova(mcap.pam.all, type = 3) 
+qqPlot(residuals(mcap.pam.all)) 
+cld(emmeans(mcap.pam.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
-mcap.pam.2 <- lmer(log10(Yield) ~ Bleach * Date + (1|ColonyID), data = pammcap)
-anova(mcap.pam.2, type = 3) 
-Anova(mcap.pam.2, type = 3)
-qqPlot(residuals(mcap.pam.2))
+mcap.pam.all.2 <- lmer(log10(Yield) ~ Bleach * Date + (1|ColonyID), data = mcappam)
+anova(mcap.pam.all.2, type = 3)
+Anova(mcap.pam.all.2, type = 3)
+qqPlot(residuals(mcap.pam.all.2))
 
-mcap.pam.3 <- lmer(sqrt(Yield) ~ Bleach * Date + (1|ColonyID), data = pammcap)
-anova(mcap.pam.3, type = 3) 
-Anova(mcap.pam.3, type = 3)
-qqPlot(residuals(mcap.pam.3))
+mcap.pam.all.3 <- lmer(log(Yield) ~ Bleach * Date + (1|ColonyID), data = mcappam)
+anova(mcap.pam.all.3, type = 3)
+Anova(mcap.pam.all.3, type = 3)
+qqPlot(residuals(mcap.pam.all.3))
 
-mcap.pam.4 <- lmer(log(Yield) ~ Bleach * Date + (1|ColonyID), data = pammcap)
-anova(mcap.pam.4, type = 3) 
-Anova(mcap.pam.4, type = 3)
-qqPlot(residuals(mcap.pam.4))
+mcap.pam.all.4 <- lmer(sqrt(Yield) ~ Bleach * Date + (1|ColonyID), data = mcappam)
+anova(mcap.pam.all.4, type = 3)
+Anova(mcap.pam.all.4, type = 3)
+qqPlot(residuals(mcap.pam.all.4))
 
-mcap.pam.5 <- lme(Yield ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = pammcap, na.action = na.exclude)
-Anova(mcap.pam.5, type = 3)
-qqPlot(residuals(mcap.pam.5))
-
-model.sel(mcap.pam, mcap.pam.2, mcap.pam.3, mcap.pam.4, mcap.pam.5) # sqrt transform best fit under AIC but no change to sig
+model.sel(mcap.pam.all, mcap.pam.all.2, mcap.pam.all.3, mcap.pam.all.4) # sqrt transform best fit uner AIC but no change to sig
 
 # PCOM
-pampcom <- subset(pamseries, Species == "Porites compressa")
-pampcom$Date <- as.factor(pampcom$Date)
-pcom.pam <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = pampcom)
-summary(pcom.pam)
-anova(pcom.pam, type = 3) 
-Anova(pcom.pam, type = 3)
-qqPlot(residuals(pcom.pam)) 
-cld(emmeans(pcom.pam, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcompam <- subset(pamseries, Species == "Porites compressa")
+pcompam$Date <- as.factor(pcompam$Date)
+pcom.pam.all <- lmer(Yield ~ Bleach * Date + (1|ColonyID), data = pcompam)
+summary(pcom.pam.all)
+anova(pcom.pam.all, type = 3) 
+Anova(pcom.pam.all, type = 3)
+qqPlot(residuals(pcom.pam.all)) 
+cld(emmeans(pcom.pam.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
-pcom.pam.2 <- lmer(log10(Yield) ~ Bleach * Date + (1|ColonyID), data = pampcom)
-anova(pcom.pam.2, type = 3) 
-Anova(pcom.pam.2, type = 3)
-qqPlot(residuals(pcom.bleach.all.2))
+pcom.pam.all.2 <- lmer(log10(Yield) ~ Bleach * Date + (1|ColonyID), data = pcompam)
+anova(pcom.pam.all.2, type = 3)
+Anova(pcom.pam.all.2, type = 3)
+qqPlot(residuals(pcom.pam.all.2))
 
-# PCOM
-pcom.pam.3 <- lme(Yield ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = pampcom, na.action = na.exclude)
-Anova(pcom.pam.3, type = 3)
+pcom.pam.all.3 <- lmer(log(Yield) ~ Bleach * Date + (1|ColonyID), data = pcompam)
+anova(pcom.pam.all.3, type = 3)
+Anova(pcom.pam.all.3, type = 3)
+qqPlot(residuals(pcom.pam.all.3))
 
-pcom.pam.4 <- lme(log10(Yield) ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = pampcom, na.action = na.exclude)
-Anova(pcom.pam.4, type = 3)
+pcom.pam.all.4 <- lmer(sqrt(Yield) ~ Bleach * Date + (1|ColonyID), data = pcompam)
+anova(pcom.pam.all.4, type = 3)
+Anova(pcom.pam.all.4, type = 3)
+qqPlot(residuals(pcom.pam.all.4))
+
+model.sel(pcom.pam.all, pcom.pam.all.2, pcom.pam.all.3, pcom.pam.all.4) # sqrt transform best fit uner AIC but no change to sig
 ```
 
 ## Gross photosynthesis
@@ -175,47 +176,58 @@ ggplot(gpseries, aes(x = Date, y = GP.umolcm2hr, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-gpmcap <- subset(gpseries, Species == "Montipora capitata")
-gpmcap$Date <- as.factor(gpmcap$Date)
-mcap.gp <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = gpmcap)
-summary(mcap.gp)
-anova(mcap.gp, type = 3) 
-Anova(mcap.gp, type = 3)
-qqPlot(residuals(mcap.gp))
-cld(emmeans(mcap.gp, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcapgp <- subset(gpseries, Species == "Montipora capitata")
+mcapgp$Date <- as.factor(mcapgp$Date)
+mcap.gp.all <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = mcapgp)
+summary(mcap.gp.all)
+anova(mcap.gp.all, type = 3) 
+Anova(mcap.gp.all, type = 3) 
+qqPlot(residuals(mcap.gp.all)) 
+cld(emmeans(mcap.gp.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
-mcap.gp.2 <- lmer(log10(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = gpmcap)
-anova(mcap.gp.2, type = 3)
-Anova(mcap.gp.2, type = 3)
-qqPlot(residuals(mcap.gp.2))
+mcap.gp.all.2 <- lmer(log10(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = mcapgp)
+anova(mcap.gp.all.2, type = 3)
+Anova(mcap.gp.all.2, type = 3)
+qqPlot(residuals(mcap.gp.all.2))
 
-# PCOM
-gppcom <- subset(gpseries, Species == "Porites compressa")
-gppcom$Date <- as.factor(gppcom$Date)
-pcom.gp <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = gppcom)
-summary(pcom.gp)
-anova(pcom.gp, type = 3) 
-Anova(pcom.gp, type = 3)
-qqPlot(residuals(pcom.gp))
-cld(emmeans(pcom.gp, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcap.gp.all.3 <- lmer(log(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = mcapgp)
+anova(mcap.gp.all.3, type = 3)
+Anova(mcap.gp.all.3, type = 3)
+qqPlot(residuals(mcap.gp.all.3))
 
-pcom.gp.2 <- lmer(log10(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = gppcom)
-anova(pcom.gp.2, type = 3)
-Anova(pcom.gp.2, type = 3)
-qqPlot(residuals(pcom.gp.2))
+mcap.gp.all.4 <- lmer(sqrt(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = mcapgp)
+anova(mcap.gp.all.4, type = 3)
+Anova(mcap.gp.all.4, type = 3)
+qqPlot(residuals(mcap.gp.all.4))
 
-## weighted chi sq type 3
-# MCAP
-mcap.gp.3 <- lme(GP.umolcm2hr ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = gpmcap, na.action = na.exclude)
-Anova(mcap.gp.3, type = 3)
-mcap.gp.4 <- lme(log10(GP.umolcm2hr) ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = gpmcap, na.action = na.exclude)
-Anova(mcap.gp.4, type = 3)
+model.sel(mcap.gp.all, mcap.gp.all.2, mcap.gp.all.3, mcap.gp.all.4) # log10 transform best fit uner AIC 
 
 # PCOM
-pcom.gp.3 <- lme(GP.umolcm2hr ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = gppcom, na.action = na.exclude)
-Anova(pcom.gp.3, type = 3)
-pcom.gp.4 <- lme(log10(GP.umolcm2hr) ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = gppcom, na.action = na.exclude)
-Anova(pcom.gp.4, type = 3)
+pcomgp <- subset(gpseries, Species == "Porites compressa")
+pcomgp$Date <- as.factor(pcomgp$Date)
+pcom.gp.all <- lmer(GP.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = pcomgp)
+summary(pcom.gp.all)
+anova(pcom.gp.all, type = 3) 
+Anova(pcom.gp.all, type = 3) 
+qqPlot(residuals(pcom.gp.all)) 
+cld(emmeans(pcom.gp.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.gp.all.2 <- lmer(log10(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = pcomgp)
+anova(pcom.gp.all.2, type = 3)
+Anova(pcom.gp.all.2, type = 3)
+qqPlot(residuals(pcom.gp.all.2))
+
+pcom.gp.all.3 <- lmer(log(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = pcomgp)
+anova(pcom.gp.all.3, type = 3)
+Anova(pcom.gp.all.3, type = 3)
+qqPlot(residuals(pcom.gp.all.3))
+
+pcom.gp.all.4 <- lmer(sqrt(GP.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = pcomgp)
+anova(pcom.gp.all.4, type = 3)
+Anova(pcom.gp.all.4, type = 3)
+qqPlot(residuals(pcom.gp.all.4))
+
+model.sel(pcom.gp.all, pcom.gp.all.2, pcom.gp.all.3, pcom.gp.all.4) # log10 transform best fit uner AIC but no change to sig
 ```
 
 ## Respiration
@@ -228,47 +240,58 @@ ggplot(Rseries, aes(x = Date, y = R.umolcm2hr, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-rmcap <- subset(Rseries, Species == "Montipora capitata")
-rmcap$Date <- as.factor(rmcap$Date)
-mcap.r <- lmer(R.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = rmcap)
-summary(mcap.r)
-anova(mcap.r, type = 3) 
-Anova(mcap.r, type = 3)
-qqPlot(residuals(mcap.r))
-cld(emmeans(mcap.r, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcapr <- subset(Rseries, Species == "Montipora capitata")
+mcapr$Date <- as.factor(mcapr$Date)
+mcap.r.all <- lmer(abs(R.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = mcapr)
+summary(mcap.r.all)
+anova(mcap.r.all, type = 3) 
+Anova(mcap.r.all, type = 3)
+qqPlot(residuals(mcap.r.all)) 
+cld(emmeans(mcap.r.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
-mcap.r.2 <- lmer(log10(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = rmcap)
-anova(mcap.r.2, type = 3) 
-Anova(mcap.r.2, type = 3)
-qqPlot(residuals(mcap.r.2))
+mcap.r.all.2 <- lmer(log10(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = mcapr)
+anova(mcap.r.all.2, type = 3)
+Anova(mcap.r.all.2, type = 3)
+qqPlot(residuals(mcap.r.all.2))
 
-# PCOM
-rpcom <- subset(Rseries, Species == "Porites compressa")
-rpcom$Date <- as.factor(rpcom$Date)
-pcom.r <- lmer(R.umolcm2hr ~ Bleach * Date + (1|ColonyID), data = rpcom)
-summary(pcom.r)
-anova(pcom.r, type = 3) 
-Anova(pcom.r, type = 3)
-qqPlot(residuals(pcom.r))
-cld(emmeans(pcom.r, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcap.r.all.3 <- lmer(log(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = mcapr)
+anova(mcap.r.all.3, type = 3)
+Anova(mcap.r.all.3, type = 3)
+qqPlot(residuals(mcap.r.all.3))
 
-pcom.r.2 <- lmer(log10(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = rpcom)
-anova(pcom.r.2, type = 3) 
-Anova(pcom.r.2, type = 3)
-qqPlot(residuals(pcom.r.2))
+mcap.r.all.4 <- lmer(sqrt(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = mcapr)
+anova(mcap.r.all.4, type = 3)
+Anova(mcap.r.all.4, type = 3)
+qqPlot(residuals(mcap.r.all.4))
 
-## weighted chi sq type 3
-# MCAP
-mcap.r.3 <- lme(R.umolcm2hr ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = rmcap, na.action = na.exclude)
-Anova(mcap.r.3, type = 3)
-mcap.r.4 <- lme(log10(abs(R.umolcm2hr)) ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = rmcap, na.action = na.exclude)
-Anova(mcap.r.3, type = 3)
+model.sel(mcap.r.all, mcap.r.all.2, mcap.r.all.3, mcap.r.all.4) # sqrt transform best fit uner AIC 
 
 # PCOM
-pcom.r.3 <- lme(R.umolcm2hr ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = rpcom, na.action = na.exclude)
-Anova(pcom.r.3, type = 3)
-pcom.r.4 <- lme(log10(abs(R.umolcm2hr)) ~ Bleach * Date, random = ~1|ColonyID, weights = varIdent(form = ~1|Date * Bleach), data = rpcom, na.action = na.exclude)
-Anova(pcom.r.3, type = 3)
+pcomr <- subset(Rseries, Species == "Porites compressa")
+pcomr$Date <- as.factor(pcomr$Date)
+pcom.r.all <- lmer(abs(R.umolcm2hr) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+summary(pcom.r.all)
+anova(pcom.r.all, type = 3) 
+Anova(pcom.r.all, type = 3) 
+qqPlot(residuals(pcom.r.all)) 
+cld(emmeans(pcom.r.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.r.all.2 <- lmer(log10(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.r.all.2, type = 3)
+Anova(pcom.r.all.2, type = 3)
+qqPlot(residuals(pcom.r.all.2))
+
+pcom.r.all.3 <- lmer(log(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.r.all.3, type = 3)
+Anova(pcom.r.all.3, type = 3)
+qqPlot(residuals(pcom.r.all.3))
+
+pcom.r.all.4 <- lmer(sqrt(abs(R.umolcm2hr)) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.r.all.4, type = 3)
+Anova(pcom.r.all.4, type = 3)
+qqPlot(residuals(pcom.r.all.4))
+
+model.sel(pcom.r.all, pcom.r.all.2, pcom.r.all.3, pcom.r.all.4) # sqrt transform best fit uner AIC but no change to sig
 ```
 
 ## Symbiont density
@@ -281,22 +304,58 @@ ggplot(symseries, aes(x = Date, y = SymSA.cellcm2, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-symmcap <- subset(symseries, Species == "Montipora capitata")
-symmcap$Date <- as.factor(symmcap$Date)
-mcap.sym <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = symmcap)
-summary(mcap.sym)
-anova(mcap.sym, type = 3) 
-qqPlot(residuals(mcap.sym))
-cld(emmeans(mcap.sym, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcapsym <- subset(symseries, Species == "Montipora capitata")
+mcapsym$Date <- as.factor(mcapsym$Date)
+mcap.sym.all <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = mcapsym)
+summary(mcap.sym.all)
+anova(mcap.sym.all, type = 3) 
+Anova(mcap.sym.all, type = 3) 
+qqPlot(residuals(mcap.sym.all)) 
+cld(emmeans(mcap.sym.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+mcap.sym.all.2 <- lmer(log10(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = mcapsym)
+anova(mcap.sym.all.2, type = 3)
+Anova(mcap.sym.all.2, type = 3)
+qqPlot(residuals(mcap.sym.all.2))
+
+mcap.sym.all.3 <- lmer(log(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = mcapsym)
+anova(mcap.sym.all.3, type = 3)
+Anova(mcap.sym.all.3, type = 3)
+qqPlot(residuals(mcap.sym.all.3))
+
+mcap.sym.all.4 <- lmer(sqrt(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = mcapsym)
+anova(mcap.sym.all.4, type = 3)
+Anova(mcap.sym.all.4, type = 3)
+qqPlot(residuals(mcap.sym.all.4))
+
+model.sel(mcap.sym.all, mcap.sym.all.2, mcap.sym.all.3, mcap.sym.all.4) # log10 transform best fit uner AIC but no change to sig
 
 # PCOM
-sympcom <- subset(symseries, Species == "Porites compressa")
-sympcom$Date <- as.factor(sympcom$Date)
-pcom.sym <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = sympcom)
-summary(pcom.sym)
-anova(pcom.sym, type = 3) 
-qqPlot(residuals(pcom.sym))
-cld(emmeans(pcom.sym, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcomsym <- subset(symseries, Species == "Porites compressa")
+pcomsym$Date <- as.factor(pcomsym$Date)
+pcom.sym.all <- lmer(SymSA.cellcm2 ~ Bleach * Date + (1|ColonyID), data = pcomsym)
+summary(pcom.sym.all)
+anova(pcom.sym.all, type = 3) 
+Anova(pcom.sym.all, type = 3) 
+qqPlot(residuals(pcom.sym.all)) 
+cld(emmeans(pcom.sym.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.sym.all.2 <- lmer(log10(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = pcomsym)
+anova(pcom.sym.all.2, type = 3)
+Anova(pcom.sym.all.2, type = 3)
+qqPlot(residuals(pcom.sym.all.2))
+
+pcom.sym.all.3 <- lmer(log(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = pcomsym)
+anova(pcom.sym.all.3, type = 3)
+Anova(pcom.sym.all.3, type = 3)
+qqPlot(residuals(pcom.sym.all.3))
+
+pcom.sym.all.4 <- lmer(sqrt(SymSA.cellcm2) ~ Bleach * Date + (1|ColonyID), data = pcomsym)
+anova(pcom.sym.all.4, type = 3)
+Anova(pcom.sym.all.4, type = 3)
+qqPlot(residuals(pcom.sym.all.4))
+
+model.sel(pcom.sym.all, pcom.sym.all.2, pcom.sym.all.3, pcom.sym.all.4) # log10 transform best fit uner AIC but no change to sig
 ```
 
 ## Chlorophyll content
@@ -309,22 +368,58 @@ ggplot(chlseries, aes(x = Date, y = ChlSA.ugcm2, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-chlmcap <- subset(chlseries, Species == "Montipora capitata")
-chlmcap$Date <- as.factor(chlmcap$Date)
-mcap.chl <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = chlmcap)
-summary(mcap.chl)
-anova(mcap.chl, type = 3) 
-qqPlot(residuals(mcap.chl))
-cld(emmeans(mcap.chl, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcapchl <- subset(chlseries, Species == "Montipora capitata")
+mcapchl$Date <- as.factor(mcapchl$Date)
+mcap.chl.all <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = mcapchl)
+summary(mcap.chl.all)
+anova(mcap.chl.all, type = 3) 
+Anova(mcap.chl.all, type = 3) 
+qqPlot(residuals(mcap.chl.all))
+cld(emmeans(mcap.chl.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+mcap.chl.all.2 <- lmer(log10(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = mcapchl)
+anova(mcap.chl.all.2, type = 3)
+Anova(mcap.chl.all.2, type = 3)
+qqPlot(residuals(mcap.chl.all.2))
+
+mcap.chl.all.3 <- lmer(log(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = mcapchl)
+anova(mcap.chl.all.3, type = 3)
+Anova(mcap.chl.all.3, type = 3)
+qqPlot(residuals(mcap.chl.all.3))
+
+mcap.chl.all.4 <- lmer(sqrt(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = mcapchl)
+anova(mcap.chl.all.4, type = 3)
+Anova(mcap.chl.all.4, type = 3)
+qqPlot(residuals(mcap.chl.all.4))
+
+model.sel(mcap.chl.all, mcap.chl.all.2, mcap.chl.all.3, mcap.chl.all.4) # log10 transform best fit uner AIC 
 
 # PCOM
-chlpcom <- subset(chlseries, Species == "Porites compressa")
-chlpcom$Date <- as.factor(chlpcom$Date)
-pcom.chl <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = chlpcom)
-summary(pcom.chl)
-anova(pcom.chl, type = 3) 
-qqPlot(residuals(pcom.chl))
-cld(emmeans(pcom.chl, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcomchl <- subset(chlseries, Species == "Porites compressa")
+pcomchl$Date <- as.factor(pcomr$Date)
+pcom.chl.all <- lmer(ChlSA.ugcm2 ~ Bleach * Date + (1|ColonyID), data = pcomchl)
+summary(pcom.chl.all)
+anova(pcom.chl.all, type = 3) 
+Anova(pcom.chl.all, type = 3) 
+qqPlot(residuals(pcom.chl.all)) 
+cld(emmeans(pcom.chl.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.chl.all.2 <- lmer(log10(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.chl.all.2, type = 3)
+Anova(pcom.chl.all.2, type = 3)
+qqPlot(residuals(pcom.chl.all.2))
+
+pcom.chl.all.3 <- lmer(log(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.chl.all.3, type = 3)
+Anova(pcom.chl.all.3, type = 3)
+qqPlot(residuals(pcom.chl.all.3))
+
+pcom.chl.all.4 <- lmer(sqrt(ChlSA.ugcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.chl.all.4, type = 3)
+Anova(pcom.chl.all.4, type = 3)
+qqPlot(residuals(pcom.chl.all.4))
+
+model.sel(pcom.chl.all, pcom.chl.all.2, pcom.chl.all.3, pcom.chl.all.4) # log10 transform best fit uner AIC but no change to sig
 ```
 
 ## Protein content
@@ -337,50 +432,122 @@ ggplot(proseries, aes(x = Date, y = ProtSA.mgcm2, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-promcap <- subset(proseries, Species == "Montipora capitata")
-promcap$Date <- as.factor(promcap$Date)
-mcap.pro <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = promcap)
-summary(mcap.pro)
-anova(mcap.pro, type = 3) 
-qqPlot(residuals(mcap.pro))
-cld(emmeans(mcap.pro, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcappro <- subset(proseries, Species == "Montipora capitata")
+mcappro$Date <- as.factor(mcappro$Date)
+mcap.pro.all <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = mcappro)
+summary(mcap.pro.all)
+anova(mcap.pro.all, type = 3) 
+Anova(mcap.pro.all, type = 3) 
+qqPlot(residuals(mcap.pro.all))
+cld(emmeans(mcap.pro.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+mcap.pro.all.2 <- lmer(log10(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcappro)
+anova(mcap.pro.all.2, type = 3)
+Anova(mcap.pro.all.2, type = 3)
+qqPlot(residuals(mcap.pro.all.2))
+
+mcap.pro.all.3 <- lmer(log(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcappro)
+anova(mcap.pro.all.3, type = 3)
+Anova(mcap.pro.all.3, type = 3)
+qqPlot(residuals(mcap.pro.all.3))
+
+mcap.pro.all.4 <- lmer(sqrt(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcappro)
+anova(mcap.pro.all.4, type = 3)
+Anova(mcap.pro.all.4, type = 3)
+qqPlot(residuals(mcap.pro.all.4))
+
+model.sel(mcap.pro.all, mcap.pro.all.2, mcap.pro.all.3, mcap.pro.all.4) # raw best fit uner AIC 
 
 # PCOM
-propcom <- subset(proseries, Species == "Porites compressa")
-propcom$Date <- as.factor(propcom$Date)
-pcom.pro <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = propcom)
-summary(pcom.pro)
-anova(pcom.pro, type = 3) 
-qqPlot(residuals(pcom.pro))
-cld(emmeans(pcom.pro, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcompro <- subset(proseries, Species == "Porites compressa")
+pcompro$Date <- as.factor(pcompro$Date)
+pcom.pro.all <- lmer(ProtSA.mgcm2 ~ Bleach * Date + (1|ColonyID), data = pcompro)
+summary(pcom.pro.all)
+anova(pcom.pro.all, type = 3) 
+Anova(pcom.pro.all, type = 3) 
+qqPlot(residuals(pcom.pro.all)) 
+cld(emmeans(pcom.pro.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.pro.all.2 <- lmer(log10(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.pro.all.2, type = 3)
+Anova(pcom.pro.all.2, type = 3)
+qqPlot(residuals(pcom.pro.all.2))
+
+pcom.pro.all.3 <- lmer(log(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.pro.all.3, type = 3)
+Anova(pcom.pro.all.3, type = 3)
+qqPlot(residuals(pcom.pro.all.3))
+
+pcom.pro.all.4 <- lmer(sqrt(ProtSA.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcomr)
+anova(pcom.pro.all.4, type = 3)
+Anova(pcom.pro.all.4, type = 3)
+qqPlot(residuals(pcom.pro.all.4))
+
+model.sel(pcom.pro.all, pcom.pro.all.2, pcom.pro.all.3, pcom.pro.all.4) # sqrt transform best fit uner AIC but no change to sig
 ```
 
 ## Antioxidant capacity
 ```{r}
-tacseries <- bleachseries[complete.cases(bleachseries$TACProt.uMug), ]
-ggplot(tacseries, aes(x = Date, y = TACProt.uMug, color = Bleach)) +
+tacseries <- bleachseries[complete.cases(bleachseries$TAC.umolmg), ]
+ggplot(tacseries, aes(x = Date, y = TAC.umolmg, color = Bleach)) +
   stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
   stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
   stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
   facet_grid(. ~ Species)
 
 # MCAP
-tacmcap <- subset(tacseries, Species == "Montipora capitata")
-tacmcap$Date <- as.factor(tacmcap$Date)
-mcap.tac <- lmer(TACProt.uMug ~ Bleach * Date + (1|ColonyID), data = tacmcap)
-summary(mcap.tac)
-anova(mcap.tac, type = 3) 
-qqPlot(residuals(mcap.tac))
-cld(emmeans(mcap.tac, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcaptac <- subset(tacseries, Species == "Montipora capitata")
+mcaptac$Date <- as.factor(mcaptac$Date)
+mcap.tac.all <- lmer(TAC.umolmg ~ Bleach * Date + (1|ColonyID), data = mcaptac)
+summary(mcap.tac.all)
+anova(mcap.tac.all, type = 3) 
+Anova(mcap.tac.all, type = 3) 
+qqPlot(residuals(mcap.tac.all))
+cld(emmeans(mcap.tac.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+mcap.tac.all.2 <- lmer(log10(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = mcaptac)
+anova(mcap.tac.all.2, type = 3)
+Anova(mcap.tac.all.2, type = 3)
+qqPlot(residuals(mcap.tac.all.2))
+
+mcap.tac.all.3 <- lmer(log(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = mcaptac)
+anova(mcap.tac.all.3, type = 3)
+Anova(mcap.tac.all.3, type = 3)
+qqPlot(residuals(mcap.tac.all.3))
+
+mcap.tac.all.4 <- lmer(sqrt(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = mcaptac)
+anova(mcap.tac.all.4, type = 3)
+Anova(mcap.tac.all.4, type = 3)
+qqPlot(residuals(mcap.tac.all.4))
+
+model.sel(mcap.tac.all, mcap.tac.all.2, mcap.tac.all.3, mcap.tac.all.4) # log10 best fit uner AIC 
 
 # PCOM
-tacpcom <- subset(tacseries, Species == "Porites compressa")
-tacpcom$Date <- as.factor(tacpcom$Date)
-pcom.tac <- lmer(TACProt.uMug ~ Bleach * Date + (1|ColonyID), data = tacpcom)
-summary(pcom.tac)
-anova(pcom.tac, type = 3) 
-qqPlot(residuals(pcom.tac))
-cld(emmeans(pcom.tac, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcomtac <- subset(tacseries, Species == "Porites compressa")
+pcomtac$Date <- as.factor(pcomtac$Date)
+pcom.tac.all <- lmer(TAC.umolmg ~ Bleach * Date + (1|ColonyID), data = pcomtac)
+summary(pcom.tac.all)
+anova(pcom.tac.all, type = 3) 
+Anova(pcom.tac.all, type = 3) 
+qqPlot(residuals(pcom.tac.all)) 
+cld(emmeans(pcom.tac.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+pcom.tac.all.2 <- lmer(log10(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = pcomtac)
+anova(pcom.tac.all.2, type = 3)
+Anova(pcom.tac.all.2, type = 3)
+qqPlot(residuals(pcom.tac.all.2))
+
+pcom.tac.all.3 <- lmer(log(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = pcomtac)
+anova(pcom.tac.all.3, type = 3)
+Anova(pcom.tac.all.3, type = 3)
+qqPlot(residuals(pcom.tac.all.3))
+
+pcom.tac.all.4 <- lmer(sqrt(TAC.umolmg) ~ Bleach * Date + (1|ColonyID), data = pcomtac)
+anova(pcom.tac.all.4, type = 3)
+Anova(pcom.tac.all.4, type = 3)
+qqPlot(residuals(pcom.tac.all.4))
+
+model.sel(pcom.tac.all, pcom.tac.all.2, pcom.tac.all.3, pcom.tac.all.4) # log10 transform best fit uner AIC but no change to sig
 ```
 
 ## Biomass
@@ -393,48 +560,56 @@ ggplot(bmseries, aes(x = Date, y = BM.mgcm2, color = Bleach)) +
   facet_grid(. ~ Species)
 
 # MCAP
-bmmcap <- subset(bmseries, Species == "Montipora capitata")
-bmmcap$Date <- as.factor(bmmcap$Date)
-mcap.bm <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = bmmcap)
-summary(mcap.bm)
-anova(mcap.bm, type = 3) 
-qqPlot(residuals(mcap.bm))
-cld(emmeans(mcap.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+mcapbm <- subset(bmseries, Species == "Montipora capitata")
+mcapbm$Date <- as.factor(mcapbm$Date)
+mcap.bm.all <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = mcapbm)
+summary(mcap.bm.all)
+anova(mcap.bm.all, type = 3) 
+Anova(mcap.bm.all, type = 3) 
+qqPlot(residuals(mcap.bm.all))
+cld(emmeans(mcap.bm.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+
+mcap.bm.all.2 <- lmer(log10(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcapbm)
+anova(mcap.bm.all.2, type = 3)
+Anova(mcap.bm.all.2, type = 3)
+qqPlot(residuals(mcap.bm.all.2))
+
+mcap.bm.all.3 <- lmer(log(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcapbm)
+anova(mcap.bm.all.3, type = 3)
+Anova(mcap.bm.all.3, type = 3)
+qqPlot(residuals(mcap.bm.all.3))
+
+mcap.bm.all.4 <- lmer(sqrt(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = mcapbm)
+anova(mcap.bm.all.4, type = 3)
+Anova(mcap.bm.all.4, type = 3)
+qqPlot(residuals(mcap.bm.all.4))
+
+model.sel(mcap.bm.all, mcap.bm.all.2, mcap.bm.all.3, mcap.bm.all.4) # raw best fit uner AIC 
 
 # PCOM
-bmpcom <- subset(bmseries, Species == "Porites compressa")
-bmpcom$Date <- as.factor(bmpcom$Date)
-pcom.bm <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = bmpcom)
-summary(pcom.bm)
-anova(pcom.bm, type = 3) 
-qqPlot(residuals(pcom.bm))
-cld(emmeans(pcom.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
-```
+pcombm <- subset(bmseries, Species == "Porites compressa")
+pcombm$Date <- as.factor(pcombm$Date)
+pcom.bm.all <- lmer(BM.mgcm2 ~ Bleach * Date + (1|ColonyID), data = pcombm)
+summary(pcom.bm.all)
+anova(pcom.bm.all, type = 3) 
+Anova(pcom.bm.all, type = 3) 
+qqPlot(residuals(pcom.bm.all)) 
+cld(emmeans(pcom.bm.all, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
 
-## Ash-free dry weight
-```{r}
-afdwseries <- bleachseries[complete.cases(bleachseries$AFDW.g), ]
-ggplot(afdwseries, aes(x = Date, y = AFDW.g, color = Bleach)) +
-  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
-  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
-  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
-  facet_grid(. ~ Species)
+pcom.bm.all.2 <- lmer(log10(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcombm)
+anova(pcom.bm.all.2, type = 3)
+Anova(pcom.bm.all.2, type = 3)
+qqPlot(residuals(pcom.bm.all.2))
 
-# MCAP
-afdwmcap <- subset(afdwseries, Species == "Montipora capitata")
-afdwmcap$Date <- as.factor(afdwmcap$Date)
-mcap.afdw <- lmer(AFDW.g ~ Bleach * Date + (1|ColonyID), data = afdwmcap)
-summary(mcap.afdw)
-anova(mcap.afdw, type = 3) 
-qqPlot(residuals(mcap.bm))
-cld(emmeans(mcap.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcom.bm.all.3 <- lmer(log(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcombm)
+anova(pcom.bm.all.3, type = 3)
+Anova(pcom.bm.all.3, type = 3)
+qqPlot(residuals(pcom.bm.all.3))
 
-# PCOM
-afdwpcom <- subset(afdwseries, Species == "Porites compressa")
-afdwpcom$Date <- as.factor(afdwpcom$Date)
-pcom.afdw <- lmer(AFDW.g ~ Bleach * Date + (1|ColonyID), data = afdwpcom)
-summary(pcom.afdw)
-anova(pcom.afdw, type = 3) 
-qqPlot(residuals(pcom.bm))
-cld(emmeans(pcom.bm, ~ Bleach * Date, adjust = "tukey"), Letters = c(LETTERS))
+pcom.bm.all.4 <- lmer(sqrt(BM.mgcm2) ~ Bleach * Date + (1|ColonyID), data = pcombm)
+anova(pcom.bm.all.4, type = 3)
+Anova(pcom.bm.all.4, type = 3)
+qqPlot(residuals(pcom.bm.all.4))
+
+model.sel(pcom.bm.all, pcom.bm.all.2, pcom.bm.all.3, pcom.bm.all.4) # sqrt transform best fit uner AIC but no change to sig
 ```
