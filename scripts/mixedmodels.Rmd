@@ -197,6 +197,62 @@ plot(fitted(pcom.r.all), residuals(pcom.r.all))
 cld(emmeans(pcom.r.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
 ```
 
+## Alpha
+```{r}
+aseries <- bleachseries[complete.cases(bleachseries$alpha), ]
+ggplot(aseries, aes(x = Date, y = alpha, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+mcapa <- subset(aseries, Species == "Montipora capitata")
+mcapa$Date <- as.factor(mcapa$Date)
+mcap.a.all <- lmer(log10(alpha) ~ Bleach * Date + (1|Pair), data = mcapa)
+anova(mcap.a.all, type = 3)
+qqPlot(residuals(mcap.a.all)) 
+plot(fitted(mcap.a.all), residuals(mcap.a.all))
+cld(emmeans(mcap.a.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
+
+# PCOM
+pcoma <- subset(aseries, Species == "Porites compressa")
+pcoma$Date <- as.factor(pcoma$Date)
+pcom.a.all <- lmer(log10(alpha) ~ Bleach * Date + (1|Pair), data = pcoma)
+anova(pcom.a.all, type = 3)
+qqPlot(residuals(pcom.a.all)) 
+plot(fitted(pcom.a.all), residuals(pcom.a.all))
+cld(emmeans(pcom.a.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
+```
+
+## Ik
+```{r}
+iseries <- bleachseries[complete.cases(bleachseries$ik), ]
+ggplot(iseries, aes(x = Date, y = ik, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point") +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line") +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", width = 3) +
+  facet_grid(. ~ Species)
+
+# MCAP
+mcapi <- subset(iseries, Species == "Montipora capitata")
+mcapi$Date <- as.factor(mcapi$Date)
+mcap.i.all <- lmer(log10(ik) ~ Bleach * Date + (1|Pair), data = mcapi)
+anova(mcap.i.all, type = 3)
+qqPlot(residuals(mcap.i.all)) 
+plot(fitted(mcap.i.all), residuals(mcap.i.all))
+cld(emmeans(mcap.i.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
+
+# PCOM
+pcomi <- subset(iseries, Species == "Porites compressa")
+pcomi$Date <- as.factor(pcomi$Date)
+pcom.i.all <- lmer(log10(ik) ~ Bleach * Date + (1|Pair), data = pcomi)
+anova(pcom.i.all, type = 3)
+qqPlot(residuals(pcom.i.all)) 
+plot(fitted(pcom.i.all), residuals(pcom.i.all))
+cld(emmeans(pcom.i.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
+```
+
 ## Symbiont density
 ```{r}
 symseries <- bleachseries[complete.cases(bleachseries$SymSA.cellcm2), ]
@@ -336,4 +392,83 @@ anova(pcom.bm.all, type = 3)
 qqPlot(residuals(pcom.bm.all)) 
 plot(fitted(pcom.bm.all), residuals(pcom.bm.all))
 cld(emmeans(pcom.bm.all, ~ Bleach * Date), adjust = "tukey", Letters = c(LETTERS))
+```
+
+### Biomass-normalized
+## Gross photosynthesis
+```{r}
+# MCAP
+mcapgp$gpafdw <- mcapgp$GPumolmin/mcapgp$AFDW.g
+mcap.gp.afdw <- lmer(log10(gpafdw) ~ Bleach * Date + (1|Pair), data = mcapgp)
+anova(mcap.gp.afdw, type = 3)
+
+# PCOM
+pcomgp$gpafdw <- pcomgp$GPumolmin/pcomgp$AFDW.g
+pcom.gp.afdw <- lmer(log10(gpafdw) ~ Bleach * Date + (1|Pair), data = pcomgp)
+anova(pcom.gp.afdw, type = 3)
+```
+
+## Respiration
+```{r}
+# MCAP
+mcapr$rafdw <- abs(mcapr$Rumolmin)/mcapr$AFDW.g
+mcap.r.afdw <- lmer(log10(rafdw) ~ Bleach * Date + (1|Pair), data = mcapr)
+anova(mcap.r.afdw, type = 3)
+
+# PCOM
+pcomr$rafdw <- abs(pcomr$Rumolmin)/pcomr$AFDW.g
+pcom.r.afdw <- lmer(log10(rafdw) ~ Bleach * Date + (1|Pair), data = pcomr)
+anova(pcom.r.afdw, type = 3)
+```
+
+## Symbiont density
+```{r}
+# MCAP
+mcapsym$symafdw <- mcapsym$SymFrag.cells/mcapsym$AFDW.g
+mcap.sym.afdw <- lmer(log10(symafdw) ~ Bleach * Date + (1|Pair), data = mcapsym)
+anova(mcap.sym.afdw, type = 3)
+
+# PCOM
+pcomsym$symafdw <- pcomsym$SymFrag.cells/pcomsym$AFDW.g
+pcom.sym.afdw <- lmer(log10(symafdw) ~ Bleach * Date + (1|Pair), data = pcomsym)
+anova(pcom.sym.afdw, type = 3)
+```
+
+## Total protein content
+```{r}
+# MCAP
+mcappro$proafdw <- mcappro$ProtFrag.mg/mcappro$AFDW.g
+mcap.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = mcappro)
+anova(mcap.pro.afdw, type = 3)
+
+# PCOM
+pcompro$proafdw <- pcompro$proaFrag.ug/pcompro$AFDW.g
+pcom.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = pcompro)
+anova(pcom.pro.afdw, type = 3)
+```
+
+## Chlorophyll content
+```{r}
+# MCAP
+mcapchl$chlafdw <- mcapchl$ChlaFrag.ug/mcapchl$AFDW.g
+mcap.chl.afdw <- lmer(log10(chlafdw) ~ Bleach * Date + (1|Pair), data = mcapchl)
+anova(mcap.chl.afdw, type = 3)
+
+# PCOM
+pcomchl$chlafdw <- pcomchl$ChlaFrag.ug/pcomchl$AFDW.g
+pcom.chl.afdw <- lmer(log10(chlafdw) ~ Bleach * Date + (1|Pair), data = pcomchl)
+anova(pcom.chl.afdw, type = 3)
+```
+
+## Host protein
+```{r}
+# MCAP
+mcappro$proafdw <- mcappro$ProtHostFrag.mg/mcappro$AFDW.g
+mcap.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = mcappro)
+anova(mcap.pro.afdw, type = 3)
+
+# PCOM
+pcompro$proafdw <- pcompro$ProtHostFrag.mg/pcompro$AFDW.g
+pcom.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = pcompro)
+anova(pcom.pro.afdw, type = 3)
 ```
