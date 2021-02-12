@@ -1,0 +1,307 @@
+---
+title: "DHW_BI"
+author: "Teegan Innis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# Load packages
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(reshape)
+library(zoo)
+library(pipeR)
+library(lubridate)
+library(readr)
+library(tidyverse)
+library(ggpubr)
+library(patchwork)
+library(gtools)
+```
+
+# Import data
+```{r}
+rm(list = ls())
+Coconut19 <- read.csv("data/temp/CoconutTemp2019.csv", stringsAsFactors = FALSE) 
+Coconut15 <- read.csv("data/temp/CoconutTemp2015.csv", stringsAsFactors = FALSE)
+benthos19 <- read.csv("data/benthos/coralnet.csv")
+benthos15 <- read.csv("Benthic_Transect_df_2015.csv")
+```
+
+# Format temp data
+```{r}
+# Create datetime object
+Coconut19$dttm <- as.POSIXct(Coconut19$DATE.TIME, format='%m/%d/%y %H:%M')
+Coconut15$dttm <- as.POSIXct(Coconut15$DATE.TIME, format='%m/%d/%y %H:%M')
+
+# Merge data
+CoconutCompare <- rbind(Coconut15, Coconut19)
+CoconutCompare$Date <- as.Date(CoconutCompare$dttm, format = "%m/%d", "America/New_York")
+CoconutCompare$Year <- gsub("2016", "2015", substring(CoconutCompare$Date, 1, 4))
+CoconutCompare$datesameyear <- as.Date(gsub("2015", "2019", CoconutCompare$Date))
+CoconutCompare$datesameyear <- as.Date(gsub("2020", "2019", CoconutCompare$datesameyear))
+```
+
+# Daily mean +/- max and min temp
+```{r}
+CoconutCompare$WATERTEMP <- as.numeric(CoconutCompare$WATERTEMP)
+CoconutCompareMean <- cbind(aggregate(CoconutCompare$WATERTEMP, by = list(CoconutCompare$datesameyear, CoconutCompare$Year), FUN = mean, na.rm = T),
+                            aggregate(CoconutCompare$WATERTEMP, by = list(CoconutCompare$datesameyear, CoconutCompare$Year), FUN = max, na.rm = T),
+                            aggregate(CoconutCompare$WATERTEMP, by = list(CoconutCompare$datesameyear, CoconutCompare$Year), FUN = min, na.rm = T))
+CoconutCompareMean <- CoconutCompareMean[ ,c(1:3,6,9)]
+names(CoconutCompareMean) <- c("Date", "Year", "Mean", "Max", "Min")
+```
+
+# Running DHW
+```{r}
+CoconutCompare$Stress <- CoconutCompare$WATERTEMP - 28
+CoconutCompare$Stress <- ifelse(CoconutCompare$Stress < 1, 0, CoconutCompare$Stress)
+CoconutCompare$Stress[is.na(CoconutCompare$Stress)] <- 0
+CoconutCompare$Stress <- floor(CoconutCompare$Stress)
+
+## By year 
+Coco2015 <- subset(CoconutCompare, Year == "2015")
+Coco2015$DHW <- rollsum(Coco2015$Stress, 2016, fill = 0)/168
+Coco2019 <- subset(CoconutCompare, Year == "2019")
+Coco2019$DHW <- rollsum(Coco2019$Stress, 2016, fill = 0)/168
+Coco2020 <- subset(CoconutCompare, Year == "2020")
+Coco2020$DHW <- rollsum(Coco2020$Stress, 2016, fill = 0)/168
+CoconutCompare <- rbind(Coco2015, Coco2019, Coco2020)
+
+### Summarized
+CoconutCompare$week <- strftime(CoconutCompare$datesameyear, format = "%V")
+WeekDHW <- aggregate(CoconutCompare$DHW, by = list(CoconutCompare$week, CoconutCompare$Year), FUN = max, na.rm = T)
+WeekDHW$Date <- as.Date(paste(WeekDHW$Group.2, WeekDHW$Group.1, 1, sep = "-"), "%Y-%U-%u")
+names(WeekDHW) <- c("Week", "Year", "DHW", "Date")
+WeekDHW$Date <- as.Date(gsub("2015", "2019", WeekDHW$Date))
+WeekDHW$Date <- as.Date(gsub("2020", "2019", WeekDHW$Date))
+WeekDHW <- WeekDHW[!is.na(WeekDHW$Date),]
+
+## Max DHW
+MaxDHWAll <- aggregate(WeekDHW$DHW, by = list(WeekDHW$Year), FUN = max)
+names(MaxDHWAll) <- c("Year", "DHW")
+MaxDHWAll$grp <- 1
+```
+
+# Format benthic data
+```{r}
+# format benthic data
+benthos19$Label <- as.factor(benthos19$Label) #label
+benthos19$date <- as.Date(substring(benthos19$Name, 1, 10)) # date
+benthos19$depth <- substring(benthos19$Name, 29, 30) # depth
+benthos19$transect <- substring(benthos19$Name, 27, 27) # transect
+
+# clarify labels
+benthos19$species <- ifelse(benthos19$Label == "Moncap BL" | benthos19$Label == "MCAP Pale" | benthos19$Label == "MCAP_Pig", "Montipora capitata", ifelse(benthos19$Label == "B_PorComp" | benthos19$Label == "PCMP Pale" | benthos19$Label == "PCOM_Pig", "Porites compressa", NA)) # species
+
+# Combine like categories 
+benthos19$Label <- gsub("SHAD", "Unk", as.character(benthos19$Label))
+benthos19$Label <- gsub("Sediment", "Sand", as.character(benthos19$Label))
+benthos19$Label <- gsub("C-Rubble", "Rubble", as.character(benthos19$Label))
+benthos19$Label <- gsub("Dictyosph", "Macro", as.character(benthos19$Label))
+benthos19$Label <- gsub("TT", "Unk", as.character(benthos19$Label))
+benthos19$Label <- gsub("MGrand", "Sponge", as.character(benthos19$Label))
+
+# Remove unknown category
+knowns <- benthos19[benthos19$Label != "Unk",]
+
+# Change data format
+knowns$date2 <- factor(format(knowns$date, "%d %b '%y"))
+```
+
+# Bleaching index
+```{r}
+# Subset only MCAP/PCOM IDs
+coral <- knowns[!is.na(knowns$species),]
+
+# Extract bleach score
+coral$score <- ifelse(coral$Label == "Moncap BL" | coral$Label == "B_PorComp", 3,
+                      ifelse(coral$Label == "MCAP Pale" | coral$Label == "PCMP Pale", 2,
+                             ifelse(coral$Label == "MCAP_Pig" | coral$Label == "PCOM_Pig", 1, NA)))
+
+# All
+PropsAll <- coral %>%
+  group_by(date, transect, score) %>% 
+  tally() %>%
+  ungroup() %>%
+  group_by(date, transect) %>% 
+  mutate(prop = n/sum(n))
+PropsAll$weight <- ifelse(PropsAll$score == 1, 0,
+                          ifelse(PropsAll$score == 2, 1,
+                                 ifelse(PropsAll$score == 3, 2, NA)))
+BIAll <- PropsAll %>%
+  group_by(date, transect) %>%
+  mutate(BI = sum(weight*prop)/2) 
+BIAll <- aggregate(BIAll$BI, by = list(BIAll$date, BIAll$transect), FUN = mean)
+names(BIAll) <- c("Date", "Transect", "BI")
+BIAll$grp = 1
+
+# Species
+PropsSpecies <- coral %>%
+  group_by(date, transect, score, species) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  group_by(date, transect, species) %>% 
+  mutate(prop = n/sum(n))
+PropsSpecies$weight <- ifelse(PropsSpecies$score == 1, 0,
+                          ifelse(PropsSpecies$score == 2, 1,
+                                 ifelse(PropsSpecies$score == 3, 2, NA)))
+BISpecies <- PropsSpecies %>%
+  group_by(date, transect, species) %>%
+  mutate(BI = sum(weight*prop)/2) 
+BISpecies <- aggregate(BISpecies$BI, by = list(BISpecies$date, BISpecies$transect, BISpecies$species), FUN = mean)
+names(BISpecies) <- c("Date", "Transect", "Species", "BI")
+
+## 2015
+benthos15 <- subset(benthos15, Month == 0 | Month == 1.5 & Reef == "Outer")
+benthos15$transect <- ifelse(benthos15$Depth == 1 & benthos15$Rep == 1, 1, 
+                               ifelse(benthos15$Depth == 1 & benthos15$Rep == 2, 2,
+                                      ifelse(benthos15$Depth == 2 & benthos15$Rep == 1, 3,
+                                             ifelse(benthos15$Depth == 2 & benthos15$Rep == 2, 4, NA))))
+BI2015All <- aggregate(benthos15$Percent, by = list(benthos15$BNB, benthos15$transect, benthos15$Date), FUN = mean)
+names(BI2015All) <- c("score", "transect", "date", "prop")
+BI2015All$weight <- ifelse(BI2015All$score == 3, 0,
+                              ifelse(BI2015All$score == 2, 1,
+                                     ifelse(BI2015All$score == 1, 2, NA)))
+BI2015All$prop <- BI2015All$prop/100
+FinalBI2015All <- BI2015All %>%
+  group_by(date, transect) %>%
+  mutate(BI = sum(weight*prop)/2) 
+FinalBI2015All$date <- as.Date(FinalBI2015All$date, format = "%m/%d/%y")
+FinalBI2015All <- aggregate(FinalBI2015All$BI, by = list(FinalBI2015All$date, FinalBI2015All$transect), FUN = mean)
+names(FinalBI2015All) <- c("Date", "Transect", "BI")
+FinalBI2015All$grp <- 1
+
+BI2015Species <- aggregate(benthos15$Percent, by = list(benthos15$BNB, benthos15$transect, benthos15$Date, benthos15$Species), FUN = mean)
+names(BI2015Species) <- c("score", "transect", "date", "species", "prop")
+BI2015Species$weight <- ifelse(BI2015Species$score == 3, 0,
+                           ifelse(BI2015Species$score == 2, 1,
+                                  ifelse(BI2015Species$score == 1, 2, NA)))
+BI2015Species$prop <- BI2015Species$prop/100
+FinalBI2015Species <- BI2015Species %>%
+  group_by(date, transect, species) %>%
+  mutate(BI = sum(weight*prop)/2) 
+FinalBI2015Species$date <- as.Date(FinalBI2015Species$date, format = "%m/%d/%y")
+FinalBI2015Species <- aggregate(FinalBI2015Species$BI, by = list(FinalBI2015Species$date, FinalBI2015Species$transect, FinalBI2015Species$species), FUN = mean)
+names(FinalBI2015Species) <- c("Date", "Transect", "Species", "BI")
+
+# compare years
+BICompareAll <- rbind(FinalBI2015All, BIAll)
+BICompareSpecies <- rbind(FinalBI2015Species, BISpecies)
+BICompareSpecies$Species <- gsub("Mcap", "Montipora capitata", as.character(BICompareSpecies$Species))
+BICompareSpecies$Species <- gsub("Pcomp", "Porites compressa", as.character(BICompareSpecies$Species))
+
+# Extract year
+BICompareAll$year <- substring(BICompareAll$Date, 1, 4)
+BICompareAll$year <- gsub("2020", "2019", BICompareAll$year)
+BICompareAll$datesameyear <- as.Date(gsub("2015", "2019", BICompareAll$Date))
+write.csv(BICompareAll, "BICompareAll.csv")
+
+BICompareSpecies$year <- substring(BICompareSpecies$Date, 1, 4)
+BICompareSpecies$year <- gsub("2020", "2019", BICompareSpecies$year)
+BICompareSpecies$datesameyear <- as.Date(gsub("2015", "2019", BICompareSpecies$Date))
+write.csv(BICompareSpecies, "BICompareSpecies.csv")
+
+# Max BI
+MaxBIAll <- aggregate(BICompareAll$BI, by = list(BICompareAll$year, BICompareAll$Transect), FUN = max)
+names(MaxBIAll) <- c("Year", "Transect", "BI")
+MaxBIAll$grp = 1
+MaxBISpecies <- aggregate(BICompareSpecies$BI, by = list(BICompareSpecies$year, BICompareSpecies$Transect, BICompareSpecies$Species), FUN = max)
+names(MaxBISpecies) <- c("Year", "Transect", "Species", "BI")
+```
+
+# Summarize
+```{r}
+WeekDHW$datesameyear <- WeekDHW$Date
+sumframe <- merge(WeekDHW, BICompareAll, by = "datesameyear", all = T)
+sumframe$datesameyear <- ifelse(sumframe$Year == "2019", sumframe$datesameyear-2, sumframe$datesameyear)
+sumframe$datesameyear <- as.Date(sumframe$datesameyear)
+WeekDHW$datesameyear <- ifelse(WeekDHW$Year == "2019", WeekDHW$datesameyear-2, WeekDHW$datesameyear)
+WeekDHW$datesameyear <- as.Date(WeekDHW$datesameyear)
+sumframe$grp <- 1
+sumframe$datesameyear[is.na(sumframe$datesameyear)] <- as.Date(sumframe$Date.y[is.na(sumframe$datesameyear)])
+sumframe$Year[is.na(sumframe$Year)] <- as.character(substring(sumframe$Date.y, 1, 4)[is.na(sumframe$Year)])
+sumframe$datesameyear <- as.Date(gsub("2015", "2019", sumframe$datesameyear))
+write.csv(sumframe[,c(1:5)], "DHW.csv")
+
+DHW <- read.csv("DHW.csv")
+DHW$datesameyear <- as.Date(DHW$datesameyear, format = "%m/%d/%y")
+DHW$Year <- as.character(DHW$Year)
+```
+
+### Summary Figure ###
+```{r}
+png("BleachProfile.png", width = 150, height = 110, units = "mm", res = 500)
+Temp <- ggplot() + 
+  geom_tile(data = DHW, aes(datesameyear, DHW/2 + 24, width = 7*0.9, height = DHW, fill = Year), alpha = 0.3) +
+  geom_line(data = CoconutCompareMean, aes(Date, Max, color = Year)) + 
+  geom_hline(yintercept = 28, linetype = "dashed", color = "black") +
+  geom_hline(yintercept = 29, linetype = "solid", color = "black") +
+  labs(y = "Temperature (°C)") +
+  scale_y_continuous(sec.axis = sec_axis(~(.-24), name = "Degree Heating Weeks")) +
+  scale_x_date(labels = date_format("%b"), date_breaks = "1 month", limits = as.Date(c("2019-05-01", "2019-12-15"))) +
+  scale_color_manual(values = c("2019" = "blue", "2015" = "red")) +
+  scale_fill_manual(values = c("2019" = "blue", "2015" = "red")) +
+  theme(aspect.ratio = 0.3, axis.text=element_text(size=10, color = "black"), axis.title.y = element_text(size=10, color = "black"), axis.title.x = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), panel.border = element_rect(fill = NA), 
+        legend.title = element_blank(), legend.key = element_blank(), legend.text = element_text(size = 8, color = "black"), legend.position = c(0.08, 0.9), legend.key.size = unit(0.3, "cm"), legend.background = element_rect(fill = NA, size = 0.25),
+        strip.background.x = element_blank(), strip.text.x = element_blank()) +
+  guides(fill = guide_legend(override.aes = list(color = NA))) 
+ALLBI <- ggplot(sumframe, aes(x = datesameyear, y = BI, color = year)) +
+  stat_summary(aes(group = year), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = year), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = year), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 8) +
+  scale_x_date(date_labels = "%b", date_breaks = "2 months", limits = as.Date(c("2019-06-01", "2019-12-15"))) +
+  scale_color_manual(values = c("2019" = "blue", "2015" = "red")) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  labs(y = "Bleaching Index", title = "Reef-wide") +
+  theme(aspect.ratio = 1, plot.title = element_text(size = 10, hjust = 0.5),
+        axis.text = element_text(size = 10, color = "black"), axis.title.y = element_text(size = 10, color = "black"), axis.title.x = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        legend.title = element_blank(), legend.key = element_blank(), legend.text = element_text(size = 8, color = "black"), legend.position = c(0.2, 0.9), legend.key.size = unit(0.3, "cm"), legend.background = element_rect(fill = NA, size = 0.25)) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) 
+MCAPBI <- ggplot(BIMCAP, aes(x = datesameyear, y = BI, color = year)) +
+  stat_summary(aes(group = year), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = year), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = year), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 8) +
+  scale_x_date(date_labels = "%b", date_breaks = "2 months", limits = as.Date(c("2019-06-01", "2019-12-15"))) +
+  scale_color_manual(values = c("2019" = "blue", "2015" = "red")) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  labs(y = "Bleaching Index", title = "Montipora capitata") +
+  theme(aspect.ratio = 1, plot.title = element_text(size = 10, face = "italic", hjust = 0.5),
+        axis.text = element_text(size = 10, color = "black"), axis.title.y = element_text(size = 10, color = "black"), axis.title.x = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        legend.title = element_blank(), legend.key = element_blank(), legend.text = element_text(size = 8, color = "black"), legend.position = c(0.2, 0.9), legend.key.size = unit(0.3, "cm"), legend.background = element_rect(fill = NA, size = 0.25)) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) 
+PCOMBI <- ggplot(BIPCOM, aes(x = datesameyear, y = BI, color = year)) +
+  stat_summary(aes(group = year), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = year), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = year), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 8) +
+  scale_x_date(date_labels = "%b", date_breaks = "2 months", limits = as.Date(c("2019-06-01", "2019-12-15"))) +
+  scale_color_manual(values = c("2019" = "blue", "2015" = "red")) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  labs(y = "Bleaching Index", title = "Porites compressa") +
+  theme(aspect.ratio = 1, plot.title = element_text(size = 10, face = "italic", hjust = 0.5),
+        axis.text = element_text(size = 10, color = "black"), axis.title.y = element_text(size = 10, color = "black"), axis.title.x = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        legend.title = element_blank(), legend.key = element_blank(), legend.text = element_text(size = 8, color = "black"), legend.position = c(0.2, 0.9), legend.key.size = unit(0.3, "cm"), legend.background = element_rect(fill = NA, size = 0.25)) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) 
+Temp + (ALLBI | MCAPBI | PCOMBI) + plot_layout(nrow = 2, heights = 1)
+dev.off()
+```
+
+# Stats
+```{r}
+# DHW: 7/1/19 - 10/1/19
+DHW <- subset(CoconutCompare, datesameyear >= "2019-07-01" & datesameyear <= "2019-10-01" & Stress >= 1)
+DHW$Stress <- floor(DHW$Stress)
+
+## By year
+DHW15 <- subset(DHW, Year == 2015)
+sum(DHW15$Stress)/168 # 2015 = 5.839286
+DHW19 <- subset(DHW, Year == 2019)
+sum(DHW19$Stress)/168 # 2019 = 3.279762
+```

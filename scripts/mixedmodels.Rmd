@@ -457,7 +457,7 @@ mcap.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = mcappro)
 anova(mcap.pro.afdw, type = 3)
 
 # PCOM
-pcompro$proafdw <- pcompro$proaFrag.ug/pcompro$AFDW.g
+pcompro$proafdw <- pcompro$ProtFrag.mg/pcompro$AFDW.g
 pcom.pro.afdw <- lmer(log10(proafdw) ~ Bleach * Date + (1|Pair), data = pcompro)
 anova(pcom.pro.afdw, type = 3)
 ```
