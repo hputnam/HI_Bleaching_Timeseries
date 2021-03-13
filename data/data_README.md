@@ -25,7 +25,10 @@ Notes:
 
 ## Clipping and Fragment Overview
 
-Table and visual view below.
+Table and visual view below:  
+- Sept 16 2019, Oct 2 2019, Oct 16 2019, and Oct 30 2019 all melted in transit and are unusable for high molecular weight DNA (DNA methylation analyses) and RNA extractions. July 16 2019 is being sent to URI for extractions. A clipping will be sent to Wes and team at UH.  
+- Dec 4 2019 DNA and RNA has been extracted at URI. A clipping will be sent to Wes and team at UH and the rest of the fragment will be processed for phys at URI.  
+- Oct 8 2020 and Nov 5 2020 fragments were not labeled and are mixed up. We know which fragments are Nov phys but the other three are unknown. From each fragment, a clipping will stay at URI and a clipping will be shipped to Wes and team at UH. The rest of the fragment will be sent for phys processing at UPenn.  
 
 ![plan1](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/images/kbayplan1.png?raw=true)
 
@@ -70,6 +73,6 @@ Table and visual view below.
 
 ## Notes from clipping
 
-Sept 16 2019 set - has two fragments labeled 217. Both were clipped but unsure which clipping is from which fragment. Are we missing a physiology fragment from this timepoint? 
+Sept 16 2019 set - has two fragments labeled 217. Both were clipped but unsure which clipping is from which fragment. Are we missing a physiology fragment from this timepoint?
 
 ![217](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/images/kbay-217.jpg?raw=true)
