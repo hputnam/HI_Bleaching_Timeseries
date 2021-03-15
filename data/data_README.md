@@ -29,7 +29,7 @@ Table and visual view below:
 - Sept 16 2019, Oct 2 2019, Oct 16 2019, and Oct 30 2019 all melted in transit and are unusable for high molecular weight DNA (DNA methylation analyses) and RNA extractions.  
 - July 16 2019 is being sent to URI for extractions. A clipping will be sent to Wes and team at UH.  
 - Aug 27 2020 samples did not melt and will be clipped to be sent to Wes and team at UH, and the rest of the molecular fragment will remain at URI.  
-- Dec 4 2019 DNA and RNA has been extracted at URI. A clipping will be sent to Wes and team at UH and the rest of the fragment will be processed for phys at URI (there was no larger physiology fragment taken at the time of collection). Surface area will be estimated based on the clippings.    
+- Dec 4 2019 DNA and RNA has been extracted at URI. A clipping will be sent to Wes and team at UH and the rest of the fragment will be processed for phys at URI (there was no larger physiology fragment taken at the time of collection). Surface area will be estimated based on the clippings. Physiology workflow markdown and processing post: [here](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-03-15-KBay-Dec-4-Physiology.md).    
 - Oct 8 2020 and Nov 5 2020 fragments were not labeled and are mixed up. We know which fragments are Nov phys but the other three are unknown. From each fragment, a clipping will stay at URI and a clipping will be shipped to Wes and team at UH. The rest of the fragment will be sent for phys processing at UPenn. Surface area will be estimated based on the clippings.  
 
 ![plan](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/images/kbayplan1.png?raw=true)
