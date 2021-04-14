@@ -98,3 +98,38 @@ pam <- ggplot(phys, aes(x = Date, y = Yield, color = Bleach)) +
   facet_grid(Species ~ .)
 pam
 dev.off()
+
+# resp
+png("GPseries.png", height = 150, width = 150, units = "mm", res = 500)
+gp <- ggplot(phys, aes(x = Date, y = GPumolmin, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 10) +
+  scale_x_date(date_labels = "%b %y", date_breaks = "3 months") +
+  scale_color_manual(values = c("Susceptible" = "gray", "Resistant" = "black")) +
+  labs(y = expression(atop("Gross Photosynthesis", paste((µmol~O["2"]~cm^-2~hr^-1)))), color = "Bleaching Susceptibility") +
+  theme(aspect.ratio = 0.7,
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        strip.background = element_blank(), strip.text = element_text(face = "italic"),
+        legend.key = element_blank()) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) +
+  facet_grid(Species ~ .)
+gp
+dev.off()
+
+png("Rseries.png", height = 150, width = 150, units = "mm", res = 500)
+r <- ggplot(phys, aes(x = Date, y = abs(Rumolmin), color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 10) +
+  scale_x_date(date_labels = "%b %y", date_breaks = "3 months") +
+  scale_color_manual(values = c("Susceptible" = "gray", "Resistant" = "black")) +
+  labs(y = expression(atop("Respiration", paste((µmol~O["2"]~cm^-2~hr^-1)))), color = "Bleaching Susceptibility") +
+  theme(aspect.ratio = 0.7,
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        strip.background = element_blank(), strip.text = element_text(face = "italic"),
+        legend.key = element_blank()) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) +
+  facet_grid(Species ~ .)
+r
+dev.off()
