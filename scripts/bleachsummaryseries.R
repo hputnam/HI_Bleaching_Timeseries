@@ -64,7 +64,7 @@ scores <- ggplot(bleachfinal, aes(x = Date, y = Score, color = Bleach)) +
 scores
 
 # organize panels
-png("~/Box/Barott lab/Data/Teegan/KBayBleachingTimeseries/bleachseriessummary_R.png", height = 150, width = 200, units = "mm", res = 500)
+png("bleachseriessummary.png", height = 150, width = 200, units = "mm", res = 500)
 scores/temp 
 dev.off()
 
@@ -73,3 +73,28 @@ bleach %>%
   filter(!is.na(Score)) %>%
   count(Date, Species, Bleach)
 
+# import phys data
+phys <- read.csv("PhysData.csv")
+phys$Bleach <- ifelse(phys$Bleach == "Bleach", "Susceptible", "Resistant")
+phys$Date <- as.Date(phys$Date, format = "%m/%d/%y")
+
+# pam
+baseline <- data.frame(Species = c("Montipora capitata", "Porites compressa"), value = c(0.638, 0.604))
+
+png("PAMseries.png", height = 150, width = 150, units = "mm", res = 500)
+pam <- ggplot(phys, aes(x = Date, y = Yield, color = Bleach)) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "point", size = 1) +
+  stat_summary(aes(group = Bleach), fun = mean, geom = "line", size = 0.6) +
+  stat_summary(aes(group = Bleach), fun.data = mean_se, geom = "errorbar", size = 0.6, width = 10) +
+  scale_x_date(date_labels = "%b %y", date_breaks = "3 months") +
+  scale_color_manual(values = c("Susceptible" = "gray", "Resistant" = "black")) +
+  geom_hline(data = baseline, aes(yintercept = value), linetype = "dashed") +
+  labs(y = expression(F["v"]/F["m"]), color = "Bleaching Susceptibility") +
+  theme(aspect.ratio = 0.7,
+        panel.background = element_blank(), panel.border = element_rect(fill = NA),
+        strip.background = element_blank(), strip.text = element_text(face = "italic"),
+        legend.key = element_blank()) +
+  guides(colour = guide_legend(override.aes = list(shape = NA))) +
+  facet_grid(Species ~ .)
+pam
+dev.off()
