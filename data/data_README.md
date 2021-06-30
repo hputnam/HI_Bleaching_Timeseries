@@ -2,7 +2,8 @@
 
 **Molecular Lab Work**  
 DNA RNA Duet Extractions [online notebook post](https://emmastrand.github.io/EmmaStrand_Notebook/Kbay-Bleaching-2019-DNA-RNA-Extractions/).  
-Pico Methyl Prep for WGBS [online notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-05-18-KBay-Dec-July-2019-WGBS.md).
+Pico Methyl Prep for WGBS [online notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-05-18-KBay-Dec-July-2019-WGBS.md).  
+TagSeq protocol in prep. Notebook posts to come soon. 
 
 Molecular Fragment Locations
 
