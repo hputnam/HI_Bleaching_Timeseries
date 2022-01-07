@@ -29,3 +29,5 @@ sample_manifest <- sample_manifest[, c(3, 1, 2)] # reordering the columns
 sample_manifest %>% write_csv(file = "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/sample_manifest.csv")
 
 ## return to terminal to secure copy paste the sample manifest file to bluewaves/andromeda folders 
+
+## 2. Sample metadata file 
