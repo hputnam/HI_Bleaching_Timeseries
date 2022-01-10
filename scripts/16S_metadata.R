@@ -26,11 +26,11 @@ sample_manifest$`sample-id` <- substr(sample_manifest$`absolute-filepath`, 53, 5
 
 sample_manifest <- sample_manifest[, c(3, 1, 2)] # reordering the columns 
 
-# sample_manifest <- sample_manifest %>% spread(direction, `absolute-filepath`) %>%
-  # dplyr::rename(`forward-absolute-filepath` = forward) %>%
-  # dplyr::rename(`reverse-absolute-filepath` = reverse)
+sample_manifest <- sample_manifest %>% spread(direction, `absolute-filepath`) %>%
+  dplyr::rename(`forward-absolute-filepath` = forward) %>%
+  dplyr::rename(`reverse-absolute-filepath` = reverse)
 
-sample_manifest %>% write_csv(file = "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/sample_manifest.csv")
+write.table(sample_manifest, "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/sample_manifest.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 
 ## return to terminal to secure copy paste the sample manifest file to bluewaves/andromeda folders 
 
@@ -66,6 +66,24 @@ metadata[1,1] <- "#q2:types"
 metadata[1,2:7] <- "categorical" #adding types of variables for QIIME2 pipeline 
 
 write.table(metadata, "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/metadata.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# Denoising statistics 
+## comparing 3 options for denoising parameters 
+
+denoise_260230 <- read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/processed_data/denoising-stats_260230.tsv", sep="\t", header = TRUE)
+denoise_270240 <- read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/processed_data/denoising-stats_270240.tsv", sep="\t", header = TRUE)
+denoise_280240 <- read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/processed_data/denoising-stats_280240.tsv", sep="\t", header = TRUE)
+
+denoise_260230$parameter <- "260forward_230reverse"
+denoise_270240$parameter <- "270forward_240reverse"
+denoise_280240$parameter <- "280forward_240reverse"
+
+denoising.stats <- union(denoise_260230, denoise_270240) %>% union(denoise_280240)
+
+
+
+
+
 
 
 
