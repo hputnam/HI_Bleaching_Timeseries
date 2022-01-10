@@ -20,11 +20,15 @@ sample_manifest$path <- "/data/putnamlab/estrand/BleachingPairs_16S/raw_data/" #
 
 sample_manifest <- sample_manifest %>% unite(`absolute-filepath`, path, `absolute-filepath`, sep = "") %>% # merging the two columns to complete the file path 
   mutate(direction = case_when(grepl("R1", `absolute-filepath`) ~ "forward",
-                               grepl("R2", `absolute-filepath`) ~ "reverse")) # creating a new column to state whether forward or reverse based on the R value in the sequence title name 
+                               grepl("R2", `absolute-filepath`) ~ "reverse")) # creating a new column to state whether forward or reverse based on the R value in the sequence title name
 
 sample_manifest$`sample-id` <- substr(sample_manifest$`absolute-filepath`, 53, 58) # creating a new column based on the sample id value
 
 sample_manifest <- sample_manifest[, c(3, 1, 2)] # reordering the columns 
+
+# sample_manifest <- sample_manifest %>% spread(direction, `absolute-filepath`) %>%
+  # dplyr::rename(`forward-absolute-filepath` = forward) %>%
+  # dplyr::rename(`reverse-absolute-filepath` = reverse)
 
 sample_manifest %>% write_csv(file = "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/sample_manifest.csv")
 
