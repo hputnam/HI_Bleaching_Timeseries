@@ -80,11 +80,31 @@ denoise_280240$parameter <- "280forward_240reverse"
 
 denoising.stats <- union(denoise_260230, denoise_270240) %>% union(denoise_280240)
 
+denoise.reads <- denoising.stats[, c(1,2,3,5,6,8,10)] # reordering columns to make it easier to plot
+denoise.percent <- denoising.stats[, c(1,4,7,9,10)] # reordering columns to make it easier to plot
 
+denoise.reads <- denoise.reads %>% gather(statistic, value, 2:6) # aggregates the three variables we are interested in to make it easier to plot 
+denoise.percent <- denoise.percent %>% gather(statistic, value, 2:4) # aggregates the three variables we are interested in to make it easier to plot 
 
+denoise.reads$statistic <- factor(denoise.reads$statistic, levels=c("input","filtered","denoised","merged","non.chimeric"))
+denoise.percent$statistic <- factor(denoise.percent$statistic, levels=c("percentage.of.input.passed.filter", "percentage.of.input.merged",
+                                                                        "percentage.of.input.non.chimeric"))
 
+percent <- ggplot(data = denoise.percent, aes(x = parameter, y = value, group = parameter, color = parameter)) +
+  theme_classic() + geom_boxplot() +
+  facet_grid(~statistic, scales = "free") +
+  theme(legend.position = "none") +
+  ylab("# reads") + 
+  theme(axis.text.x = element_text(angle = 60, vjust = 1.2, hjust = 1.3)); denoise.plot #Set the text angle
 
+reads <- ggplot(data = denoise.reads, aes(x = parameter, y = value, group = parameter, color = parameter)) +
+  theme_classic() + geom_boxplot() +
+  facet_grid(~statistic, scales = "free") +
+  theme(legend.position = "none") +
+  ylab("# reads") + 
+  theme(axis.text.x = element_text(angle = 60, vjust = 1.2, hjust = 1.3)); denoise.plot #Set the text angle
 
-
+percent
+reads
 
   
