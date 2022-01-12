@@ -12,7 +12,7 @@ Logistics guide to field collection.
 
 The following specifications written on the whirlpak bag in sharpie/permanent marker:  
 - Date: Month, Day, Year  
-- "Biospy" or "B"  
+- "Biopsy" or "B"  
 - Name of tech/person collecting samples  
 - Species  
 - Coral ID
