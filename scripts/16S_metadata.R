@@ -41,7 +41,7 @@ collection.summary <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/Collec
   dplyr::rename(Timepoint = Date)
 collection.summary$Timepoint <- as.Date(collection.summary$Timepoint, format="%m/%d/%y")
 
-sequencing.id <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata//16S_sequencingID.csv", header = TRUE) %>%
+sequencing.id <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/16S_sequencingID.csv", header = TRUE) %>%
   subset(Project == "ES_BP" & Type == "16S") %>% # selecting for just this 16S project's data and excluding Ariana and Kevin's 
   dplyr::rename(ColonyID = Coral.ID) %>%
   select(Sample.ID, ColonyID, Timepoint) %>%
@@ -106,5 +106,8 @@ reads <- ggplot(data = denoise.reads, aes(x = parameter, y = value, group = para
 
 percent
 reads
+
+ggsave(file="~/MyProjects/HI_Bleaching_Timeseries/data/16S/processed_data/denoising-percent.png", percent, width = 11, height = 6, units = c("in"))
+ggsave(file="~/MyProjects/HI_Bleaching_Timeseries/data/16S/processed_data/denoising-reads.png", reads, width = 11, height = 6, units = c("in"))
 
   
