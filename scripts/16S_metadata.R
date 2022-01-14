@@ -62,8 +62,12 @@ metadata <- full_join(collection.summary, sequencing.id, by = "Group") %>% na.om
 metadata <- metadata %>% rename(`#SampleID` = Sample.ID)
 
 metadata <- metadata[, c(7,1,2,3,4,5,6)] # reordering the columns 
-metadata[1,1] <- "#q2:types"
-metadata[1,2:7] <- "categorical" #adding types of variables for QIIME2 pipeline 
+
+categories <- c("#q2:types", "categorical", "categorical", "categorical", "categorical", 
+                "categorical", "categorical") # QIIME2 needs each column to be specified 
+
+metadata <- rbind(metadata, categories)
+metadata <- metadata[c(41,1:40),]
 
 write.table(metadata, "~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/metadata.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 
