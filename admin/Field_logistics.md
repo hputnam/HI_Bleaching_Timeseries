@@ -22,11 +22,11 @@ If there is room on the bag, it doesn't hurt to label the bag twice with the cor
 
 **Physiology fragments**
 
-The following specifications written on a piece of waterproof paper:  
+The following specifications written on a piece of waterproof paper that will be placed inside each whirlpak:    
 - Date: Month, Day, Year  
 - Name of tech/person collecting samples  
 - Species  
-- Coral ID
+- Coral ID  
 
 ## Shipments
 

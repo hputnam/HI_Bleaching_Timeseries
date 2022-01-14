@@ -1,31 +1,38 @@
 # HI_Bleaching_Timeseries
 
-**Molecular Lab Work**  
+## Sample Locations
+
+Sample Locations: [google spreadsheet](https://docs.google.com/spreadsheets/d/1Dtp6X6xE38RKrcz8YBqZlXAAbSYH22mzXvN2c0AmYlE/edit#gid=0).  
+Instructions for shipping in [field logistics doc](https://github.com/hputnam/HI_Bleaching_Timeseries/blob/main/admin/Field_logistics.md).  
+
+## Raw Sequence Data
+
+**URI HPC Andromeda cluster paths**:  
+WGBS data:  
+16S data: ../../data/putnamlab/shared/ES_BP_16S      
+ITS2 data: ../../data/putnamlab/shared/ES_BP_ITS2      
+RNASeq data:  
+
+*Insert public database links once uploaded (i.e. NCBI, OSF).*
+
+## Laboratory work at URI
+
+**Molecular work for July 2019 and Dec 2019 M. capitata fragments**  
 DNA RNA Duet Extractions [online notebook post](https://emmastrand.github.io/EmmaStrand_Notebook/Kbay-Bleaching-2019-DNA-RNA-Extractions/).  
 Pico Methyl Prep for WGBS [online notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-05-18-KBay-Dec-July-2019-WGBS.md).  
-TagSeq protocol in prep. Notebook posts to come soon. 
+RNASeq prep can be found in the master molecular spreadsheet linked below.    
+16S sequencing Processing [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-11-09-KBay-Bleaching-Pairs-16S-Processing.md) and [google spreadsheet from processing](https://docs.google.com/spreadsheets/d/1hFIY0g74x_yjGrz7F8n_IFccVfC5TheEPZtd7_je3uI/edit#gid=1693868430).      
+16S pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-07-KBay-Pairs-16S-Analysis-Pipeline.md).  
+ITS2 sequencing processing [notebook post](https://github.com/kevinhwong1/KevinHWong_Notebook/blob/master/_posts/2021-11-09-20211109-ITS2-KW-AH-ES-samples.md) and [google spreadsheet from processing](https://docs.google.com/spreadsheets/d/1Zs6nKV5QTHoSMigXAZXgNoiaDMglZ9uycr6kK0upcTU/edit#gid=1607182602).    
+ITS2 sequencing pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-14-KBay-Bleaching-Pairs-ITS2-Analysis-Pipeline.md).  
 
-Molecular Fragment Locations
+Master molecular excel spreadsheet for this project: [here](https://github.com/hputnam/HI_Bleaching_Timeseries/blob/main/data/Molecular-labwork.xlsx)
 
-| Year  	| Date  	| Biopsy  	| Physio            	| Label                              	| Notes                          	|
-|-------	|-------	|---------	|-------------------	|------------------------------------	|--------------------------------	|
-| 2019  	| 7/16  	| @ URI 	| N/A               	| Date; ID #; Reef #; Species        	| To go to URI                   	|
-| 2019  	| 9/16  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species  	| Yellow mesh                    	|
-| 2019  	| 10/2  	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species  	| Yellow mesh                    	|
-| 2019  	| 10/16 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species  	| Yellow mesh                    	|
-| 2019  	| 10/30 	| @ URI   	| Processed @ UPenn 	| Date; ID #; Reef #; Meas; Species  	| Yellow mesh                    	|
-| 2019  	| 12/4  	| @ URI   	|         To be processed at URI          	| "T5" and ID #                      	| Black mesh                     |
-| 2020  	| 1/24  	| NA      	| NA                	| NA                                 	| no molecular at this timepoint 	|
-| 2020  	| 8/27  	| @ URI   	| Processed @ UPenn 	|                                    	|                                 |
-| 2020  	| 10/8  	| @ URI   	| @ URI             	|                                    	|                                	|
-| 2020  	| 11/5  	| @ URI   	| @ URI             	| "T2" on larger plastic bag; ID #   	| Black mesh                     |
-| 2020  	| 12/10 	|         	|                   	|                                    	|                                	|
+**Physiology**  
+Dec 4 2019 physiology processing [online notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-03-15-KBay-Dec-4-Physiology.md).  
+Coral clipping for molecular samples to UH [protocol](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-03-08-KBay-Coral-Chipping-2021.md).
 
-Notes:  
-- Labels on 2020 timepoints: Oct 2020 = T1; Nov 2020 = T2.
-- In the future, label each individual whirlpak with the coral ID #, sampling date, "DNA" or "phys", and reef #. The larger plastic bags can burst in transit and the coral fragments from different bags can mix.  
-
-## Clipping and Fragment Overview
+#### Clipping and Fragment Overview
 
 Table and visual view below:  
 - Sept 16 2019, Oct 2 2019, Oct 16 2019, and Oct 30 2019 all melted in transit and are unusable for high molecular weight DNA (DNA methylation analyses) and RNA extractions.  
@@ -38,44 +45,7 @@ Table and visual view below:
 
 ![plan2](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/images/kbayplan2.png?raw=true)
 
-
-
-| Timepoint                     	| Piece                 	| Label/Tube/Whirlpak        	| Going To / Location 	| Notes                                                                                                                           	|
-|-------------------------------	|-----------------------	|----------------------------	|---------------------	|---------------------------------------------------------------------------------------------------------------------------------	|
-| July 16th 2019                	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| As of March 12th, 2021 molecular is at UPenn and will be shipped to URI                                                         	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| To be clipped                                                                                                                   	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| NA - processed?                                                                                                                 	|
-| Sept 16th 2019                	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| Will stay at URI                                                                                                                	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| In process of being clipping                                                                                                    	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| Processed                                                                                                                       	|
-| Oct 2nd 2019                  	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| Will stay at URI                                                                                                                	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| In process of being clipping                                                                                                    	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| Processed                                                                                                                       	|
-| Oct 16th 2019                 	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| Will stay at URI                                                                                                                	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| In process of being clipping                                                                                                    	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| Processed                                                                                                                       	|
-| Oct 30th 2019                 	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| Will stay at URI                                                                                                                	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| In process of being clipping                                                                                                    	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| Processed                                                                                                                       	|
-| Dec 4th 2019                  	| Molecular Fragment    	| Extracted/To be airbrushed 	| URI - Emma / Hollie 	| Extracted and the rest of the fragment will be airbrushed at URI and processed for Phys                                         	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| In process of being clipping                                                                                                    	|
-| Aug 27th 2020                 	| Molecular Fragment    	| In original whirlpak       	| URI - Emma / Hollie 	| Will stay at URI                                                                                                                	|
-|                               	| Molecular Clipping    	| TBD                        	| UH - Wes            	| To be clipped                                                                                                                   	|
-|                               	| Physiology Fragment   	| NA                         	| UPenn - Teegan      	| Processed                                                                                                                       	|
-| Nov 5th 2020                  	| Fragment 1            	| Coral ID 1 in whirlpak     	| UPenn - Teegan      	| November Phys 2020 - the fragment post clipping will be sent to UPenn                                                           	|
-|                               	| Fragment Clipping 1-A 	| Coral ID 1-A in tube       	| URI - Emma / Hollie 	| November Phys 2020                                                                                                              	|
-|                               	| Fragment Clipping 1-B 	| Coral ID 1-B in tube       	| UH - Wes            	| November Phys 2020                                                                                                              	|
-| Nov 5th 2020 or Oct 8th 2020  	| Fragment 2            	| Coral ID 2 in whirlpak     	| UPenn - Teegan      	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys - the fragment post clipping will be sent to UPenn 	|
-|                               	| Fragment Clipping 2-A 	| Coral ID 2-A in tube       	| URI - Emma / Hollie 	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-|                               	| Fragment Clipping 2-B 	| Coral ID 2-B in tube       	| UH - Wes            	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-| Nov 5th 2020 or Oct 8th 2020  	| Fragment 3            	| Coral ID 3 in whirlpak     	| UPenn - Teegan      	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys - the fragment post clipping will be sent to UPenn 	|
-|                               	| Fragment Clipping 3-A 	| Coral ID 3-A in tube       	| URI - Emma / Hollie 	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-|                               	| Fragment Clipping 3-B 	| Coral ID 3-B in tube       	| UH - Wes            	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-| Nov 5th 2020 or Oct 8th 2020  	| Fragment 4            	| Coral ID 4 in whirlpak     	| UPenn - Teegan      	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys - the fragment post clipping will be sent to UPenn 	|
-|                               	| Fragment Clipping 4-A 	| Coral ID 4-A in tube       	| URI - Emma / Hollie 	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-|                               	| Fragment Clipping 4-B 	| Coral ID 4-B in tube       	| UH - Wes            	| Unknown timepoint or phys molec - could be Nov molec, Oct molec, or Oct phys                                                    	|
-
-## Notes from clipping
+#### Notes from clipping
 
 Sept 16 2019 set - has two fragments labeled 217. Both were clipped but unsure which clipping is from which fragment. Are we missing a physiology fragment from this timepoint?
 
