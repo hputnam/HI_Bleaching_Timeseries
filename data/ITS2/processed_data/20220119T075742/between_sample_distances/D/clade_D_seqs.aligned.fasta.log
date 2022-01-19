@@ -1,0 +1,1475 @@
+IQ-TREE multicore version 2.2.0-beta COVID-edition for Linux 64-bit built Dec 21 2021 built Dec 21 2021
+Developed by Bui Quang Minh, James Barbetti, Nguyen Lam Tung,
+Olga Chernomor, Heiko Schmidt, Dominik Schrempf, Michael Woodhams, Ly Trong Nhan.
+
+Host:    n064.cluster.com (AVX512, FMA3, 125 GB RAM)
+Command: iqtree -nt AUTO -ntmax 4 -s /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta
+Seed:    43255 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Wed Jan 19 08:00:14 2022
+Kernel:  AVX+FMA - auto-detect threads (1 CPU cores detected)
+
+Reading alignment file /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta ... Fasta format detected
+Reading fasta file: done in 0.000278092 secs using 93.49% CPU
+Alignment most likely contains DNA/RNA sequences
+Constructing alignment: done in 0.000475275 secs using 99.52% CPU
+Alignment has 30 sequences with 281 columns, 33 distinct patterns
+11 parsimony-informative, 7 singleton sites, 263 constant sites
+      Gap/Ambiguity  Composition  p-value
+Analyzing sequences: done in 1.18399e-05 secs using 16.89% CPU
+   1  386     7.12%    passed     97.68%
+   2  147     7.12%    passed     99.31%
+   3  149     7.12%    passed     99.87%
+   4  1430    7.12%    passed     99.75%
+   5  1433    7.12%    passed     99.67%
+   6  1434    7.12%    passed     99.96%
+   7  1435    7.12%    passed     99.96%
+   8  1436    7.12%    passed     98.12%
+   9  1442    7.12%    passed     99.98%
+  10  931     7.12%    passed     99.54%
+  11  1443    7.12%    passed     99.92%
+  12  1190    7.12%    passed     99.98%
+  13  1451    7.47%    passed     99.48%
+  14  1080    7.12%    passed     99.31%
+  15  57      7.12%    passed     99.67%
+  16  1083    7.12%    passed     99.87%
+  17  68      7.12%    passed     98.78%
+  18  71      7.12%    passed     99.95%
+  19  1365    0.71%    passed     99.95%
+  20  1366    7.12%    passed     99.54%
+  21  1367    6.41%    passed     98.57%
+  22  1368    7.12%    passed     98.25%
+  23  985     7.12%    passed     99.54%
+  24  1369    6.41%    passed     99.60%
+  25  347     7.12%    passed     99.98%
+  26  118     7.12%    passed     98.45%
+  27  1399    7.12%    passed     99.69%
+  28  1400   11.74%    passed     99.82%
+  29  123     7.12%    passed     99.95%
+  30  126     7.12%    passed     99.31%
+****  TOTAL    7.02%  0 sequences failed composition chi2 test (p-value<5%; df=3)
+Checking for duplicate sequences: done in 9.99938e-05 secs using 8% CPU
+
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.000 seconds
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+208 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -788
+Determining AUTO threadcount: done in 1.00113 secs using 84.32% CPU
+BEST NUMBER OF THREADS: 1
+
+Perform fast likelihood tree search using GTR+I+G model...
+Estimate model parameters (epsilon = 5.000)
+
+WARNING: Estimated model parameters are at boundary that can cause numerical instability!
+
+Perform nearest neighbor interchange...
+Optimizing NNI: done in 0.0521512 secs using 82.49% CPU
+Estimate model parameters (epsilon = 1.000)
+1. Initial log-likelihood: -629.682
+2. Current log-likelihood: -627.237
+Optimal log-likelihood: -626.779
+Rate parameters:  A-C: 0.00010  A-G: 48.51736  A-T: 7.79166  C-G: 25.14890  C-T: 93.84706  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.256  G: 0.246  T: 0.320
+Proportion of invariable sites: 0.664
+Gamma shape alpha: 0.141
+Parameters optimization took 2 rounds (0.021 sec)
+Time for fast ML tree search: 0.121 seconds
+
+NOTE: ModelFinder requires 0 MB RAM!
+ModelFinder will test up to 299 DNA models (sample size: 281) ...
+ No. Model         -LnL         df  AIC          AICc         BIC
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+438 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -801
+Determining AUTO threadcount: done in 1.00092 secs using 81.75% CPU
+BEST NUMBER OF THREADS: 1
+
+  1  GTR+F         692.621      65  1515.243     1555.150     1751.736
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+342 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -761
+Determining AUTO threadcount: done in 1.00187 secs using 82.16% CPU
+BEST NUMBER OF THREADS: 1
+
+  2  GTR+F+I       628.945      66  1389.889     1431.216     1630.021
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+292 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -755
+Determining AUTO threadcount: done in 1.00101 secs using 86.12% CPU
+BEST NUMBER OF THREADS: 1
+
+  3  GTR+F+G4      646.495      66  1424.990     1466.317     1665.121
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+204 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -667
+Determining AUTO threadcount: done in 1.00393 secs using 84.8% CPU
+BEST NUMBER OF THREADS: 1
+
+  4  GTR+F+I+G4    625.136      67  1384.273     1427.052     1628.043
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+351 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -814
+Determining AUTO threadcount: done in 1.00123 secs using 83.35% CPU
+BEST NUMBER OF THREADS: 1
+
+  5  GTR+F+R2      624.930      67  1383.860     1426.640     1627.630
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+311 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -757
+Determining AUTO threadcount: done in 1.00133 secs using 84.45% CPU
+BEST NUMBER OF THREADS: 1
+
+  6  GTR+F+R3      623.746      69  1385.492     1431.274     1636.538
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+355 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -699
+Determining AUTO threadcount: done in 1.00321 secs using 82.06% CPU
+BEST NUMBER OF THREADS: 1
+
+ 15  SYM+I         636.273      63  1398.545     1435.706     1627.761
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+209 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -676
+Determining AUTO threadcount: done in 1.00304 secs using 84.08% CPU
+BEST NUMBER OF THREADS: 1
+
+ 17  SYM+I+G4      632.350      64  1392.700     1431.219     1625.555
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+300 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -685
+Determining AUTO threadcount: done in 1.00253 secs using 84.56% CPU
+BEST NUMBER OF THREADS: 1
+
+ 18  SYM+R2        631.292      64  1390.585     1429.103     1623.439
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+306 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -783
+Determining AUTO threadcount: done in 1.00133 secs using 84.55% CPU
+BEST NUMBER OF THREADS: 1
+
+ 19  SYM+R3        631.070      66  1394.139     1435.466     1634.271
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+358 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -670
+Determining AUTO threadcount: done in 1.00161 secs using 82.94% CPU
+BEST NUMBER OF THREADS: 1
+
+ 28  TVM+F+I       629.064      65  1388.127     1428.034     1624.620
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+220 trees examined
+Threads: 1 / Time: 1.006 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -669
+Determining AUTO threadcount: done in 1.0062 secs using 84.43% CPU
+BEST NUMBER OF THREADS: 1
+
+ 30  TVM+F+I+G4    625.645      66  1383.290     1424.617     1623.421
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+280 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -668
+Determining AUTO threadcount: done in 1.00188 secs using 81.67% CPU
+BEST NUMBER OF THREADS: 1
+
+ 31  TVM+F+R2      624.414      66  1380.827     1422.154     1620.959
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+323 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -788
+Determining AUTO threadcount: done in 1.00323 secs using 85.48% CPU
+BEST NUMBER OF THREADS: 1
+
+ 32  TVM+F+R3      624.426      68  1384.852     1429.116     1632.260
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+368 trees examined
+Threads: 1 / Time: 1.005 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -702
+Determining AUTO threadcount: done in 1.00544 secs using 80.14% CPU
+BEST NUMBER OF THREADS: 1
+
+ 41  TVMe+I        637.214      62  1398.428     1434.263     1624.006
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+215 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -676
+Determining AUTO threadcount: done in 1.00353 secs using 85.58% CPU
+BEST NUMBER OF THREADS: 1
+
+ 43  TVMe+I+G4     633.888      63  1393.777     1430.938     1622.993
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+293 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -674
+Determining AUTO threadcount: done in 1.0017 secs using 83.38% CPU
+BEST NUMBER OF THREADS: 1
+
+ 44  TVMe+R2       632.625      63  1391.251     1428.412     1620.467
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+306 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -810
+Determining AUTO threadcount: done in 1.00136 secs using 83.88% CPU
+BEST NUMBER OF THREADS: 1
+
+ 45  TVMe+R3       632.669      65  1395.337     1435.244     1631.830
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+353 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -693
+Determining AUTO threadcount: done in 1.00162 secs using 80.78% CPU
+BEST NUMBER OF THREADS: 1
+
+ 54  TIM3+F+I      632.069      64  1392.138     1430.656     1624.992
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+221 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -687
+Determining AUTO threadcount: done in 1.00211 secs using 87.85% CPU
+BEST NUMBER OF THREADS: 1
+
+ 56  TIM3+F+I+G4   628.119      65  1386.238     1426.145     1622.731
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+295 trees examined
+Threads: 1 / Time: 1.005 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -667
+Determining AUTO threadcount: done in 1.00516 secs using 81.82% CPU
+BEST NUMBER OF THREADS: 1
+
+ 57  TIM3+F+R2     626.821      65  1383.641     1423.548     1620.134
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+304 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -805
+Determining AUTO threadcount: done in 1.00108 secs using 82.26% CPU
+BEST NUMBER OF THREADS: 1
+
+ 58  TIM3+F+R3     626.880      67  1387.759     1430.539     1631.529
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+341 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -697
+Determining AUTO threadcount: done in 1.0019 secs using 80.56% CPU
+BEST NUMBER OF THREADS: 1
+
+ 67  TIM3e+I       639.877      61  1401.753     1436.292     1623.693
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+213 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -686
+Determining AUTO threadcount: done in 1.0036 secs using 86.17% CPU
+BEST NUMBER OF THREADS: 1
+
+ 69  TIM3e+I+G4    635.870      62  1395.740     1431.575     1621.318
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+292 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -689
+Determining AUTO threadcount: done in 1.00201 secs using 82.38% CPU
+BEST NUMBER OF THREADS: 1
+
+ 70  TIM3e+R2      634.580      62  1393.159     1428.994     1618.737
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+307 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -796
+Determining AUTO threadcount: done in 1.0022 secs using 84.27% CPU
+BEST NUMBER OF THREADS: 1
+
+ 71  TIM3e+R3      634.704      64  1397.409     1435.927     1630.263
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+352 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -693
+Determining AUTO threadcount: done in 1.003 secs using 80.87% CPU
+BEST NUMBER OF THREADS: 1
+
+ 80  TIM2+F+I      632.479      64  1392.958     1431.477     1625.813
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+209 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -669
+Determining AUTO threadcount: done in 1.00155 secs using 84.45% CPU
+BEST NUMBER OF THREADS: 1
+
+ 82  TIM2+F+I+G4   628.527      65  1387.053     1426.960     1623.546
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+286 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -663
+Determining AUTO threadcount: done in 1.00092 secs using 84.06% CPU
+BEST NUMBER OF THREADS: 1
+
+ 83  TIM2+F+R2     627.149      65  1384.298     1424.205     1620.791
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+311 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -791
+Determining AUTO threadcount: done in 1.00306 secs using 85.48% CPU
+BEST NUMBER OF THREADS: 1
+
+ 84  TIM2+F+R3     627.281      67  1388.562     1431.342     1632.332
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+359 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -685
+Determining AUTO threadcount: done in 1.00117 secs using 82.67% CPU
+BEST NUMBER OF THREADS: 1
+
+ 93  TIM2e+I       639.634      61  1401.268     1435.807     1623.207
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+205 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -684
+Determining AUTO threadcount: done in 1.00067 secs using 87.04% CPU
+BEST NUMBER OF THREADS: 1
+
+ 95  TIM2e+I+G4    635.510      62  1395.020     1430.855     1620.598
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+284 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -685
+Determining AUTO threadcount: done in 1.00066 secs using 81.47% CPU
+BEST NUMBER OF THREADS: 1
+
+ 96  TIM2e+R2      634.238      62  1392.475     1428.310     1618.053
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+315 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -775
+Determining AUTO threadcount: done in 1.00344 secs using 87.66% CPU
+BEST NUMBER OF THREADS: 1
+
+ 97  TIM2e+R3      634.372      64  1396.744     1435.262     1629.599
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+341 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -691
+Determining AUTO threadcount: done in 1.00283 secs using 78.3% CPU
+BEST NUMBER OF THREADS: 1
+
+106  TIM+F+I       629.922      64  1387.844     1426.362     1620.699
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+205 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -671
+Determining AUTO threadcount: done in 1.00365 secs using 83.69% CPU
+BEST NUMBER OF THREADS: 1
+
+108  TIM+F+I+G4    626.272      65  1382.545     1422.452     1619.038
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+265 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -668
+Determining AUTO threadcount: done in 1.00103 secs using 82.86% CPU
+BEST NUMBER OF THREADS: 1
+
+109  TIM+F+R2      625.146      65  1380.291     1420.198     1616.784
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+296 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -776
+Determining AUTO threadcount: done in 1.00379 secs using 86.47% CPU
+BEST NUMBER OF THREADS: 1
+
+110  TIM+F+R3      625.264      67  1384.528     1427.308     1628.298
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+328 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -693
+Determining AUTO threadcount: done in 1.0013 secs using 79.67% CPU
+BEST NUMBER OF THREADS: 1
+
+119  TIMe+I        637.739      61  1397.478     1432.017     1619.418
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+210 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -684
+Determining AUTO threadcount: done in 1.0036 secs using 85.19% CPU
+BEST NUMBER OF THREADS: 1
+
+121  TIMe+I+G4     633.896      62  1391.793     1427.628     1617.371
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+278 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -663
+Determining AUTO threadcount: done in 1.00129 secs using 83.56% CPU
+BEST NUMBER OF THREADS: 1
+
+122  TIMe+R2       632.913      62  1389.826     1425.661     1615.404
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+318 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -772
+Determining AUTO threadcount: done in 1.00287 secs using 84.45% CPU
+BEST NUMBER OF THREADS: 1
+
+123  TIMe+R3       633.065      64  1394.130     1432.649     1626.985
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+353 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -692
+Determining AUTO threadcount: done in 1.00327 secs using 80.11% CPU
+BEST NUMBER OF THREADS: 1
+
+132  TPM3u+F+I     632.169      63  1390.339     1427.500     1619.555
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+206 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -675
+Determining AUTO threadcount: done in 1.00241 secs using 85.37% CPU
+BEST NUMBER OF THREADS: 1
+
+134  TPM3u+F+I+G4  628.788      64  1385.575     1424.094     1618.430
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+289 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -673
+Determining AUTO threadcount: done in 1.00215 secs using 82.48% CPU
+BEST NUMBER OF THREADS: 1
+
+135  TPM3u+F+R2    627.527      64  1383.053     1421.572     1615.908
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+308 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -783
+Determining AUTO threadcount: done in 1.00167 secs using 85.44% CPU
+BEST NUMBER OF THREADS: 1
+
+136  TPM3u+F+R3    627.660      66  1387.321     1428.648     1627.452
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+362 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -707
+Determining AUTO threadcount: done in 1.00221 secs using 81.59% CPU
+BEST NUMBER OF THREADS: 1
+
+145  TPM3+I        640.719      60  1401.439     1434.712     1619.740
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+200 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -692
+Determining AUTO threadcount: done in 1.00373 secs using 83.3% CPU
+BEST NUMBER OF THREADS: 1
+
+147  TPM3+I+G4     637.547      61  1397.093     1431.632     1619.033
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+289 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -688
+Determining AUTO threadcount: done in 1.00281 secs using 81.68% CPU
+BEST NUMBER OF THREADS: 1
+
+148  TPM3+R2       636.241      61  1394.481     1429.020     1616.421
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+316 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -785
+Determining AUTO threadcount: done in 1.00338 secs using 83.9% CPU
+BEST NUMBER OF THREADS: 1
+
+149  TPM3+R3       636.371      63  1398.741     1435.902     1627.957
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+349 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -687
+Determining AUTO threadcount: done in 1.0033 secs using 79.01% CPU
+BEST NUMBER OF THREADS: 1
+
+158  TPM2u+F+I     632.596      63  1391.192     1428.353     1620.408
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+210 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -677
+Determining AUTO threadcount: done in 1.00431 secs using 82.21% CPU
+BEST NUMBER OF THREADS: 1
+
+160  TPM2u+F+I+G4  629.174      64  1386.348     1424.867     1619.203
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+299 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -669
+Determining AUTO threadcount: done in 1.00268 secs using 82.57% CPU
+BEST NUMBER OF THREADS: 1
+
+161  TPM2u+F+R2    627.795      64  1383.590     1422.108     1616.444
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+322 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -786
+Determining AUTO threadcount: done in 1.00365 secs using 84.78% CPU
+BEST NUMBER OF THREADS: 1
+
+162  TPM2u+F+R3    627.924      66  1387.849     1429.176     1627.980
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+358 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -698
+Determining AUTO threadcount: done in 1.00148 secs using 81.35% CPU
+BEST NUMBER OF THREADS: 1
+
+171  TPM2+I        640.523      60  1401.046     1434.319     1619.348
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+201 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -680
+Determining AUTO threadcount: done in 1.00425 secs using 87.18% CPU
+BEST NUMBER OF THREADS: 1
+
+173  TPM2+I+G4     637.118      61  1396.235     1430.774     1618.175
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+297 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -679
+Determining AUTO threadcount: done in 1.00115 secs using 81.93% CPU
+BEST NUMBER OF THREADS: 1
+
+174  TPM2+R2       635.736      61  1393.471     1428.010     1615.411
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+319 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -817
+Determining AUTO threadcount: done in 1.00136 secs using 85.66% CPU
+BEST NUMBER OF THREADS: 1
+
+175  TPM2+R3       635.854      63  1397.709     1434.870     1626.925
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+353 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -670
+Determining AUTO threadcount: done in 1.0025 secs using 80.71% CPU
+BEST NUMBER OF THREADS: 1
+
+184  K3Pu+F+I      630.023      63  1386.045     1423.207     1615.262
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+213 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -673
+Determining AUTO threadcount: done in 1.00197 secs using 85.96% CPU
+BEST NUMBER OF THREADS: 1
+
+186  K3Pu+F+I+G4   627.075      64  1382.150     1420.668     1615.004
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+284 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -664
+Determining AUTO threadcount: done in 1.00165 secs using 83.48% CPU
+BEST NUMBER OF THREADS: 1
+
+187  K3Pu+F+R2     626.024      64  1380.049     1418.567     1612.903
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+312 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -788
+Determining AUTO threadcount: done in 1.00094 secs using 85.56% CPU
+BEST NUMBER OF THREADS: 1
+
+188  K3Pu+F+R3     626.166      66  1384.332     1425.659     1624.463
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+356 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -688
+Determining AUTO threadcount: done in 1.00298 secs using 78.49% CPU
+BEST NUMBER OF THREADS: 1
+
+197  K3P+I         638.608      60  1397.216     1430.489     1615.517
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+201 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -682
+Determining AUTO threadcount: done in 1.00143 secs using 86.06% CPU
+BEST NUMBER OF THREADS: 1
+
+199  K3P+I+G4      635.835      61  1393.670     1428.208     1615.609
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+299 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -675
+Determining AUTO threadcount: done in 1.00155 secs using 83.07% CPU
+BEST NUMBER OF THREADS: 1
+
+200  K3P+R2        634.803      61  1391.607     1426.146     1613.546
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+313 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -801
+Determining AUTO threadcount: done in 1.00349 secs using 84.27% CPU
+BEST NUMBER OF THREADS: 1
+
+201  K3P+R3        634.941      63  1395.883     1433.044     1625.099
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+356 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -693
+Determining AUTO threadcount: done in 1.00179 secs using 81.57% CPU
+BEST NUMBER OF THREADS: 1
+
+210  TN+F+I        633.023      63  1392.046     1429.207     1621.262
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+200 trees examined
+Threads: 1 / Time: 1.006 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -673
+Determining AUTO threadcount: done in 1.00599 secs using 83.46% CPU
+BEST NUMBER OF THREADS: 1
+
+212  TN+F+I+G4     629.214      64  1386.428     1424.947     1619.283
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+286 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -665
+Determining AUTO threadcount: done in 1.00219 secs using 82.96% CPU
+BEST NUMBER OF THREADS: 1
+
+213  TN+F+R2       628.002      64  1384.004     1422.522     1616.858
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+315 trees examined
+Threads: 1 / Time: 1.003 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -790
+Determining AUTO threadcount: done in 1.0033 secs using 83.09% CPU
+BEST NUMBER OF THREADS: 1
+
+214  TN+F+R3       628.110      66  1388.219     1429.546     1628.351
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+364 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -696
+Determining AUTO threadcount: done in 1.00127 secs using 81.46% CPU
+BEST NUMBER OF THREADS: 1
+
+223  TNe+I         640.703      60  1401.405     1434.678     1619.707
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+199 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -686
+Determining AUTO threadcount: done in 1.00189 secs using 86.96% CPU
+BEST NUMBER OF THREADS: 1
+
+225  TNe+I+G4      636.636      61  1395.273     1429.812     1617.213
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+291 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -680
+Determining AUTO threadcount: done in 1.00408 secs using 82% CPU
+BEST NUMBER OF THREADS: 1
+
+226  TNe+R2        635.595      61  1393.190     1427.729     1615.130
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+327 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -821
+Determining AUTO threadcount: done in 1.00456 secs using 85.01% CPU
+BEST NUMBER OF THREADS: 1
+
+227  TNe+R3        635.706      63  1397.413     1434.574     1626.629
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+362 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -689
+Determining AUTO threadcount: done in 1.00193 secs using 80.15% CPU
+BEST NUMBER OF THREADS: 1
+
+236  HKY+F+I       633.129      62  1390.258     1426.093     1615.836
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+203 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -669
+Determining AUTO threadcount: done in 1.00189 secs using 85.57% CPU
+BEST NUMBER OF THREADS: 1
+
+238  HKY+F+I+G4    629.939      63  1385.878     1423.039     1615.095
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+287 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -675
+Determining AUTO threadcount: done in 1.0025 secs using 81.18% CPU
+BEST NUMBER OF THREADS: 1
+
+239  HKY+F+R2      628.784      63  1383.567     1420.728     1612.783
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+319 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -807
+Determining AUTO threadcount: done in 1.00302 secs using 83.47% CPU
+BEST NUMBER OF THREADS: 1
+
+240  HKY+F+R3      628.926      65  1387.853     1427.760     1624.346
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+367 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -696
+Determining AUTO threadcount: done in 1.00234 secs using 80.39% CPU
+BEST NUMBER OF THREADS: 1
+
+249  K2P+I         641.544      59  1401.087     1433.123     1615.750
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+200 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -687
+Determining AUTO threadcount: done in 1.00166 secs using 84.87% CPU
+BEST NUMBER OF THREADS: 1
+
+251  K2P+I+G4      638.448      60  1396.896     1430.168     1615.197
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+305 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -690
+Determining AUTO threadcount: done in 1.00088 secs using 82.15% CPU
+BEST NUMBER OF THREADS: 1
+
+252  K2P+R2        637.303      60  1394.606     1427.879     1612.907
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+312 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -783
+Determining AUTO threadcount: done in 1.00104 secs using 83.76% CPU
+BEST NUMBER OF THREADS: 1
+
+253  K2P+R3        637.435      62  1398.870     1434.705     1624.448
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+380 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -721
+Determining AUTO threadcount: done in 1.00106 secs using 79.56% CPU
+BEST NUMBER OF THREADS: 1
+
+262  F81+F+I       654.236      61  1430.473     1465.012     1652.413
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+174 trees examined
+Threads: 1 / Time: 1.000 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -706
+Determining AUTO threadcount: done in 1.0008 secs using 84.45% CPU
+BEST NUMBER OF THREADS: 1
+
+264  F81+F+I+G4    651.130      62  1426.260     1462.095     1651.838
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+303 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -720
+Determining AUTO threadcount: done in 1.00216 secs using 83.45% CPU
+BEST NUMBER OF THREADS: 1
+
+265  F81+F+R2      649.988      62  1423.976     1459.811     1649.554
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+311 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -843
+Determining AUTO threadcount: done in 1.0024 secs using 84.77% CPU
+BEST NUMBER OF THREADS: 1
+
+266  F81+F+R3      650.135      64  1428.270     1466.789     1661.125
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+384 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -752
+Determining AUTO threadcount: done in 1.00315 secs using 79.59% CPU
+BEST NUMBER OF THREADS: 1
+
+275  JC+I          664.989      58  1445.977     1476.806     1657.002
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+190 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -720
+Determining AUTO threadcount: done in 1.00151 secs using 85.85% CPU
+BEST NUMBER OF THREADS: 1
+
+277  JC+I+G4       661.677      59  1441.355     1473.391     1656.018
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+302 trees examined
+Threads: 1 / Time: 1.002 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -724
+Determining AUTO threadcount: done in 1.00215 secs using 82.88% CPU
+BEST NUMBER OF THREADS: 1
+
+278  JC+R2         660.506      59  1439.013     1471.049     1653.675
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+317 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -849
+Determining AUTO threadcount: done in 1.00118 secs using 82.96% CPU
+BEST NUMBER OF THREADS: 1
+
+279  JC+R3         660.654      61  1443.308     1477.847     1665.248
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+235 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -737
+Determining AUTO threadcount: done in 1.00419 secs using 89.37% CPU
+BEST NUMBER OF THREADS: 1
+
+288  UNREST+FO+I   626.292      70  1392.584     1439.918     1647.269
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+63 trees examined
+Threads: 1 / Time: 1.013 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -722
+Determining AUTO threadcount: done in 1.01373 secs using 94.37% CPU
+BEST NUMBER OF THREADS: 1
+
+290  UNREST+FO+I+G4 622.584      71  1387.168     1436.087     1645.491
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+141 trees examined
+Threads: 1 / Time: 1.004 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -731
+Determining AUTO threadcount: done in 1.00481 secs using 92.66% CPU
+BEST NUMBER OF THREADS: 1
+
+291  UNREST+FO+R2  621.059      71  1384.119     1433.037     1642.442
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+130 trees examined
+Threads: 1 / Time: 1.005 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -849
+Determining AUTO threadcount: done in 1.00512 secs using 92.13% CPU
+BEST NUMBER OF THREADS: 1
+
+292  UNREST+FO+R3  621.710      73  1389.419     1441.613     1655.019
+Akaike Information Criterion:           K3Pu+F+R2
+Corrected Akaike Information Criterion: K3Pu+F+R2
+Bayesian Information Criterion:         HKY+F+R2
+Best-fit model: HKY+F+R2 chosen according to BIC
+
+All model information printed to /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta.model.gz
+CPU time for ModelFinder: 83.423 seconds (0h:1m:23s)
+Wall-clock time for ModelFinder: 99.383 seconds (0h:1m:39s)
+
+NOTE: 0 MB RAM (0 GB) is required!
+Measuring multi-threading efficiency up to 1 CPU cores
+Increase to 10 rounds for branch lengths
+348 trees examined
+Threads: 1 / Time: 1.001 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -856
+Determining AUTO threadcount: done in 1.00169 secs using 85.27% CPU
+BEST NUMBER OF THREADS: 1
+
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -628.784
+Optimal log-likelihood: -628.781
+Rate parameters:  A-C: 1.00000  A-G: 9.01718  A-T: 1.00000  C-G: 1.00000  C-T: 9.01718  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.256  G: 0.246  T: 0.320
+Site proportion and rates:  (0.957,0.141) (0.043,20.066)
+Parameters optimization took 1 rounds (0.004 sec)
+Wrote distance file to... 
+Computing ML distances based on estimated model parameters...
+Calculating distance matrix: done in 0.00396167 secs using 96.4% CPU
+Computing ML distances took 0.004311 sec (of wall-clock time) 0.003908 sec (of CPU time)
+Setting up auxiliary I and S matrices: done in 9.67579e-05 secs using 83.71% CPU
+Constructing RapidNJ tree: done in 0.000355385 secs using 86.95% CPU
+Computing RapidNJ tree took 0.000843 sec (of wall-clock time) 0.000499 sec (of CPU time)
+Log-likelihood of RapidNJ tree: -582.823
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 0.051 second
+Computing log-likelihood of 98 initial trees ... 0.098 seconds
+Current best score: -582.823
+
+Do NNI search on 20 best initial trees
+Optimizing NNI: done in 0.00361614 secs using 46.15% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -581.531
+Optimizing NNI: done in 0.0101311 secs using 70.06% CPU
+Optimizing NNI: done in 0.0370523 secs using 88.92% CPU
+Optimizing NNI: done in 0.0467955 secs using 76.37% CPU
+Optimizing NNI: done in 0.035215 secs using 82.87% CPU
+Optimizing NNI: done in 0.0262141 secs using 81.17% CPU
+Optimizing NNI: done in 0.0306312 secs using 90.13% CPU
+Optimizing NNI: done in 0.0174709 secs using 59.8% CPU
+Optimizing NNI: done in 0.0389548 secs using 84.41% CPU
+Optimizing NNI: done in 0.0178573 secs using 72.39% CPU
+Iteration 10 / LogL: -636.793 / Time: 0h:0m:1s
+Optimizing NNI: done in 0.0273297 secs using 78.23% CPU
+Optimizing NNI: done in 0.0240309 secs using 78.76% CPU
+Optimizing NNI: done in 0.025616 secs using 69.05% CPU
+Optimizing NNI: done in 0.0212629 secs using 62.4% CPU
+Optimizing NNI: done in 0.0273212 secs using 88.86% CPU
+Optimizing NNI: done in 0.0296809 secs using 83.43% CPU
+Optimizing NNI: done in 0.0456 secs using 82.39% CPU
+Optimizing NNI: done in 0.0255609 secs using 80.17% CPU
+Optimizing NNI: done in 0.0288478 secs using 85.85% CPU
+Optimizing NNI: done in 0.0184823 secs using 67.58% CPU
+Iteration 20 / LogL: -625.930 / Time: 0h:0m:1s
+Finish initializing candidate tree set (20)
+Current best tree score: -581.531 / CPU time: 0.716
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Optimizing NNI: done in 0.0116692 secs using 83.09% CPU
+Optimizing NNI: done in 0.0133376 secs using 99.35% CPU
+Optimizing NNI: done in 0.0136795 secs using 85.42% CPU
+Optimizing NNI: done in 0.016483 secs using 76.33% CPU
+Optimizing NNI: done in 0.010451 secs using 60.98% CPU
+Optimizing NNI: done in 0.0238706 secs using 70.01% CPU
+Optimizing NNI: done in 0.0195594 secs using 63.69% CPU
+Optimizing NNI: done in 0.0146886 secs using 86.61% CPU
+Optimizing NNI: done in 0.0213355 secs using 76.14% CPU
+Optimizing NNI: done in 0.0103524 secs using 60.72% CPU
+BETTER TREE FOUND at iteration 30: -581.530
+Iteration 30 / LogL: -581.530 / Time: 0h:0m:2s (0h:0m:7s left)
+Optimizing NNI: done in 0.0198127 secs using 84.79% CPU
+Optimizing NNI: done in 0.0250529 secs using 87.83% CPU
+Optimizing NNI: done in 0.00933384 secs using 90.37% CPU
+Optimizing NNI: done in 0.0171789 secs using 82.27% CPU
+Optimizing NNI: done in 0.0153336 secs using 67% CPU
+Optimizing NNI: done in 0.0147656 secs using 72.03% CPU
+Optimizing NNI: done in 0.0174619 secs using 99.23% CPU
+Optimizing NNI: done in 0.0169145 secs using 82.38% CPU
+Optimizing NNI: done in 0.0120691 secs using 99.65% CPU
+Optimizing NNI: done in 0.0241054 secs using 70.57% CPU
+Iteration 40 / LogL: -581.725 / Time: 0h:0m:2s (0h:0m:5s left)
+Optimizing NNI: done in 0.0140242 secs using 78.39% CPU
+Optimizing NNI: done in 0.0142284 secs using 85.79% CPU
+Optimizing NNI: done in 0.0144446 secs using 86.42% CPU
+Optimizing NNI: done in 0.0216306 secs using 86.24% CPU
+Optimizing NNI: done in 0.0205556 secs using 85.54% CPU
+Optimizing NNI: done in 0.0223733 secs using 72.81% CPU
+BETTER TREE FOUND at iteration 46: -581.530
+Optimizing NNI: done in 0.0136333 secs using 84.28% CPU
+Optimizing NNI: done in 0.0213461 secs using 67.52% CPU
+Optimizing NNI: done in 0.0295598 secs using 75.84% CPU
+Optimizing NNI: done in 0.0144325 secs using 78.55% CPU
+Iteration 50 / LogL: -583.843 / Time: 0h:0m:2s (0h:0m:4s left)
+Optimizing NNI: done in 0.0156984 secs using 80.99% CPU
+Optimizing NNI: done in 0.0150377 secs using 79.91% CPU
+Optimizing NNI: done in 0.0192045 secs using 68.43% CPU
+Optimizing NNI: done in 0.0176277 secs using 88.76% CPU
+Optimizing NNI: done in 0.0199321 secs using 69.81% CPU
+Optimizing NNI: done in 0.0179302 secs using 88.76% CPU
+Optimizing NNI: done in 0.0144043 secs using 72.69% CPU
+Optimizing NNI: done in 0.0191485 secs using 58.14% CPU
+Optimizing NNI: done in 0.010937 secs using 81.16% CPU
+Optimizing NNI: done in 0.0142531 secs using 79.33% CPU
+Iteration 60 / LogL: -581.530 / Time: 0h:0m:2s (0h:0m:3s left)
+Optimizing NNI: done in 0.0147296 secs using 86.47% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 61: -581.307
+Optimizing NNI: done in 0.0157017 secs using 68.24% CPU
+Optimizing NNI: done in 0.0109538 secs using 72.58% CPU
+Optimizing NNI: done in 0.014833 secs using 79.05% CPU
+Optimizing NNI: done in 0.0187156 secs using 83.82% CPU
+Optimizing NNI: done in 0.0153131 secs using 67.88% CPU
+Optimizing NNI: done in 0.0134833 secs using 84.61% CPU
+BETTER TREE FOUND at iteration 67: -581.307
+Optimizing NNI: done in 0.01885 secs using 84% CPU
+Optimizing NNI: done in 0.0184971 secs using 78.64% CPU
+Optimizing NNI: done in 0.0211226 secs using 80.79% CPU
+Iteration 70 / LogL: -587.936 / Time: 0h:0m:2s (0h:0m:4s left)
+Optimizing NNI: done in 0.0192977 secs using 73.88% CPU
+Optimizing NNI: done in 0.0177027 secs using 66.2% CPU
+Optimizing NNI: done in 0.0119839 secs using 91.75% CPU
+Optimizing NNI: done in 0.014448 secs using 86.03% CPU
+Optimizing NNI: done in 0.0208499 secs using 76.55% CPU
+Optimizing NNI: done in 0.0132235 secs using 76.27% CPU
+Optimizing NNI: done in 0.0148112 secs using 73.16% CPU
+Optimizing NNI: done in 0.0168623 secs using 82.22% CPU
+Optimizing NNI: done in 0.0152479 secs using 93.42% CPU
+Optimizing NNI: done in 0.0151708 secs using 60.12% CPU
+Iteration 80 / LogL: -588.398 / Time: 0h:0m:3s (0h:0m:3s left)
+Optimizing NNI: done in 0.0180794 secs using 66.69% CPU
+Optimizing NNI: done in 0.0113272 secs using 73.36% CPU
+Optimizing NNI: done in 0.0185754 secs using 78.54% CPU
+Optimizing NNI: done in 0.0172076 secs using 76.61% CPU
+Optimizing NNI: done in 0.0191475 secs using 73.58% CPU
+Optimizing NNI: done in 0.0143322 secs using 64.71% CPU
+Optimizing NNI: done in 0.0146046 secs using 72.18% CPU
+Optimizing NNI: done in 0.0137159 secs using 70.84% CPU
+Optimizing NNI: done in 0.0180235 secs using 66.92% CPU
+Optimizing NNI: done in 0.0200683 secs using 74.86% CPU
+Iteration 90 / LogL: -581.725 / Time: 0h:0m:3s (0h:0m:2s left)
+Optimizing NNI: done in 0.0110257 secs using 70.76% CPU
+Optimizing NNI: done in 0.00716679 secs using 99.74% CPU
+Optimizing NNI: done in 0.0187044 secs using 84% CPU
+BETTER TREE FOUND at iteration 93: -581.307
+Optimizing NNI: done in 0.0242033 secs using 87.28% CPU
+Optimizing NNI: done in 0.0185067 secs using 89.43% CPU
+Optimizing NNI: done in 0.0113184 secs using 82.44% CPU
+Optimizing NNI: done in 0.0169917 secs using 70.85% CPU
+Optimizing NNI: done in 0.0143185 secs using 92.69% CPU
+BETTER TREE FOUND at iteration 98: -581.307
+Optimizing NNI: done in 0.0228893 secs using 82.31% CPU
+Optimizing NNI: done in 0.0135897 secs using 70.61% CPU
+Iteration 100 / LogL: -581.307 / Time: 0h:0m:3s (0h:0m:3s left)
+Optimizing NNI: done in 0.0113442 secs using 64.09% CPU
+Optimizing NNI: done in 0.0246836 secs using 83.73% CPU
+Optimizing NNI: done in 0.0187335 secs using 78.74% CPU
+Optimizing NNI: done in 0.0108921 secs using 72.57% CPU
+Optimizing NNI: done in 0.0110664 secs using 90.75% CPU
+Optimizing NNI: done in 0.0145788 secs using 80.1% CPU
+BETTER TREE FOUND at iteration 106: -581.306
+Optimizing NNI: done in 0.0159631 secs using 68.54% CPU
+Optimizing NNI: done in 0.0109614 secs using 90.96% CPU
+Optimizing NNI: done in 0.0148651 secs using 86.65% CPU
+Optimizing NNI: done in 0.0154187 secs using 86.4% CPU
+Iteration 110 / LogL: -585.304 / Time: 0h:0m:3s (0h:0m:3s left)
+Optimizing NNI: done in 0.0149884 secs using 99.74% CPU
+Optimizing NNI: done in 0.0138607 secs using 78.63% CPU
+Optimizing NNI: done in 0.0111909 secs using 82.3% CPU
+Optimizing NNI: done in 0.0148369 secs using 86.24% CPU
+Optimizing NNI: done in 0.0143925 secs using 91.98% CPU
+Optimizing NNI: done in 0.0144349 secs using 86.24% CPU
+Optimizing NNI: done in 0.0170614 secs using 88% CPU
+Optimizing NNI: done in 0.0171915 secs using 87.78% CPU
+Optimizing NNI: done in 0.0175149 secs using 77.05% CPU
+Optimizing NNI: done in 0.0142543 secs using 78.85% CPU
+Iteration 120 / LogL: -581.500 / Time: 0h:0m:3s (0h:0m:2s left)
+Optimizing NNI: done in 0.0143696 secs using 85.92% CPU
+Optimizing NNI: done in 0.0144717 secs using 79.46% CPU
+Optimizing NNI: done in 0.0240942 secs using 70.7% CPU
+Optimizing NNI: done in 0.0166404 secs using 52.13% CPU
+Optimizing NNI: done in 0.0143117 secs using 85.62% CPU
+Optimizing NNI: done in 0.0133872 secs using 78.1% CPU
+Optimizing NNI: done in 0.0213752 secs using 85.55% CPU
+Optimizing NNI: done in 0.017464 secs using 76.93% CPU
+Optimizing NNI: done in 0.0217499 secs using 90.9% CPU
+BETTER TREE FOUND at iteration 129: -581.306
+Optimizing NNI: done in 0.019043 secs using 73.7% CPU
+Iteration 130 / LogL: -581.516 / Time: 0h:0m:3s (0h:0m:3s left)
+Optimizing NNI: done in 0.014025 secs using 85.33% CPU
+Optimizing NNI: done in 0.0142241 secs using 93.09% CPU
+Optimizing NNI: done in 0.0198993 secs using 79.78% CPU
+Optimizing NNI: done in 0.0198536 secs using 64.69% CPU
+Optimizing NNI: done in 0.0204857 secs using 90.41% CPU
+Optimizing NNI: done in 0.0142998 secs using 85.7% CPU
+Optimizing NNI: done in 0.0159625 secs using 93.76% CPU
+Optimizing NNI: done in 0.0106244 secs using 81.65% CPU
+Optimizing NNI: done in 0.0141493 secs using 71.62% CPU
+Optimizing NNI: done in 0.0166588 secs using 94.26% CPU
+Iteration 140 / LogL: -581.306 / Time: 0h:0m:4s (0h:0m:2s left)
+Optimizing NNI: done in 0.0155602 secs using 93.1% CPU
+Optimizing NNI: done in 0.0137916 secs using 78.48% CPU
+Optimizing NNI: done in 0.020434 secs using 90.3% CPU
+Optimizing NNI: done in 0.0210077 secs using 76.12% CPU
+Optimizing NNI: done in 0.0141525 secs using 92.53% CPU
+Optimizing NNI: done in 0.0170926 secs using 71.4% CPU
+Optimizing NNI: done in 0.0135766 secs using 84.44% CPU
+Optimizing NNI: done in 0.0130565 secs using 84.39% CPU
+Optimizing NNI: done in 0.013984 secs using 71.23% CPU
+Optimizing NNI: done in 0.0104054 secs using 97.61% CPU
+Iteration 150 / LogL: -592.779 / Time: 0h:0m:4s (0h:0m:2s left)
+Optimizing NNI: done in 0.023502 secs using 70.67% CPU
+Optimizing NNI: done in 0.0104513 secs using 90.46% CPU
+Optimizing NNI: done in 0.0141311 secs using 78.42% CPU
+Optimizing NNI: done in 0.0132507 secs using 98.89% CPU
+Optimizing NNI: done in 0.0136166 secs using 85.32% CPU
+Optimizing NNI: done in 0.0139017 secs using 92.62% CPU
+Optimizing NNI: done in 0.0170862 secs using 88.11% CPU
+Optimizing NNI: done in 0.0171668 secs using 76.56% CPU
+Optimizing NNI: done in 0.0109618 secs using 63.44% CPU
+Optimizing NNI: done in 0.00446736 secs using 55.98% CPU
+Iteration 160 / LogL: -581.307 / Time: 0h:0m:4s (0h:0m:1s left)
+Optimizing NNI: done in 0.0230126 secs using 87% CPU
+Optimizing NNI: done in 0.0184452 secs using 88.71% CPU
+Optimizing NNI: done in 0.0142132 secs using 93.84% CPU
+Optimizing NNI: done in 0.0134203 secs using 47.5% CPU
+Optimizing NNI: done in 0.011273 secs using 72.93% CPU
+Optimizing NNI: done in 0.0152335 secs using 94.23% CPU
+Optimizing NNI: done in 0.0109248 secs using 90.93% CPU
+Optimizing NNI: done in 0.0171882 secs using 93.91% CPU
+Optimizing NNI: done in 0.0169871 secs using 64.7% CPU
+Optimizing NNI: done in 0.0159683 secs using 87.41% CPU
+Iteration 170 / LogL: -581.896 / Time: 0h:0m:4s (0h:0m:1s left)
+Optimizing NNI: done in 0.00977376 secs using 59.28% CPU
+Optimizing NNI: done in 0.0142139 secs using 86.58% CPU
+Optimizing NNI: done in 0.0129513 secs using 69.28% CPU
+Optimizing NNI: done in 0.0100448 secs using 69.89% CPU
+Optimizing NNI: done in 0.0206059 secs using 94.62% CPU
+Optimizing NNI: done in 0.0167487 secs using 75.44% CPU
+Optimizing NNI: done in 0.0139227 secs using 78.34% CPU
+Optimizing NNI: done in 0.0182813 secs using 83.23% CPU
+Optimizing NNI: done in 0.0148221 secs using 86.65% CPU
+Optimizing NNI: done in 0.00998397 secs using 79.87% CPU
+Iteration 180 / LogL: -582.114 / Time: 0h:0m:4s (0h:0m:1s left)
+Optimizing NNI: done in 0.0103959 secs using 70.35% CPU
+Optimizing NNI: done in 0.0182834 secs using 93.58% CPU
+Optimizing NNI: done in 0.0106796 secs using 73.03% CPU
+Optimizing NNI: done in 0.0127403 secs using 76.62% CPU
+Optimizing NNI: done in 0.0134299 secs using 92.05% CPU
+Optimizing NNI: done in 0.0131523 secs using 70.37% CPU
+Optimizing NNI: done in 0.0180789 secs using 88.38% CPU
+Optimizing NNI: done in 0.0198955 secs using 80.26% CPU
+Optimizing NNI: done in 0.0104928 secs using 99.36% CPU
+Optimizing NNI: done in 0.0217626 secs using 86.17% CPU
+Iteration 190 / LogL: -581.573 / Time: 0h:0m:4s (0h:0m:1s left)
+Optimizing NNI: done in 0.0208 secs using 84.65% CPU
+Optimizing NNI: done in 0.015729 secs using 87.56% CPU
+Optimizing NNI: done in 0.0194855 secs using 74.21% CPU
+Optimizing NNI: done in 0.0176525 secs using 82.78% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 194: -580.856
+Optimizing NNI: done in 0.0114597 secs using 99.73% CPU
+Optimizing NNI: done in 0.0205309 secs using 91.47% CPU
+Optimizing NNI: done in 0.0237529 secs using 87.44% CPU
+Optimizing NNI: done in 0.0211197 secs using 66.67% CPU
+Optimizing NNI: done in 0.0144809 secs using 99.32% CPU
+Optimizing NNI: done in 0.0171086 secs using 64.76% CPU
+Iteration 200 / LogL: -581.085 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0138556 secs using 49.51% CPU
+Optimizing NNI: done in 0.0175371 secs using 71.87% CPU
+Optimizing NNI: done in 0.0136546 secs using 91.97% CPU
+Optimizing NNI: done in 0.0172804 secs using 82.47% CPU
+Optimizing NNI: done in 0.00977978 secs using 79.87% CPU
+Optimizing NNI: done in 0.0168848 secs using 64.32% CPU
+Optimizing NNI: done in 0.0148089 secs using 92.25% CPU
+Optimizing NNI: done in 0.0101859 secs using 88.91% CPU
+Optimizing NNI: done in 0.0194415 secs using 69.32% CPU
+Optimizing NNI: done in 0.0149847 secs using 86.46% CPU
+Iteration 210 / LogL: -581.085 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0187952 secs using 73.34% CPU
+Optimizing NNI: done in 0.0139775 secs using 84.64% CPU
+BETTER TREE FOUND at iteration 212: -580.853
+Optimizing NNI: done in 0.0149247 secs using 82.56% CPU
+Optimizing NNI: done in 0.0193694 secs using 84.19% CPU
+Optimizing NNI: done in 0.0105291 secs using 81.85% CPU
+Optimizing NNI: done in 0.0195678 secs using 89.3% CPU
+Optimizing NNI: done in 0.0107118 secs using 63.25% CPU
+Optimizing NNI: done in 0.0168016 secs using 87.61% CPU
+Optimizing NNI: done in 0.0138867 secs using 78.51% CPU
+Optimizing NNI: done in 0.0173864 secs using 77.01% CPU
+Iteration 220 / LogL: -581.808 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0104715 secs using 60.84% CPU
+Optimizing NNI: done in 0.0106072 secs using 81.87% CPU
+Optimizing NNI: done in 0.0169806 secs using 70.46% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 223: -580.812
+Optimizing NNI: done in 0.0140468 secs using 85.73% CPU
+Optimizing NNI: done in 0.0102159 secs using 88.83% CPU
+Optimizing NNI: done in 0.0238298 secs using 79.3% CPU
+Optimizing NNI: done in 0.022316 secs using 68.22% CPU
+Optimizing NNI: done in 0.0171285 secs using 82.11% CPU
+Optimizing NNI: done in 0.0213785 secs using 71.54% CPU
+Optimizing NNI: done in 0.0163784 secs using 87.28% CPU
+Iteration 230 / LogL: -580.835 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0139832 secs using 85.47% CPU
+Optimizing NNI: done in 0.0171444 secs using 82.92% CPU
+Optimizing NNI: done in 0.0172264 secs using 82.01% CPU
+Optimizing NNI: done in 0.0226583 secs using 69.7% CPU
+Optimizing NNI: done in 0.01037 secs using 89.67% CPU
+Optimizing NNI: done in 0.0145724 secs using 72.82% CPU
+Optimizing NNI: done in 0.012876 secs using 91.94% CPU
+Optimizing NNI: done in 0.0170747 secs using 88.21% CPU
+Optimizing NNI: done in 0.0147692 secs using 79.71% CPU
+Optimizing NNI: done in 0.018017 secs using 83.5% CPU
+Iteration 240 / LogL: -582.061 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0104792 secs using 91.29% CPU
+Optimizing NNI: done in 0.0109376 secs using 54.57% CPU
+Optimizing NNI: done in 0.0141994 secs using 57.64% CPU
+Optimizing NNI: done in 0.010877 secs using 90.76% CPU
+Optimizing NNI: done in 0.0102514 secs using 81.36% CPU
+Optimizing NNI: done in 0.0105876 secs using 89.68% CPU
+Optimizing NNI: done in 0.020351 secs using 85.55% CPU
+Optimizing NNI: done in 0.0164917 secs using 93.4% CPU
+Optimizing NNI: done in 0.0141335 secs using 93.08% CPU
+Optimizing NNI: done in 0.017568 secs using 77.16% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 250: -580.617
+Iteration 250 / LogL: -580.617 / Time: 0h:0m:5s (0h:0m:2s left)
+Optimizing NNI: done in 0.0140597 secs using 92.58% CPU
+Optimizing NNI: done in 0.0141654 secs using 70.38% CPU
+BETTER TREE FOUND at iteration 252: -580.616
+Optimizing NNI: done in 0.0179956 secs using 84.26% CPU
+Optimizing NNI: done in 0.0317472 secs using 80.8% CPU
+Optimizing NNI: done in 0.0131235 secs using 77.62% CPU
+Optimizing NNI: done in 0.0109053 secs using 81.27% CPU
+Optimizing NNI: done in 0.017223 secs using 59.63% CPU
+Optimizing NNI: done in 0.020202 secs using 84.63% CPU
+Optimizing NNI: done in 0.0183994 secs using 78.21% CPU
+Optimizing NNI: done in 0.0211197 secs using 84.65% CPU
+Iteration 260 / LogL: -582.683 / Time: 0h:0m:6s (0h:0m:2s left)
+Optimizing NNI: done in 0.00338716 secs using 98.84% CPU
+Optimizing NNI: done in 0.01057 secs using 81.61% CPU
+Optimizing NNI: done in 0.00929399 secs using 88.49% CPU
+Optimizing NNI: done in 0.0215395 secs using 86.19% CPU
+Optimizing NNI: done in 0.0298239 secs using 83.23% CPU
+Optimizing NNI: done in 0.0102402 secs using 99.53% CPU
+Optimizing NNI: done in 0.0153587 secs using 93.91% CPU
+BETTER TREE FOUND at iteration 267: -580.616
+Optimizing NNI: done in 0.0174154 secs using 77.37% CPU
+Optimizing NNI: done in 0.0160089 secs using 99.51% CPU
+Optimizing NNI: done in 0.0206242 secs using 90.18% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 270: -580.591
+Iteration 270 / LogL: -580.591 / Time: 0h:0m:6s (0h:0m:2s left)
+Optimizing NNI: done in 0.0145074 secs using 45.27% CPU
+Optimizing NNI: done in 0.0154118 secs using 60.53% CPU
+Optimizing NNI: done in 0.0150563 secs using 79.81% CPU
+Optimizing NNI: done in 0.0185552 secs using 77.98% CPU
+Optimizing NNI: done in 0.0292968 secs using 86.27% CPU
+Optimizing NNI: done in 0.0208083 secs using 85.8% CPU
+Optimizing NNI: done in 0.0182045 secs using 82.99% CPU
+Optimizing NNI: done in 0.0110443 secs using 91.49% CPU
+Optimizing NNI: done in 0.0152782 secs using 86.95% CPU
+Optimizing NNI: done in 0.0221736 secs using 95.43% CPU
+Iteration 280 / LogL: -582.878 / Time: 0h:0m:6s (0h:0m:2s left)
+Optimizing NNI: done in 0.0134249 secs using 69.96% CPU
+Optimizing NNI: done in 0.0151459 secs using 80.15% CPU
+Optimizing NNI: done in 0.013964 secs using 64.08% CPU
+BETTER TREE FOUND at iteration 283: -580.591
+Optimizing NNI: done in 0.0152754 secs using 74.37% CPU
+Optimizing NNI: done in 0.0211225 secs using 94.85% CPU
+Optimizing NNI: done in 0.0146715 secs using 80.06% CPU
+Optimizing NNI: done in 0.0114625 secs using 82.01% CPU
+Optimizing NNI: done in 0.0146432 secs using 79.91% CPU
+Optimizing NNI: done in 0.0249278 secs using 75.79% CPU
+BETTER TREE FOUND at iteration 289: -580.590
+Optimizing NNI: done in 0.0139489 secs using 78.35% CPU
+Iteration 290 / LogL: -580.591 / Time: 0h:0m:6s (0h:0m:2s left)
+Optimizing NNI: done in 0.0174518 secs using 82.26% CPU
+Optimizing NNI: done in 0.0181854 secs using 72.08% CPU
+Optimizing NNI: done in 0.0179839 secs using 77.73% CPU
+Optimizing NNI: done in 0.0147091 secs using 93.02% CPU
+Optimizing NNI: done in 0.0183778 secs using 78.53% CPU
+Optimizing NNI: done in 0.0157029 secs using 62.16% CPU
+Optimizing NNI: done in 0.018011 secs using 82.82% CPU
+Optimizing NNI: done in 0.0106035 secs using 80.97% CPU
+Optimizing NNI: done in 0.015848 secs using 92.71% CPU
+BETTER TREE FOUND at iteration 299: -580.590
+Optimizing NNI: done in 0.0148397 secs using 71.97% CPU
+Iteration 300 / LogL: -580.590 / Time: 0h:0m:6s (0h:0m:2s left)
+Optimizing NNI: done in 0.0197914 secs using 79.32% CPU
+Optimizing NNI: done in 0.0149306 secs using 93.13% CPU
+Optimizing NNI: done in 0.0186784 secs using 78.58% CPU
+Optimizing NNI: done in 0.0151404 secs using 80.1% CPU
+Optimizing NNI: done in 0.0184672 secs using 67.96% CPU
+Optimizing NNI: done in 0.00525633 secs using 98.97% CPU
+Optimizing NNI: done in 0.0105271 secs using 91.15% CPU
+Optimizing NNI: done in 0.011253 secs using 81.67% CPU
+Optimizing NNI: done in 0.0259712 secs using 88.39% CPU
+Optimizing NNI: done in 0.0215291 secs using 76.37% CPU
+Iteration 310 / LogL: -581.553 / Time: 0h:0m:7s (0h:0m:2s left)
+Optimizing NNI: done in 0.0148594 secs using 33% CPU
+Optimizing NNI: done in 0.0154444 secs using 73.66% CPU
+Optimizing NNI: done in 0.0214061 secs using 66.95% CPU
+Optimizing NNI: done in 0.0148115 secs using 79.84% CPU
+Optimizing NNI: done in 0.0182365 secs using 78.53% CPU
+Optimizing NNI: done in 0.0185732 secs using 77.9% CPU
+Optimizing NNI: done in 0.0111338 secs using 63.72% CPU
+Optimizing NNI: done in 0.0146085 secs using 66.02% CPU
+Optimizing NNI: done in 0.0195885 secs using 79.89% CPU
+Optimizing NNI: done in 0.0131115 secs using 93.2% CPU
+Iteration 320 / LogL: -580.590 / Time: 0h:0m:7s (0h:0m:1s left)
+Optimizing NNI: done in 0.0171107 secs using 81.91% CPU
+Optimizing NNI: done in 0.01947 secs using 94.64% CPU
+Optimizing NNI: done in 0.0102285 secs using 62.05% CPU
+Optimizing NNI: done in 0.0142731 secs using 64.68% CPU
+Optimizing NNI: done in 0.0180225 secs using 83.33% CPU
+Optimizing NNI: done in 0.0130024 secs using 92.24% CPU
+Optimizing NNI: done in 0.0180645 secs using 72.25% CPU
+Optimizing NNI: done in 0.0114211 secs using 74.34% CPU
+Optimizing NNI: done in 0.0106103 secs using 99.19% CPU
+Optimizing NNI: done in 0.0187087 secs using 62.67% CPU
+Iteration 330 / LogL: -581.917 / Time: 0h:0m:7s (0h:0m:1s left)
+Optimizing NNI: done in 0.0111235 secs using 90.6% CPU
+Optimizing NNI: done in 0.0158395 secs using 81.01% CPU
+Optimizing NNI: done in 0.0112287 secs using 83.06% CPU
+Optimizing NNI: done in 0.0210348 secs using 73.9% CPU
+Optimizing NNI: done in 0.0104427 secs using 60.87% CPU
+Optimizing NNI: done in 0.0155292 secs using 86.86% CPU
+Optimizing NNI: done in 0.0212023 secs using 76.59% CPU
+Optimizing NNI: done in 0.0171769 secs using 76.56% CPU
+Optimizing NNI: done in 0.0107623 secs using 89.49% CPU
+Optimizing NNI: done in 0.0227608 secs using 73.77% CPU
+Iteration 340 / LogL: -580.590 / Time: 0h:0m:7s (0h:0m:1s left)
+Optimizing NNI: done in 0.014543 secs using 92.96% CPU
+Optimizing NNI: done in 0.0174061 secs using 88.35% CPU
+Optimizing NNI: done in 0.0188906 secs using 73.02% CPU
+Optimizing NNI: done in 0.0139631 secs using 72.15% CPU
+Optimizing NNI: done in 0.0197293 secs using 78.98% CPU
+Optimizing NNI: done in 0.0151438 secs using 80.25% CPU
+Optimizing NNI: done in 0.019991 secs using 75.41% CPU
+Optimizing NNI: done in 0.0134206 secs using 77.06% CPU
+Optimizing NNI: done in 0.0131863 secs using 69.23% CPU
+Optimizing NNI: done in 0.0149767 secs using 79.86% CPU
+Iteration 350 / LogL: -584.290 / Time: 0h:0m:7s (0h:0m:1s left)
+Optimizing NNI: done in 0.0183788 secs using 73.15% CPU
+Optimizing NNI: done in 0.0103918 secs using 80.27% CPU
+Optimizing NNI: done in 0.0149219 secs using 79.9% CPU
+Optimizing NNI: done in 0.0103725 secs using 80.11% CPU
+Optimizing NNI: done in 0.0175498 secs using 88.89% CPU
+Optimizing NNI: done in 0.010471 secs using 91.35% CPU
+Optimizing NNI: done in 0.0142864 secs using 85.72% CPU
+Optimizing NNI: done in 0.0133706 secs using 77.17% CPU
+Optimizing NNI: done in 0.0131159 secs using 85.6% CPU
+Optimizing NNI: done in 0.0108303 secs using 90.16% CPU
+Iteration 360 / LogL: -580.590 / Time: 0h:0m:7s (0h:0m:0s left)
+Optimizing NNI: done in 0.0142044 secs using 65.03% CPU
+Optimizing NNI: done in 0.0183915 secs using 78.57% CPU
+Optimizing NNI: done in 0.00571238 secs using 63.48% CPU
+Optimizing NNI: done in 0.0212598 secs using 85.2% CPU
+Optimizing NNI: done in 0.0103706 secs using 71.25% CPU
+Optimizing NNI: done in 0.019616 secs using 84.8% CPU
+Optimizing NNI: done in 0.0104563 secs using 80.33% CPU
+Optimizing NNI: done in 0.0131708 secs using 70.44% CPU
+Optimizing NNI: done in 0.0104407 secs using 98.78% CPU
+Optimizing NNI: done in 0.00935777 secs using 78.72% CPU
+Iteration 370 / LogL: -580.590 / Time: 0h:0m:8s (0h:0m:0s left)
+Optimizing NNI: done in 0.0153625 secs using 79.99% CPU
+Optimizing NNI: done in 0.0184682 secs using 88.68% CPU
+Optimizing NNI: done in 0.0113746 secs using 90.29% CPU
+Optimizing NNI: done in 0.0136031 secs using 78.56% CPU
+Optimizing NNI: done in 0.0134569 secs using 77.13% CPU
+Optimizing NNI: done in 0.0216841 secs using 95.36% CPU
+Optimizing NNI: done in 0.0188649 secs using 89.22% CPU
+Optimizing NNI: done in 0.0144408 secs using 93.22% CPU
+Optimizing NNI: done in 0.0163674 secs using 69.75% CPU
+Optimizing NNI: done in 0.0185151 secs using 88.91% CPU
+Iteration 380 / LogL: -589.509 / Time: 0h:0m:8s (0h:0m:0s left)
+Optimizing NNI: done in 0.0189815 secs using 84.75% CPU
+Optimizing NNI: done in 0.0127784 secs using 91.49% CPU
+Optimizing NNI: done in 0.0170036 secs using 77.13% CPU
+Optimizing NNI: done in 0.0184591 secs using 72.49% CPU
+Optimizing NNI: done in 0.0213725 secs using 90.24% CPU
+Optimizing NNI: done in 0.0139156 secs using 86.59% CPU
+Optimizing NNI: done in 0.010697 secs using 90.28% CPU
+Optimizing NNI: done in 0.0138414 secs using 77.93% CPU
+Optimizing NNI: done in 0.0184351 secs using 82.94% CPU
+Optimizing NNI: done in 0.023838 secs using 87.45% CPU
+Iteration 390 / LogL: -580.590 / Time: 0h:0m:8s (0h:0m:0s left)
+Optimizing NNI: done in 0.013844 secs using 71.11% CPU
+BETTER TREE FOUND at iteration 391: -580.589
+Optimizing NNI: done in 0.0181806 secs using 88.62% CPU
+Optimizing NNI: done in 0.0156979 secs using 74.53% CPU
+Optimizing NNI: done in 0.0105933 secs using 91.23% CPU
+Optimizing NNI: done in 0.0142796 secs using 85.66% CPU
+Optimizing NNI: done in 0.0139012 secs using 71.4% CPU
+Optimizing NNI: done in 0.0176784 secs using 82.99% CPU
+Optimizing NNI: done in 0.0208899 secs using 71.42% CPU
+Optimizing NNI: done in 0.0147761 secs using 79.97% CPU
+Optimizing NNI: done in 0.0178991 secs using 83.19% CPU
+Iteration 400 / LogL: -580.789 / Time: 0h:0m:8s (0h:0m:1s left)
+Optimizing NNI: done in 0.0104834 secs using 80.27% CPU
+Optimizing NNI: done in 0.0134626 secs using 78.07% CPU
+Optimizing NNI: done in 0.0173236 secs using 71.57% CPU
+Optimizing NNI: done in 0.0107255 secs using 61.71% CPU
+Optimizing NNI: done in 0.0139108 secs using 78.34% CPU
+Optimizing NNI: done in 0.0160936 secs using 75.84% CPU
+Optimizing NNI: done in 0.0182048 secs using 66.89% CPU
+Optimizing NNI: done in 0.00720651 secs using 99.73% CPU
+Optimizing NNI: done in 0.0141511 secs using 71.57% CPU
+Optimizing NNI: done in 0.0174797 secs using 71.69% CPU
+Iteration 410 / LogL: -582.011 / Time: 0h:0m:8s (0h:0m:1s left)
+Optimizing NNI: done in 0.0182193 secs using 88.61% CPU
+Optimizing NNI: done in 0.0102833 secs using 52.3% CPU
+Optimizing NNI: done in 0.0133086 secs using 99.15% CPU
+Optimizing NNI: done in 0.0137863 secs using 64.5% CPU
+Optimizing NNI: done in 0.0145761 secs using 72.38% CPU
+Optimizing NNI: done in 0.022183 secs using 81.94% CPU
+Optimizing NNI: done in 0.0137508 secs using 93.27% CPU
+Optimizing NNI: done in 0.0178797 secs using 83.45% CPU
+Optimizing NNI: done in 0.0159233 secs using 74.8% CPU
+Optimizing NNI: done in 0.0209998 secs using 81.05% CPU
+Iteration 420 / LogL: -580.590 / Time: 0h:0m:8s (0h:0m:1s left)
+Optimizing NNI: done in 0.00993698 secs using 89.8% CPU
+Optimizing NNI: done in 0.0137882 secs using 93.02% CPU
+Optimizing NNI: done in 0.0143363 secs using 50.86% CPU
+Optimizing NNI: done in 0.021969 secs using 81.54% CPU
+Optimizing NNI: done in 0.0171658 secs using 64.73% CPU
+Optimizing NNI: done in 0.0146058 secs using 65.04% CPU
+Optimizing NNI: done in 0.019972 secs using 94.77% CPU
+Optimizing NNI: done in 0.0140677 secs using 69.95% CPU
+Optimizing NNI: done in 0.0101142 secs using 81.4% CPU
+Optimizing NNI: done in 0.0124727 secs using 83.45% CPU
+Iteration 430 / LogL: -580.590 / Time: 0h:0m:9s (0h:0m:1s left)
+Optimizing NNI: done in 0.0167506 secs using 76.3% CPU
+Optimizing NNI: done in 0.0141763 secs using 71.41% CPU
+Optimizing NNI: done in 0.017266 secs using 82.26% CPU
+Optimizing NNI: done in 0.0211843 secs using 76.25% CPU
+Optimizing NNI: done in 0.0181503 secs using 77.84% CPU
+Optimizing NNI: done in 0.0137763 secs using 85.52% CPU
+Optimizing NNI: done in 0.0199728 secs using 79.72% CPU
+Optimizing NNI: done in 0.0197659 secs using 75.09% CPU
+Optimizing NNI: done in 0.0169667 secs using 82.36% CPU
+Optimizing NNI: done in 0.0164371 secs using 69.2% CPU
+Iteration 440 / LogL: -580.819 / Time: 0h:0m:9s (0h:0m:1s left)
+Optimizing NNI: done in 0.0145348 secs using 79.9% CPU
+Optimizing NNI: done in 0.0136612 secs using 70.36% CPU
+Optimizing NNI: done in 0.0105642 secs using 81.54% CPU
+Optimizing NNI: done in 0.0175682 secs using 77.12% CPU
+Optimizing NNI: done in 0.0100951 secs using 81.39% CPU
+Optimizing NNI: done in 0.0168253 secs using 64.46% CPU
+Optimizing NNI: done in 0.0134832 secs using 84.51% CPU
+Optimizing NNI: done in 0.0210857 secs using 76.03% CPU
+Optimizing NNI: done in 0.0143339 secs using 85.88% CPU
+Optimizing NNI: done in 0.0166197 secs using 75.96% CPU
+Iteration 450 / LogL: -582.622 / Time: 0h:0m:9s (0h:0m:0s left)
+Optimizing NNI: done in 0.0144808 secs using 92.43% CPU
+Optimizing NNI: done in 0.0127065 secs using 84.41% CPU
+Optimizing NNI: done in 0.0100707 secs using 70.16% CPU
+Optimizing NNI: done in 0.0173293 secs using 77.4% CPU
+Optimizing NNI: done in 0.0200952 secs using 94.66% CPU
+Optimizing NNI: done in 0.0172726 secs using 76.71% CPU
+Optimizing NNI: done in 0.0108577 secs using 91.1% CPU
+Optimizing NNI: done in 0.0171627 secs using 70.75% CPU
+Optimizing NNI: done in 0.0133404 secs using 85.57% CPU
+Optimizing NNI: done in 0.0173418 secs using 82.29% CPU
+Iteration 460 / LogL: -586.156 / Time: 0h:0m:9s (0h:0m:0s left)
+Optimizing NNI: done in 0.014084 secs using 85.49% CPU
+Optimizing NNI: done in 0.0131515 secs using 84.38% CPU
+Optimizing NNI: done in 0.0136622 secs using 69.78% CPU
+Optimizing NNI: done in 0.0113213 secs using 56.14% CPU
+Optimizing NNI: done in 0.0133499 secs using 77.62% CPU
+Optimizing NNI: done in 0.010868 secs using 72.54% CPU
+Optimizing NNI: done in 0.0102534 secs using 70.52% CPU
+Optimizing NNI: done in 0.0184022 secs using 77.57% CPU
+Optimizing NNI: done in 0.0107057 secs using 90.72% CPU
+Optimizing NNI: done in 0.0145471 secs using 99.75% CPU
+Iteration 470 / LogL: -580.590 / Time: 0h:0m:9s (0h:0m:0s left)
+Optimizing NNI: done in 0.020525 secs using 80.21% CPU
+Optimizing NNI: done in 0.019595 secs using 79.32% CPU
+Optimizing NNI: done in 0.0172335 secs using 65.59% CPU
+Optimizing NNI: done in 0.0189728 secs using 94.28% CPU
+Optimizing NNI: done in 0.0230375 secs using 69.42% CPU
+Optimizing NNI: done in 0.0105713 secs using 81.51% CPU
+Optimizing NNI: done in 0.0218356 secs using 81.77% CPU
+Optimizing NNI: done in 0.0176936 secs using 88.89% CPU
+Optimizing NNI: done in 0.0140793 secs using 57.4% CPU
+Optimizing NNI: done in 0.0174062 secs using 65.14% CPU
+Iteration 480 / LogL: -584.884 / Time: 0h:0m:9s (0h:0m:0s left)
+Optimizing NNI: done in 0.0142561 secs using 85.73% CPU
+Optimizing NNI: done in 0.0139315 secs using 70.67% CPU
+Optimizing NNI: done in 0.0104466 secs using 71.8% CPU
+Optimizing NNI: done in 0.0178271 secs using 77.52% CPU
+Optimizing NNI: done in 0.0170545 secs using 58.97% CPU
+Optimizing NNI: done in 0.0144426 secs using 65.83% CPU
+Optimizing NNI: done in 0.0158907 secs using 81.22% CPU
+Optimizing NNI: done in 0.0182605 secs using 88.64% CPU
+Optimizing NNI: done in 0.0167593 secs using 64.36% CPU
+Optimizing NNI: done in 0.0177005 secs using 55.05% CPU
+Iteration 490 / LogL: -588.335 / Time: 0h:0m:10s (0h:0m:0s left)
+Optimizing NNI: done in 0.0174505 secs using 77.38% CPU
+Optimizing NNI: done in 0.0157155 secs using 93.19% CPU
+TREE SEARCH COMPLETED AFTER 492 ITERATIONS / Time: 0h:0m:10s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -580.589
+Optimal log-likelihood: -580.588
+Rate parameters:  A-C: 1.00000  A-G: 8.40276  A-T: 1.00000  C-G: 1.00000  C-T: 8.40276  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.256  G: 0.246  T: 0.320
+Site proportion and rates:  (0.944,0.191) (0.056,14.575)
+Parameters optimization took 1 rounds (0.004 sec)
+BEST SCORE FOUND : -580.588
+Total tree length: 0.128
+
+Total number of iterations: 492
+CPU time used for tree search: 6.920 sec (0h:0m:6s)
+Wall-clock time used for tree search: 8.848 sec (0h:0m:8s)
+Total CPU time used: 7.797 sec (0h:0m:7s)
+Total wall-clock time used: 10.114 sec (0h:0m:10s)
+
+Analysis results written to: 
+  IQ-TREE report:                /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta.iqtree
+  Maximum-likelihood tree:       /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta.treefile
+  Likelihood distances:          /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta.mldist
+  Screen log file:               /data/putnamlab/estrand/SymPortal/outputs/analyses/5/20220119T075742/between_sample_distances/D/clade_D_seqs.aligned.fasta.log
+
+Date and Time: Wed Jan 19 08:02:03 2022
