@@ -1,0 +1,176 @@
+---
+title: "ITS2.Rmd"
+author: "Emma Strand"
+date: "1/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ITS2 Analysis 
+
+Complete the following workflow in terminal using SymPortal before starting this R script: [Emma Strand Notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-14-KBay-Bleaching-Pairs-ITS2-Analysis-Pipeline.md#Troubleshooting).
+
+#### Load packages 
+
+```{r}
+library(plyr)
+library(dplyr) # needs to be loaded after plyr
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(vegan)
+library(ggh4x)
+library(ggfortify)
+library(ggtext)
+```
+
+
+#### Read in metadata file 
+
+This file was created during the above workflow. Sample ID is the ID given during sequencing. ColonyID is the ID given during field work and what the coral is tagged as. 
+
+```{r}
+metadata <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/metadata/metadata.csv", header = TRUE)
+```
+
+
+## Type Profile Level
+
+#### Read in Type Profile dataframes. SymPortal outputs both absolute and relative abundance data as text files. 
+
+**Relative abundance** 
+
+```{r}
+relative.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/processed_data/20220119T075742/its2_type_profiles/5_BleachingPairs_analysis_20220119T075742.profiles.relative.abund_and_meta.txt", sep = "\t", dec = ".", na.strings=c("","NA"))
+
+relative.abundance <- relative.abundance.raw %>% dplyr::rename(Sample.ID = X) %>% dplyr::rename(`C31/C17d-C21-C21ac` = X6) %>%
+  dplyr::rename(`C31-C17d-C21-C31.1-C31a-C17e` = X7) %>% dplyr::rename(`C31-C17d-C31.1-C21-C31a-1373` = X8) %>% dplyr::rename(`D1-D4-D6-D1ab` = X9) %>%
+  filter(!is.na(Sample.ID))
+
+relative.abundance <- full_join(relative.abundance, metadata, by = "Sample.ID") %>%
+  gather(Type.Profile, Relative.Abundance, 3:6)
+
+relative.abundance$Relative.Abundance <- as.numeric(relative.abundance$Relative.Abundance)
+relative.abundance$ColonyID <- as.character(relative.abundance$ColonyID)
+
+relative.abundance <- relative.abundance %>% unite(Group, ColonyID, Timepoint, sep = " ", remove = FALSE)
+relative.abundance <- relative.abundance %>% unite(Big.Group, Bleach, Group, sep = " ", remove = FALSE)
+```
+
+**Absolute abundance** 
+
+```{r}
+absolute.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/processed_data/20220119T075742/its2_type_profiles/5_BleachingPairs_analysis_20220119T075742.profiles.absolute.abund_and_meta.txt", header = TRUE, sep = "\t", dec = ".", na.strings=c("","NA"))
+
+absolute.abundance <- absolute.abundance.raw %>% dplyr::rename(Sample.ID = X) %>% dplyr::rename(`C31/C17d-C21-C21ac` = X6) %>%
+  dplyr::rename(`C31-C17d-C21-C31.1-C31a-C17e` = X7) %>% dplyr::rename(`C31-C17d-C31.1-C21-C31a-1373` = X8) %>% dplyr::rename(`D1-D4-D6-D1ab` = X9) %>%
+  filter(!is.na(Sample.ID))
+```
+
+#### Plotting 
+
+**Relative abundance** 
+
+Plotting altgoether. 
+
+```{r}
+#cols <- c("deepskyblue", "darkblue", "cyan2", "darkmagenta")
+
+ggplot(data = relative.abundance, mapping = aes(x = Bleach, y = Relative.Abundance, fill = Type.Profile)) +
+    geom_bar(position="fill", stat="identity") +
+    ylab("Relative Abundance") +
+    facet_grid(~Timepoint) +
+    #scale_fill_manual(values = cols) +
+    labs(x = "Phenotype") +
+    theme_classic()+
+    theme(axis.text.x = element_text(size=rel(1), vjust = 0.3, hjust = 0.3)) +
+    theme(legend.title = element_text(size = 6), 
+               legend.text = element_text(size = 4))
+
+ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.blch.status.pdf")
+
+ggplot(data = relative.abundance, mapping = aes(x = Big.Group, y = Relative.Abundance, fill = Type.Profile)) +
+    geom_bar(position="fill", stat="identity") +
+    ylab("Relative Abundance") +
+    #facet_grid(~Bleach) +
+    #scale_fill_manual(values = cols) +
+    labs(x = "Colony ID", title = "All samples by ID #. Timepoints next to each other") +
+    theme_classic()+
+    theme(axis.text.x = element_text(size=rel(1), angle = 90, vjust = 0.3, hjust = 0.3)) +
+    theme(legend.title = element_text(size = 6), 
+               legend.text = element_text(size = 4))
+
+ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.blch.all.pdf")
+
+ggplot(relative.abundance, aes(x = ColonyID, y = Type.Profile)) + 
+  geom_point(aes(size = Relative.Abundance, fill = Type.Profile), alpha = 0.75, shape = 21) + 
+  scale_size_continuous(limits = c(0.000001, 100), range = c(1,17), breaks = c(1,25,50,100)) + 
+  facet_nested_wrap(facets =  vars(Bleach, Timepoint), nest_line = TRUE) + 
+  labs(x = "", y = "", size = "Relative Abundance (%)", fill = "")  + 
+  theme(legend.key=element_blank(), 
+        #strip.background = element_rect(color="black", fill="white", size=0.5, linetype="solid"),
+        strip.background = element_blank(),
+        ggh4x.facet.nestline = element_line(colour = "black"),
+        strip.text = element_markdown(size = 12, lineheight = 1.1),
+        axis.text.x = element_text(colour = "black", size = 12, angle = 90, vjust = 0.3, hjust = 1), 
+        axis.text.y = element_text(colour = "black", size = 11), 
+        legend.text = element_text(size = 10, face ="bold", colour ="black"), 
+        legend.title = element_text(size = 12, face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 0.5), 
+        legend.position = "bottom")
+
+ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.bubble.pdf")
+```
+
+Splitting the data frame to plot separately.  
+
+```{r}
+bleach <- relative.abundance %>% subset(Bleach = "Bleach")
+non.bleach <- relative.abundance %>% subset(Bleach = "Non-bleach")
+
+ggplot(data = bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
+    geom_bar(position="fill", stat="identity") +
+    ylab("Relative Abundance") +
+    #facet_grid(~Bleach) +
+    #scale_fill_manual(values = cols) +
+    labs(x = "Colony ID", title = "Bleached Phenotype") +
+    theme_classic()+
+    theme(axis.text.x = element_text(size=rel(1), angle = 90, vjust = 0.3, hjust = 0.3)) +
+    theme(legend.title = element_text(size = 6), 
+               legend.text = element_text(size = 4))
+
+ggplot(data = non.bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
+    geom_bar(position="fill", stat="identity") +
+    ylab("Relative Abundance") +
+    #facet_grid(~Bleach) +
+    #scale_fill_manual(values = cols) +
+    labs(x = "Colony ID", title = "Tolerant (Non-Bleached) Phenotype") +
+    theme_classic()+
+    theme(axis.text.x = element_text(size=rel(1), angle = 90, vjust = 0.3, hjust = 0.3)) +
+    theme(legend.title = element_text(size = 6), 
+               legend.text = element_text(size = 4))
+
+ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.ind.stitched.pdf", width = 11, height = 8, units = c("in"))
+```
+
+
+
+
+
+
+## Sequence ID Level 
+
+I read this dataframe in to check if WSH123 had any sequences at all. It did not. 
+
+```{r}
+seq.rel.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/processed_data/20220119T075742/post_med_seqs/5_BleachingPairs_analysis_20220119T075742.seqs.relative.abund_and_meta.txt", sep = "\t", dec = ".", na.strings=c("","NA"))
+```
+
+
+
+
+
+
