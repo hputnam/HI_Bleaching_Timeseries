@@ -25,6 +25,7 @@ library(vegan)
 library(ggh4x)
 library(ggfortify)
 library(ggtext)
+library(ggpubr)
 ```
 
 
@@ -128,10 +129,10 @@ ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.bubble.pdf
 Splitting the data frame to plot separately.  
 
 ```{r}
-bleach <- relative.abundance %>% subset(Bleach = "Bleach")
-non.bleach <- relative.abundance %>% subset(Bleach = "Non-bleach")
+bleach <- relative.abundance %>% subset(Bleach == "Bleach")
+non.bleach <- relative.abundance %>% subset(Bleach == "Non-bleach")
 
-ggplot(data = bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
+bleach.plot <- ggplot(data = bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
     geom_bar(position="fill", stat="identity") +
     ylab("Relative Abundance") +
     #facet_grid(~Bleach) +
@@ -142,7 +143,7 @@ ggplot(data = bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Ty
     theme(legend.title = element_text(size = 6), 
                legend.text = element_text(size = 4))
 
-ggplot(data = non.bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
+nonbleach.plot <- ggplot(data = non.bleach, mapping = aes(x = Group, y = Relative.Abundance, fill = Type.Profile)) +
     geom_bar(position="fill", stat="identity") +
     ylab("Relative Abundance") +
     #facet_grid(~Bleach) +
@@ -153,12 +154,11 @@ ggplot(data = non.bleach, mapping = aes(x = Group, y = Relative.Abundance, fill 
     theme(legend.title = element_text(size = 6), 
                legend.text = element_text(size = 4))
 
-ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.ind.stitched.pdf", width = 11, height = 8, units = c("in"))
+phenotype <- ggarrange(bleach.plot, nonbleach.plot, ncol = 1, nrow = 2)
+phenotype
+
+ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.ind.stitched.pdf", phenotype, width = 8, height = 12, units = c("in"))
 ```
-
-
-
-
 
 
 ## Sequence ID Level 
