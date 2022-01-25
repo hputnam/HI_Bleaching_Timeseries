@@ -22,7 +22,8 @@ DNA RNA Duet Extractions [online notebook post](https://emmastrand.github.io/Emm
 Pico Methyl Prep for WGBS [online notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-05-18-KBay-Dec-July-2019-WGBS.md).  
 RNASeq prep can be found in the master molecular spreadsheet linked below.    
 16S sequencing Processing [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2021-11-09-KBay-Bleaching-Pairs-16S-Processing.md) and [google spreadsheet from processing](https://docs.google.com/spreadsheets/d/1hFIY0g74x_yjGrz7F8n_IFccVfC5TheEPZtd7_je3uI/edit#gid=1693868430).      
-16S pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-07-KBay-Pairs-16S-Analysis-Pipeline.md).  
+16S QIIME 2 pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-07-KBay-Pairs-16S-Analysis-Pipeline.md).  
+16S Mothur pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-24-KBay-Bleached-Pairs-16S-Analysis-Mothur.md).   
 ITS2 sequencing processing [notebook post](https://github.com/kevinhwong1/KevinHWong_Notebook/blob/master/_posts/2021-11-09-20211109-ITS2-KW-AH-ES-samples.md) and [google spreadsheet from processing](https://docs.google.com/spreadsheets/d/1Zs6nKV5QTHoSMigXAZXgNoiaDMglZ9uycr6kK0upcTU/edit#gid=1607182602).    
 ITS2 sequencing pipeline/analysis [notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-14-KBay-Bleaching-Pairs-ITS2-Analysis-Pipeline.md).  
 
