@@ -80,10 +80,10 @@ Plotting altgoether.
 ```{r}
 #cols <- c("deepskyblue", "darkblue", "cyan2", "darkmagenta")
 
-ggplot(data = relative.abundance, mapping = aes(x = Bleach, y = Relative.Abundance, fill = Type.Profile)) +
+ggplot(data = relative.abundance, mapping = aes(x = Timepoint, y = Relative.Abundance, fill = Type.Profile)) +
     geom_bar(position="fill", stat="identity") +
     ylab("Relative Abundance") +
-    facet_grid(~Timepoint) +
+    facet_grid(~Bleach) +
     #scale_fill_manual(values = cols) +
     labs(x = "Phenotype") +
     theme_classic()+
