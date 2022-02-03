@@ -11,7 +11,8 @@ Instructions for shipping in [field logistics doc](https://github.com/hputnam/HI
 WGBS data:  
 16S data: ../../data/putnamlab/shared/ES_BP_16S      
 ITS2 data: ../../data/putnamlab/shared/ES_BP_ITS2      
-RNASeq data:  
+RNASeq data: /data/putnamlab/KITT/hputnam/20220203_BleachedPairs_RNASeq  
+- This dataset is huge (~30  million reads per sample for 40 samples) so probably best to symlink to this folder. 
 
 *Insert public database links once uploaded (i.e. NCBI, OSF).*
 
