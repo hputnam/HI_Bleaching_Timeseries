@@ -1,0 +1,313 @@
+---
+title: "16S.Rmd"
+author: "Emma Strand"
+date: "2/4/2022"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+  pdf_document:
+    keep_tex: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+Set up workspace, set options, and load required packages. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+## install packages if you dont already have them in your library
+if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
+if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
+if ("cowplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('cowplot') 
+if ("janitor" %in% rownames(installed.packages()) == 'FALSE') install.packages('janitor') 
+if ("car" %in% rownames(installed.packages()) == 'FALSE') install.packages('car') 
+if ("phyloseq" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('phyloseq') 
+if ("stringr" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('stringr')
+if ("ape" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ape') 
+if ("DESeq2" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('DESeq2') 
+if ("microViz" %in% rownames(installed.packages()) == 'FALSE') devtools::install_github("david-barnett/microViz@0.9.0") 
+if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan') 
+#load packages
+library("ggplot2")
+library('cowplot')
+library("tidyverse")
+library("janitor")
+library("car")
+library("phyloseq")
+library("stringr")
+library("ape")
+library("DESeq2")
+library("microViz")
+library("vegan")
+library(plyr)
+library(dplyr)
+library(stringr)
+```
+
+# Load Data 
+
+Import OTU and taxonomy table. 
+
+```{r}
+otu.full<-read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/mothur_output/kbay.opti_mcc.shared", sep='\t', header=TRUE)
+taxonomy.raw<-read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/mothur_output/kbay.taxonomy", sep='\t', header=TRUE)
+
+## used write csv to be able to open this file in excel and edit the columns 
+# write.csv(taxonomy.raw,"~/MyProjects/HI_Bleaching_Timeseries/data/16S/mothur_output/kbay.taxonomy.csv", row.names = FALSE)
+## Within excel, used text to column function to separate the taxonomy column into 6
+
+taxonomy<-read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/16S/mothur_output/kbay.taxonomy.csv", sep=',', header=TRUE)
+```
+
+Load sample information.
+```{r}
+metadata.raw <- read.table("~/MyProjects/HI_Bleaching_Timeseries/data/16S/metadata/metadata.txt", sep='\t', header=FALSE) %>%
+  dplyr::rename(sample = V1) %>% dplyr::rename(colony.id = V2) %>% dplyr::rename(timepoint = V3) %>% select(-V4,-V5,-V6) %>% dplyr::rename(bleach = V7) %>%
+  unite(group, timepoint, bleach, remove = FALSE, sep = " ")
+
+metadata <- metadata.raw
+rownames(metadata) <- metadata$sample
+
+metadata <- metadata %>% select(!sample)
+```
+
+Set default plot theme.  
+
+```{r}
+theme_set(theme_bw())
+```
+
+# RELATIVE ABUNDANCE 
+
+```{r}
+otu.rel <- otu.full %>% select(-label, -numOtus) %>% dplyr::rename(sample = Group)
+rownames(otu.rel) <- otu.rel$sample
+otu.rel <- otu.rel %>% select(-sample)
+
+Rel.OTU.Data <- otu.rel/rowSums(otu.rel) # calculate the Relative Abundance
+N <- rowSums(Rel.OTU.Data) # calculate row sums of the relative abundances, should sum to 1
+N #Display Row Sums, should all be 1
+
+ggplot(data = relative.abundance, mapping = aes(x = Timepoint, y = Relative.Abundance, fill = Type.Profile)) +
+    geom_bar(position="fill", stat="identity") +
+    ylab("Relative Abundance") +
+    facet_grid(~Bleach) +
+    #scale_fill_manual(values = cols) +
+    labs(x = "Phenotype") +
+    theme_classic()+
+    theme(axis.text.x = element_text(size=rel(1), vjust = 0.3, hjust = 0.3)) +
+    theme(legend.title = element_text(size = 6), 
+               legend.text = element_text(size = 4))
+```
+
+
+# PHYLOSEQ 
+# Tree and heatmap 
+
+Prepare the matrix to be all numeric with taxa in rows.  
+```{r}
+otu.full <- otu.full %>% select(-label,-numOtus)
+rownames(otu.full) <- otu.full$Group
+otu.full <- otu.full %>% select(-Group)
+otu.full <- t(otu.full)
+```
+
+Prepare the taxonomy table.  
+```{r}
+## taxonomy <- str_split_fixed(taxonomy$Taxonomy, ";", 6)
+## the above function could be used later to split instead of the excel short cut, come back to this 
+
+rownames(taxonomy) <- taxonomy$OTU
+ 
+taxonomy <- taxonomy %>% select(-Size, -OTU) %>%
+   mutate_all(funs(str_replace_all(., "\\([^\\)]+\\)", ""))) %>% # remove the certainty % values in parentheses for each taxa 
+  dplyr::rename(Domain = Taxonomy) %>% dplyr::rename(Phylum = X) %>% dplyr::rename(Class = X.1) %>% dplyr::rename(Order = X.2) %>%
+  dplyr::rename(Family = X.3) %>% dplyr::rename(Genus = X.4)
+
+taxonomy <- as.matrix(taxonomy)
+```
+
+Combine the OTU and taxonomic information. 
+```{r}
+OTU_full = otu_table(otu.full, taxa_are_rows = TRUE)
+TAX = tax_table(taxonomy)
+OTU_full
+```
+
+Load into phyloseq.  
+```{r}
+physeq = phyloseq(OTU_full, TAX)
+physeq
+```
+
+Plot an abundance table at the different taxonomic levels.    
+
+```{r}
+plot_bar(physeq, fill = "Domain") + theme(legend.position="bottom")
+plot_bar(physeq, fill = "Phylum") + theme(legend.position="bottom")
+plot_bar(physeq, fill = "Class") + theme(legend.position="bottom")
+plot_bar(physeq, fill = "Order") + theme(legend.position="bottom")
+plot_bar(physeq, fill = "Family") + theme(legend.position="bottom")
+plot_bar(physeq, fill = "Genus") + theme(legend.position="bottom")
+```
+
+Plot a tree of OTU's.  
+```{r}
+random_tree = rtree(ntaxa(physeq), rooted=TRUE, tip.label=taxa_names(physeq))
+plot(random_tree)
+```
+
+Generate sample information.  
+```{r}
+sampledata = sample_data(data.frame(
+  timepoint = metadata$timepoint,
+  bleach = metadata$bleach, 
+  colony.id = metadata$colony.id,
+  group = metadata$group,
+  row.names=sample_names(physeq),
+  stringsAsFactors=FALSE
+))
+sampledata
+```
+
+Merge the tree, sample information, and OTU table.  
+```{r}
+physeq1 = merge_phyloseq(physeq, sampledata, random_tree)
+physeq1
+```
+
+Now rebuild phyloseq.  
+```{r}
+physeq2 = phyloseq(OTU_full, TAX, sampledata, random_tree)
+physeq2
+```
+
+Check that they are identical. Should return TRUE.  
+```{r}
+identical(physeq1, physeq2)
+```
+
+## Filter out samples here if needed
+
+Plot abundance by category. 
+
+```{r}
+plot_bar(physeq, fill = "Class") + theme(legend.position="bottom")
+plot_bar(physeq1, fill="Class", facet_grid=~group) + theme(legend.position="bottom")
+```
+
+Now build a tree with the combined data.  
+```{r}
+plot_tree(physeq1, color="timepoint", label.tips="taxa_names", ladderize="left", plot.margin=0.3)
+plot_tree(physeq1, color="bleach", label.tips="taxa_names", ladderize="left", plot.margin=0.3)
+```
+
+Plot a heatmap.  
+
+```{r}
+plot_heatmap(physeq1, "NMDS", "bray", "timepoint", "Family", low="#66CCFF", high="#000033", na.value="white")
+plot_heatmap(physeq1, "NMDS", "bray", "bleach", "Family", low="#66CCFF", high="#000033", na.value="white")
+```
+
+# NMDS 
+
+```{r}
+GP1 = physeq1
+GP1
+```
+
+Transform to even sampling depth.  
+```{r}
+GP1 = transform_sample_counts(GP1, function(x) 1E6 * x/sum(x))
+```
+
+View ordination by OTU.  
+```{r}
+GP.ord <- ordinate(GP1, "NMDS", "bray")
+p1 = plot_ordination(GP1, GP.ord, type="taxa", color="Class", title="taxa")
+```
+
+View faceted by Phylum.  
+```{r}
+p1 + facet_wrap(~Class, 3) + theme(legend.position="none")
+```
+
+Plot with samples now.  
+```{r}
+p2 = plot_ordination(GP1, GP.ord, type="samples", color="group", shape="group") + geom_point(size=3) + 
+  ggtitle("16S communities") + stat_ellipse() + 
+  scale_color_manual(values = c("green3", "darkgreen", "lightblue", "darkblue")) 
+#+ geom_polygon(aes(fill=timepoint))
+
+
+```
+
+Plot OTU and sample plots together.  
+```{r}
+p3 = plot_ordination(GP1, GP.ord, type="split", color="Phylum", label="timepoint", title="split") 
+p3
+```
+
+Now view through different ordination methods. 
+
+```{r}
+dist = "bray"
+ord_meths = c("DCA", "CCA", "RDA", "DPCoA", "NMDS", "MDS", "PCoA")
+plist = plyr::llply(as.list(ord_meths), function(i, physeq, dist){
+        ordi = ordinate(physeq, method=i, distance=dist)
+        plot_ordination(physeq, ordi, "samples", color="timepoint")
+}, GP1, dist)
+names(plist) <- ord_meths
+pdataframe = plyr::ldply(plist, function(x){
+    df = x$data[, 1:2]
+    colnames(df) = c("Axis_1", "Axis_2")
+    return(cbind(df, x$data))
+})
+names(pdataframe)[1] = "method"
+p = ggplot(pdataframe, aes(Axis_1, Axis_2, color=timepoint, fill=timepoint))
+p = p + geom_point(size=4) + geom_polygon()
+p = p + facet_wrap(~method, scales="free")
+#p = p + scale_fill_brewer(type="qual", palette="Set1")
+#p = p + scale_colour_brewer(type="qual", palette="Set1")
+p
+```
+
+Display NMDS, the method we will be using.  
+```{r}
+p = plist[[5]] 
+p = p + geom_point(size=2) + stat_ellipse() 
+p
+```
+
+Conduct a permanova in the vegan package.  
+
+```{r}
+metadata <- as(sample_data(GP1), "data.frame")
+adonis(phyloseq::distance(GP1, method="bray") ~ timepoint*bleach,
+       data = metadata)
+```
+
+# Networks  
+
+Remove NA's. 
+```{r}
+GP3f = physeq1
+```
+
+Plot network.  
+```{r}
+plot_net(GP3f, maxdist = 1, point_label = "bleach", color = "timepoint")
+```
+
+Plot network.  
+```{r}
+igF <- make_network(GP3f, max.dist=1)
+plot_network(igF, GP3f, color="timepoint", label=NULL)
+```
+
+
