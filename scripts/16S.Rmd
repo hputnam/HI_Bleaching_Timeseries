@@ -93,6 +93,23 @@ Rel.OTU.Data <- otu.rel/rowSums(otu.rel) # calculate the Relative Abundance
 N <- rowSums(Rel.OTU.Data) # calculate row sums of the relative abundances, should sum to 1
 N #Display Row Sums, should all be 1
 
+# # Transform Relative Abundance Matrix using sqrt ---- see note below on if we need to do something like this 
+# Trans.Rel.Sym.Data <- sqrt(Rel.Sym.Data) #sqrt transform the matrix
+# Trans.Rel.Sym.Data #view data
+```
+
+Do we need to transform this before using? We did for a different project, circle back to this.. 
+```{r}
+rel.otu.pca <- prcomp(Rel.OTU.Data, retx=TRUE) #principal components analysis on rel abundance dataframe
+summary(rel.otu.pca) #analysis summary
+# use scree diagram to determine break in majority versus minority variation explaination components
+screeplot(rel.otu.pca, type="lines")
+
+autoplot(rel.otu.pca, data = metadata.raw, colour = 'Bleach', shape='Timepoint')
+```
+
+
+```{r}
 ggplot(data = relative.abundance, mapping = aes(x = Timepoint, y = Relative.Abundance, fill = Type.Profile)) +
     geom_bar(position="fill", stat="identity") +
     ylab("Relative Abundance") +
@@ -198,7 +215,8 @@ Plot abundance by category.
 
 ```{r}
 plot_bar(physeq, fill = "Class") + theme(legend.position="bottom")
-plot_bar(physeq1, fill="Class", facet_grid=~group) + theme(legend.position="bottom")
+plot_bar(physeq1, fill="Phylum", facet_grid=~group) + theme(legend.position="bottom")
+
 ```
 
 Now build a tree with the combined data.  
@@ -243,8 +261,6 @@ p2 = plot_ordination(GP1, GP.ord, type="samples", color="group", shape="group") 
   ggtitle("16S communities") + stat_ellipse() + 
   scale_color_manual(values = c("green3", "darkgreen", "lightblue", "darkblue")) 
 #+ geom_polygon(aes(fill=timepoint))
-
-
 ```
 
 Plot OTU and sample plots together.  
@@ -301,7 +317,8 @@ GP3f = physeq1
 
 Plot network.  
 ```{r}
-plot_net(GP3f, maxdist = 1, point_label = "bleach", color = "timepoint")
+plot_net(GP3f, maxdist = 1, color = "group") + scale_color_manual(values = c("green3", "darkgreen", "lightblue", "darkblue")) + 
+  ggtitle("16S community network plot based on the default distance method, “Jaccard”")
 ```
 
 Plot network.  
@@ -310,4 +327,47 @@ igF <- make_network(GP3f, max.dist=1)
 plot_network(igF, GP3f, color="timepoint", label=NULL)
 ```
 
+# DESeq2
+
+Convert phyloseq object to DESeq2 object.  
+
+Construct DESeq2 object looking at differences by lifestage.  
+```{r}
+diagdds_full = phyloseq_to_deseq2(physeq1, ~ group)
+gm_mean = function(x, na.rm=TRUE){
+  exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+}
+geoMeans = apply(counts(diagdds_full), 1, gm_mean)
+diagdds_full = estimateSizeFactors(diagdds_full, geoMeans = geoMeans)
+#diagdds_full = DESeq(diagdds_full, fitType="local")
+diagdds_full = DESeq(diagdds_full, test="Wald", fitType="parametric")
+```
+
+Look at results table.  
+```{r}
+res_full = results(diagdds_full, cooksCutoff = FALSE)
+alpha = 1
+sigtab = res_full[which(res_full$padj < alpha), ]
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq1)[rownames(sigtab), ], "matrix"))
+head(sigtab)
+```
+
+Plot
+```{r}
+theme_set(theme_bw())
+
+scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+}
+# Phylum order
+x = tapply(sigtab$log2FoldChange, sigtab$Phylum, function(x) max(x))
+x = sort(x, TRUE)
+sigtab$Phylum = factor(as.character(sigtab$Phylum), levels=names(x))
+# Genus order
+x = tapply(sigtab$log2FoldChange, sigtab$Genus, function(x) max(x))
+x = sort(x, TRUE)
+sigtab$Genus = factor(as.character(sigtab$Genus), levels=names(x))
+ggplot(sigtab, aes(x=Genus, y=log2FoldChange, color=Phylum)) + geom_point(size=2) + 
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+```
 
