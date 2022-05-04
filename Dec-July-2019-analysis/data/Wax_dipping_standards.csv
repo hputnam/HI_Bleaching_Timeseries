@@ -1,0 +1,10 @@
+﻿Standard,Sample,Surface_area_mm,weight1.g,weight2.g,Notes
+Standard1,Standard,50.26548246,0.03,0.05,only 1 top/bottom side
+Standard2,Standard,75.39822369,0.06,0.07,only 1 top/bottom side
+Standard3,Standard,138.2300768,0.12,0.14,only 1 top/bottom side
+Standard4,Standard,263.8937829,0.22,0.26,only 1 top/bottom side
+Standard5,Standard,389.557489,0.34,0.43,only 1 top/bottom side
+Standard6,Standard,829.3804605,0.74,0.93,only 1 top/bottom side
+Standard7,Standard,1306.902544,1.18,1.47,both top and bottom side
+Standard8,Standard,1156.106097,0.7,0.81,only 1 top/bottom side
+Standard9,Standard,3669.380219,2.57,3.02,only 1 top/bottom side
