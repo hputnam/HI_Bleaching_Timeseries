@@ -1,8 +1,16 @@
 ---
-title: "ITS2.Rmd"
-author: "Emma Strand"
-date: "1/19/2022"
-output: html_document
+title: "ITS2 Analysis of KBAY Bleaching Pairs"
+author: "EL Strand"
+output:
+  github_document: default
+  pdf_document:
+    keep_tex: yes
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -12,20 +20,22 @@ knitr::opts_chunk$set(echo = TRUE)
 # ITS2 Analysis 
 
 Complete the following workflow in terminal using SymPortal before starting this R script: [Emma Strand Notebook post](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-01-14-KBay-Bleaching-Pairs-ITS2-Analysis-Pipeline.md#Troubleshooting).
-
-#### Load packages 
+## Load libraries 
 
 ```{r}
-library(plyr)
-library(dplyr) # needs to be loaded after plyr
-library(tidyr)
-library(ggplot2)
-library(lubridate)
-library(vegan)
-library(ggh4x)
-library(ggfortify)
-library(ggtext)
-library(ggpubr)
+#install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+p1 <- c("plyr", "dplyr", "tidyverse", "vegan", "BiocManager", "ggpubr", "janitor", "funrar", "AMR", "ggbiplot", "stats",
+        "devtools", "pairwiseAdonis", "lubridate", "ggh4x", "ggfortify")
+p2 <- c("phyloseq", "ANCOMBC", "DESeq2", "ComplexHeatmap","microbiomeMarker")
+load_package <- function(p) {
+  if (!requireNamespace(p, quietly = TRUE)) {
+    ifelse(p %in% p1, 
+           install.packages(p, repos = "http://cran.us.r-project.org/"), 
+           BiocManager::install(p))
+  }
+  library(p, character.only = TRUE, quietly = TRUE)
+}
+invisible(lapply(c(p1,p2), load_package))
 ```
 
 
@@ -34,7 +44,7 @@ library(ggpubr)
 This file was created during the above workflow. Sample ID is the ID given during sequencing. ColonyID is the ID given during field work and what the coral is tagged as. 
 
 ```{r}
-metadata <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/metadata/metadata.csv", header = TRUE)
+metadata <- read.csv("Dec-July-2019-analysis/output/ITS2/metadata/metadata.csv", header = TRUE)
 ```
 
 
@@ -45,7 +55,7 @@ metadata <- read.csv("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/metadata/me
 **Relative abundance** 
 
 ```{r}
-relative.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/processed_data/20220119T075742/its2_type_profiles/5_BleachingPairs_analysis_20220119T075742.profiles.relative.abund_and_meta.txt", sep = "\t", dec = ".", na.strings=c("","NA"))
+relative.abundance.raw <- read.delim("Dec-July-2019-analysis/output/ITS2/processed_data/20220119T075742/its2_type_profiles/5_BleachingPairs_analysis_20220119T075742.profiles.relative.abund_and_meta.txt", sep = "\t", dec = ".", na.strings=c("","NA"))
 
 relative.abundance <- relative.abundance.raw %>% dplyr::rename(Sample.ID = X) %>% dplyr::rename(`C31/C17d-C21-C21ac` = X6) %>%
   dplyr::rename(`C31-C17d-C21-C31.1-C31a-C17e` = X7) %>% dplyr::rename(`C31-C17d-C31.1-C21-C31a-1373` = X8) %>% dplyr::rename(`D1-D4-D6-D1ab` = X9) %>%
@@ -115,7 +125,7 @@ ggplot(relative.abundance, aes(x = ColonyID, y = Type.Profile)) +
         #strip.background = element_rect(color="black", fill="white", size=0.5, linetype="solid"),
         strip.background = element_blank(),
         ggh4x.facet.nestline = element_line(colour = "black"),
-        strip.text = element_markdown(size = 12, lineheight = 1.1),
+        #strip.text = element_markdown(size = 12, lineheight = 1.1),
         axis.text.x = element_text(colour = "black", size = 12, angle = 90, vjust = 0.3, hjust = 1), 
         axis.text.y = element_text(colour = "black", size = 11), 
         legend.text = element_text(size = 10, face ="bold", colour ="black"), 
@@ -124,6 +134,30 @@ ggplot(relative.abundance, aes(x = ColonyID, y = Type.Profile)) +
         legend.position = "bottom")
 
 ggsave("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/figures/rel.ab.bubble.pdf")
+
+relative.abundance %>% subset(Bleach=="Bleach") %>%
+  ggplot(., aes(x = ColonyID, y = Type.Profile)) + 
+  geom_tile(aes(fill = Relative.Abundance), color = "grey") +
+  facet_nested_wrap(facets =  vars(Bleach, Timepoint), nest_line = TRUE) + 
+  scale_fill_distiller(palette = "Purples", direction=100, labels = scales::label_percent(scale=100)) + 
+  theme_classic() +
+  theme(axis.text.x.bottom = element_text(angle = 60),
+        axis.text.y = element_text(colour = 'black', size = 10, face = 'italic')) + 
+  labs(x="Colony ID", fill="Relative Abundance", y="Clade") 
+
+ggsave("Dec-July-2019-analysis/output/ITS2/figures/relab-heatmap-Bleach.pdf", width = 7, height = 3, units = c("in"))
+
+relative.abundance %>% subset(Bleach=="Non-bleach") %>%
+  ggplot(., aes(x = ColonyID, y = Type.Profile)) + 
+  geom_tile(aes(fill = Relative.Abundance), color = "grey") +
+  facet_nested_wrap(facets =  vars(Bleach, Timepoint), nest_line = TRUE) + 
+  scale_fill_distiller(palette = "Purples", direction=100, labels = scales::label_percent(scale=100)) + 
+  theme_classic() +
+  theme(axis.text.x.bottom = element_text(angle = 60),
+        axis.text.y = element_text(colour = 'black', size = 10, face = 'italic')) + 
+  labs(x="Colony ID", fill="Relative Abundance", y="Clade") 
+
+ggsave("Dec-July-2019-analysis/output/ITS2/figures/relab-heatmap-nonBleach.pdf", width = 7, height = 3, units = c("in"))
 ```
 
 Splitting the data frame to plot separately.  
@@ -169,7 +203,51 @@ I read this dataframe in to check if WSH123 had any sequences at all. It did not
 seq.rel.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/data/ITS2/processed_data/20220119T075742/post_med_seqs/5_BleachingPairs_analysis_20220119T075742.seqs.relative.abund_and_meta.txt", sep = "\t", dec = ".", na.strings=c("","NA"))
 ```
 
+## PERMANOVA 
 
+Didn't scale because these are already relative abundance values and therefore scaled. 
+
+```{r}
+# all 
+rel.matrix <- relative.abundance %>% select(Sample.ID, Type.Profile, Relative.Abundance) %>% spread(Type.Profile, Relative.Abundance)
+rownames(rel.matrix) <- rel.matrix[,1]
+rel.matrix <- rel.matrix %>% select(-Sample.ID)
+
+rel.meta <- relative.abundance %>% 
+  select(Sample.ID, ColonyID, Timepoint, Bleach) %>%
+  distinct() %>%
+  arrange(Sample.ID)
+
+adonis2(rel.matrix ~ Timepoint*Bleach, data = rel.meta, method='eu')
+
+# only single portion
+rel.matrix.bleach <- relative.abundance %>% #subset(Bleach=="Non-bleach") %>% 
+  subset(Timepoint == "2019-12-04") %>%
+  select(Sample.ID, Type.Profile, Relative.Abundance) %>% spread(Type.Profile, Relative.Abundance)
+rownames(rel.matrix.bleach) <- rel.matrix.bleach[,1]
+rel.matrix.bleach <- rel.matrix.bleach %>% select(-Sample.ID)
+
+rel.meta.bleach <- relative.abundance %>% #subset(Bleach=="Non-bleach") %>% 
+  subset(Timepoint == "2019-12-04") %>%
+  select(Sample.ID, ColonyID, Timepoint, Bleach) %>%
+  distinct() %>%
+  arrange(Sample.ID)
+
+adonis2(rel.matrix.bleach ~ Bleach, data = rel.meta.bleach, method='eu')
+```
+
+Number of raw counts
+
+```{r}
+counts <- read.delim("Dec-July-2019-analysis/output/ITS2/processed_data/20220119T075742/its2_type_profiles/5_BleachingPairs_analysis_20220119T075742.profiles.absolute.abund_only.txt", sep = "\t", header = T)
+
+count1=sum(counts$X6)
+count2=sum(counts$X7)
+count3=sum(counts$X8)
+count4=sum(counts$X9)
+
+count1+count2+count3+count4
+```
 
 
 
