@@ -9,204 +9,27 @@ Based on Kevin Wong’s methylseq analysis scripts.
 library("reshape")
 #library(plyr)
 library("dplyr")
-```
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following object is masked from 'package:reshape':
-    ## 
-    ##     rename
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
 library("tidyverse")
-```
-
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
-
-    ## ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
-    ## ✔ tibble  3.1.7     ✔ stringr 1.4.0
-    ## ✔ tidyr   1.2.0     ✔ forcats 0.5.1
-    ## ✔ readr   2.1.2
-
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ tidyr::expand() masks reshape::expand()
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ✖ dplyr::rename() masks reshape::rename()
-
-``` r
 library("Rmisc")
-```
-
-    ## Loading required package: lattice
-
-    ## Loading required package: plyr
-
-    ## ------------------------------------------------------------------------------
-
-    ## You have loaded plyr after dplyr - this is likely to cause problems.
-    ## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-    ## library(plyr); library(dplyr)
-
-    ## ------------------------------------------------------------------------------
-
-    ## 
-    ## Attaching package: 'plyr'
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     compact
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-    ##     summarize
-
-    ## The following objects are masked from 'package:reshape':
-    ## 
-    ##     rename, round_any
-
-``` r
 library(gridExtra)
-```
-
-    ## 
-    ## Attaching package: 'gridExtra'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     combine
-
-``` r
 library(ggpubr)
-```
-
-    ## 
-    ## Attaching package: 'ggpubr'
-
-    ## The following object is masked from 'package:plyr':
-    ## 
-    ##     mutate
-
-``` r
 library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
 library(lme4)
-```
-
-    ## Loading required package: Matrix
-
-    ## 
-    ## Attaching package: 'Matrix'
-
-    ## The following objects are masked from 'package:tidyr':
-    ## 
-    ##     expand, pack, unpack
-
-    ## The following object is masked from 'package:reshape':
-    ## 
-    ##     expand
-
-``` r
 library(lmerTest)
-```
-
-    ## 
-    ## Attaching package: 'lmerTest'
-
-    ## The following object is masked from 'package:lme4':
-    ## 
-    ##     lmer
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     step
-
-``` r
 library(car)
-```
-
-    ## Loading required package: carData
-
-    ## 
-    ## Attaching package: 'car'
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     some
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     recode
-
-``` r
 library(effects)
-```
-
-    ## Use the command
-    ##     lattice::trellis.par.set(effectsTheme())
-    ##   to customize lattice options for effects plots.
-    ## See ?effectsTheme for details.
-
-``` r
 library(ggfortify)
 library(cowplot)
-```
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:ggpubr':
-    ## 
-    ##     get_legend
-
-    ## The following object is masked from 'package:reshape':
-    ## 
-    ##     stamp
-
-``` r
 library(vegan)
-```
-
-    ## Loading required package: permute
-
-    ## This is vegan 2.6-2
-
-``` r
 library(corrr)
 library(ggcorrplot)
 library(GGally)
-```
-
-    ## Registered S3 method overwritten by 'GGally':
-    ##   method from   
-    ##   +.gg   ggplot2
-
-``` r
 library(broom)
 library(cowplot)
 library(arsenal)
 library(patchwork)
-```
-
-    ## 
-    ## Attaching package: 'patchwork'
-
-    ## The following object is masked from 'package:cowplot':
-    ## 
-    ##     align_plots
-
-``` r
 library(tidyr)
 library(ggrepel)
 ```
