@@ -256,7 +256,7 @@ data %>% select(1:19) %>%
   facet_wrap(~ measurement, scales = "free")
 ```
 
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 data %>% select(1:19) %>%
@@ -274,11 +274,87 @@ data %>% select(1:19) %>%
   facet_wrap(~ measurement, scales = "free")
 ```
 
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
 data %>% select(1:19) %>%
   gather(measurement, value, 11:19) %>%
+  ggplot(., aes(x=EXT_Date, y=value)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21) +
+  xlab("Extraction Date") +  
+  ylab("Value") + #Axis titles
+  theme_classic() + 
+  ggtitle("only one sample in 20210517") +
+  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
+        panel.grid.major = element_blank(), #Makes background theme white
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_wrap(~ measurement, scales = "free")
+```
+
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
+
+``` r
+data %>% select(1:19) %>%
+  gather(measurement, value, 11:19) %>%
+  ggplot(., aes(x=PMS_Date, y=value)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21) +
+  ggtitle("only one sample in 20210521") +
+  xlab("Pico Methyl Date") +  
+  ylab("Value") + #Axis titles
+  theme_classic() + 
+  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
+        panel.grid.major = element_blank(), #Makes background theme white
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_wrap(~ measurement, scales = "free")
+```
+
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
+
+``` r
+data %>% select(1:10, 20:27) %>%
+  gather(measurement, value, 11:18) %>%
+  ggplot(., aes(x=Bleach, y=value)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21) +
+  xlab("Phenotype") +  
+  ylab("Value") + #Axis titles
+  theme_classic() + 
+  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
+        panel.grid.major = element_blank(), #Makes background theme white
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank()) +
+  facet_wrap(~ measurement, scales = "free")
+```
+
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
+data %>% select(1:10, 20:27) %>%
+  gather(measurement, value, 11:18) %>%
+  ggplot(., aes(x=Date, y=value)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21) +
+  xlab("Time point") +  
+  ylab("Value") + #Axis titles
+  theme_classic() + 
+  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
+        panel.grid.major = element_blank(), #Makes background theme white
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank()) +
+  facet_wrap(~ measurement, scales = "free")
+```
+
+![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+
+``` r
+data %>% select(1:10, 20:27) %>%
+  gather(measurement, value, 11:18) %>%
   ggplot(., aes(x=EXT_Date, y=value)) +
   geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
   geom_point(pch = 21) +
@@ -297,8 +373,8 @@ data %>% select(1:19) %>%
 ![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
 
 ``` r
-data %>% select(1:19) %>%
-  gather(measurement, value, 11:19) %>%
+data %>% select(1:10, 20:27) %>%
+  gather(measurement, value, 11:18) %>%
   ggplot(., aes(x=PMS_Date, y=value)) +
   geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
   geom_point(pch = 21) +
@@ -315,82 +391,6 @@ data %>% select(1:19) %>%
 ```
 
 ![](methylseq_statistics_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
-
-``` r
-data %>% select(1:10, 20:27) %>%
-  gather(measurement, value, 11:18) %>%
-  ggplot(., aes(x=Bleach, y=value)) +
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
-  geom_point(pch = 21) +
-  xlab("Phenotype") +  
-  ylab("Value") + #Axis titles
-  theme_classic() + 
-  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
-        panel.grid.major = element_blank(), #Makes background theme white
-        panel.grid.minor = element_blank(), 
-        axis.line = element_blank()) +
-  facet_wrap(~ measurement, scales = "free")
-```
-
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
-``` r
-data %>% select(1:10, 20:27) %>%
-  gather(measurement, value, 11:18) %>%
-  ggplot(., aes(x=Date, y=value)) +
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
-  geom_point(pch = 21) +
-  xlab("Time point") +  
-  ylab("Value") + #Axis titles
-  theme_classic() + 
-  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
-        panel.grid.major = element_blank(), #Makes background theme white
-        panel.grid.minor = element_blank(), 
-        axis.line = element_blank()) +
-  facet_wrap(~ measurement, scales = "free")
-```
-
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
-
-``` r
-data %>% select(1:10, 20:27) %>%
-  gather(measurement, value, 11:18) %>%
-  ggplot(., aes(x=EXT_Date, y=value)) +
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
-  geom_point(pch = 21) +
-  xlab("Extraction Date") +  
-  ylab("Value") + #Axis titles
-  theme_classic() + 
-  ggtitle("only one sample in 20210517") +
-  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
-        panel.grid.major = element_blank(), #Makes background theme white
-        panel.grid.minor = element_blank(), 
-        axis.line = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ measurement, scales = "free")
-```
-
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->
-
-``` r
-data %>% select(1:10, 20:27) %>%
-  gather(measurement, value, 11:18) %>%
-  ggplot(., aes(x=PMS_Date, y=value)) +
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.5), alpha = 0.7) +
-  geom_point(pch = 21) +
-  ggtitle("only one sample in 20210521") +
-  xlab("Pico Methyl Date") +  
-  ylab("Value") + #Axis titles
-  theme_classic() + 
-  theme(panel.border = element_rect(color="black", fill=NA, size=0.75), 
-        panel.grid.major = element_blank(), #Makes background theme white
-        panel.grid.minor = element_blank(), 
-        axis.line = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ measurement, scales = "free")
-```
-
-![](methylseq_statistics_files/figure-gfm/unnamed-chunk-4-4.png)<!-- -->
 
 Statistics
 

@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Based on Kevin Wong's methylseq analysis scripts. 
 
-```{r}
+```{r, installation}
 # Read in required libraries
 library("reshape")
 #library(plyr)
