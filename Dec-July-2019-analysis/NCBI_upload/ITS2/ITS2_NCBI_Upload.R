@@ -17,3 +17,4 @@ raw.reads <- raw.reads %>%
                                grepl("R2", seq.title) ~ "filename2")) %>%
   spread(direction, seq.title)
 
+write_csv(file = "Dec-July-2019-analysis/NCBI_upload/ITS2/NCBI-ITS2-sample-title.csv", raw.reads)
