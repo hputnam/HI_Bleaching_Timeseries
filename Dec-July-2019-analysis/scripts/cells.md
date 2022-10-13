@@ -102,6 +102,11 @@ library(car)
 
 ``` r
 library(sjPlot)
+```
+
+    ## Learn more about sjPlot with 'browseVignettes("sjPlot")'.
+
+``` r
 library(ggstatsplot)
 ```
 
@@ -111,6 +116,7 @@ library(ggstatsplot)
 
 ``` r
 library(emmeans)
+library(Rmisc)
 ```
 
 ## Load in data
@@ -135,7 +141,12 @@ df <- df %>%
          cells = cells.mL * `volume (mL)`) %>%
          #haemo.cells.cm2 = cells / surface.area.cm2)
   ungroup() %>%
+  filter(!is.na(cells)) %>%
+  select(ColonyID, Date, Bleach, `volume (mL)`, count_mean, cells.mL, cells) %>%
+  distinct() %>%
   write_csv(., file = "Dec-July-2019-analysis/data/cell_counts.csv")
+
+df2 <- summarySE(df, measurevar = c("cells"), groupvars = c("Date", "Bleach"))
 ```
 
 ## Visualize data
@@ -149,8 +160,14 @@ df %>%
   facet_grid(~Date)
 ```
 
-    ## Warning: Removed 18 rows containing non-finite values (stat_boxplot).
-
-    ## Warning: Removed 18 rows containing missing values (geom_point).
-
 ![](cells_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+df2 %>%
+  ggplot(., aes(x=Date, y=cells, color=Bleach)) + 
+  geom_errorbar(aes(ymin=cells-se, ymax=cells+se), size=0.5, width=.1) +
+  theme_classic() + xlab("") + geom_point(size=2.5) +
+  geom_line(aes(group = Bleach))
+```
+
+![](cells_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->

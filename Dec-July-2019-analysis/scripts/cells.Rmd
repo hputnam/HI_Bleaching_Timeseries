@@ -34,6 +34,7 @@ library(car)
 library(sjPlot)
 library(ggstatsplot)
 library(emmeans)
+library(Rmisc)
 ```
 
 ## Load in data  
@@ -58,7 +59,12 @@ df <- df %>%
          cells = cells.mL * `volume (mL)`) %>%
          #haemo.cells.cm2 = cells / surface.area.cm2)
   ungroup() %>%
+  filter(!is.na(cells)) %>%
+  select(ColonyID, Date, Bleach, `volume (mL)`, count_mean, cells.mL, cells) %>%
+  distinct() %>%
   write_csv(., file = "Dec-July-2019-analysis/data/cell_counts.csv")
+
+df2 <- summarySE(df, measurevar = c("cells"), groupvars = c("Date", "Bleach"))
 ```
 
 ## Visualize data
@@ -70,5 +76,11 @@ df %>%
   geom_boxplot() +
   geom_point() +
   facet_grid(~Date)
+
+df2 %>%
+  ggplot(., aes(x=Date, y=cells, color=Bleach)) + 
+  geom_errorbar(aes(ymin=cells-se, ymax=cells+se), size=0.5, width=.1) +
+  theme_classic() + xlab("") + geom_point(size=2.5) +
+  geom_line(aes(group = Bleach))
 ```
 
