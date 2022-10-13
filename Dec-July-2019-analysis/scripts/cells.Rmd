@@ -1,0 +1,74 @@
+---
+title: "Endosymbiont Density (cell counts) Analysis"
+author: "Author: Emma Strand; emma_strand@uri.edu"
+output:
+  github_document: default
+  pdf_document:
+    keep_tex: yes
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages.
+```{r}
+rm(list=ls())
+
+library(plyr)
+library(dplyr)
+library(readxl)
+library(tidyr)
+library(tidyverse)
+library(ggpubr)
+library(purrr)
+library(Rmisc)
+library(lme4)
+library(car)
+library(sjPlot)
+library(ggstatsplot)
+library(emmeans)
+```
+
+## Load in data  
+
+```{r}
+meta <- read_excel("Dec-July-2019-analysis/data/Physiology-URI-labwork.xlsx", sheet = "Master-ID-List")
+data <- read_excel("Dec-July-2019-analysis/data/Physiology-URI-labwork.xlsx", sheet = "Counts")
+
+df <- full_join(meta, data, by = c("ColonyID", "Date")) 
+df$ColonyID <- as.character(df$ColonyID)
+df$Date <- as.character(df$Date)
+```
+
+## Calculate mean cell count per sample 
+
+```{r}
+df <- df %>%
+  gather("rep", "count", Count1, Count2, Count3, Count4, Count5, Count6) %>%
+  dplyr::group_by(ColonyID, Date) %>%
+  mutate(count_mean = mean(count),
+         cells.mL = count_mean * 10000 / `Squares counted`,
+         cells = cells.mL * `volume (mL)`) %>%
+         #haemo.cells.cm2 = cells / surface.area.cm2)
+  ungroup() %>%
+  write_csv(., file = "Dec-July-2019-analysis/data/cell_counts.csv")
+```
+
+## Visualize data
+
+```{r}
+df %>%
+  ggplot(., aes(x=Bleach, y=cells, color=Bleach)) + 
+  theme_classic() + xlab("") +
+  geom_boxplot() +
+  geom_point() +
+  facet_grid(~Date)
+```
+
