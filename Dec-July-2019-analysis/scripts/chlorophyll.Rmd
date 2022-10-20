@@ -1,0 +1,124 @@
+---
+title: "Chlorophyll Analysis"
+author: "Author: Emma Strand; emma_strand@uri.edu"
+output:
+  github_document: default
+  pdf_document:
+    keep_tex: yes
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages.
+```{r}
+rm(list=ls())
+
+library(plyr)
+library(dplyr)
+library(readxl)
+library(tidyr)
+library(tidyverse)
+library(ggpubr)
+library(purrr)
+library(Rmisc)
+library(lme4)
+library(car)
+library(sjPlot)
+library(ggstatsplot)
+library(emmeans)
+library(Rmisc)
+```
+
+## Load in data and calculate cholorophyll concentrations
+
+```{r}
+meta <- read_excel("Dec-July-2019-analysis/data/Physiology-URI-labwork.xlsx", sheet = "Master-ID-List")
+meta$ColonyID <- as.character(meta$ColonyID)
+
+cells <- read_csv("Dec-July-2019-analysis/data/cell_counts.csv") %>%
+  select(ColonyID, Date, cells, haemo.cells.cm2, SA)
+cells$ColonyID <- as.character(cells$ColonyID)
+
+meta <- full_join(meta, cells, by = c("ColonyID", "Date")) 
+
+platemap <- read_excel("Dec-July-2019-analysis/data/Physiology-URI-labwork.xlsx", 
+                   sheet = "Chlorophyll", col_types = c("text", "text", "date"))
+
+platemap$ColonyID[platemap$ColonyID == "NA"] <- NA
+
+raw_data <-
+  list.files(path = 'Dec-July-2019-analysis/data/chlorophyll',pattern = ".csv", full.names = TRUE) %>% 
+  # list files in directory following a particular pattern
+  set_names(.) %>% # get the column names
+  map_dfr(read.csv, .id = "file.ID") %>% # join all files together in one data frame by file ID
+  select(Well, Chl.663, Chl.750, Chl.630) %>%
+  gather(absorbance, value, 2:4) %>%
+  filter(!is.na(value)) %>%
+  spread(absorbance, value)
+
+df <- full_join(raw_data, platemap, by = "Well") %>%
+  filter(!is.na(ColonyID)) %>%
+  group_by(ColonyID, Date) %>%
+  mutate(mean630 = mean(Chl.630),
+         mean663 = mean(Chl.663),
+         mean750 = mean(Chl.750)) %>%
+  ungroup(ColonyID, Date) %>%
+  select(ColonyID, Date, mean630, mean663, mean750) %>%
+  distinct() %>%
+# adjust sample values by subtracting the blank value 
+# calculate chla and chlc2 values based on equations from Jeffrey and Humphrey 1975
+  mutate(blank750 = `mean750`[ColonyID == "Blank"],
+         adj630 = mean630 - blank750,
+         adj663 = mean663 - blank750,
+         chla.ug.ml = (11.43 * adj663) - (0.64 * adj630),
+         chlc2.ug.ml = (27.09 * adj630) - (3.63 * adj663)) %>%
+  select(ColonyID, Date, chla.ug.ml, chlc2.ug.ml) %>%
+  filter(!is.na(Date)) 
+
+df <- full_join(df, meta, by = c("ColonyID", "Date")) %>%
+  mutate(chla.ug.cm2 = (chla.ug.ml * `volume (mL)`) / SA,
+         chlc2.ug.cm2 = (chlc2.ug.ml * `volume (mL)`) / SA,
+         chla.ug.cells = (chla.ug.ml * `volume (mL)`) / cells,
+         chlc2.ug.cells = (chlc2.ug.ml * `volume (mL)`) / cells) %>%
+  gather(measurement, value, 13:18) %>%
+  filter(!is.na(value)) %>%
+  subset(measurement == "chla.ug.cells" | measurement == "chla.ug.cm2" | measurement == "haemo.cells.cm2")
+
+df$Date <- as.character(df$Date)
+
+df2 <- summarySE(df, measurevar = c("value"), groupvars = c("Date", "Bleach", "measurement"))
+```
+
+## Figures 
+
+```{r}
+df %>%
+  ggplot(., aes(x=Date, y=value, color=Bleach)) + 
+  theme_classic() + xlab("") +
+  geom_boxplot() + geom_point() +
+  facet_grid(measurement~Bleach, scales = "free")
+
+df2 %>%
+  ggplot(., aes(x=Date, y=value, color=Bleach)) + 
+  geom_errorbar(aes(ymin=value-se, ymax=value+se), size=0.8, width=.1) +
+  theme_classic() + xlab("") + geom_point(size=4) +
+  geom_line(aes(group = Bleach), size=0.8) +
+  facet_wrap(~measurement, scales = "free")
+
+df %>%
+  subset(!Pair == "2" & !Pair == "3" & !Pair == "9") %>%
+  subset(!measurement == "chla.ug.cm2") %>%
+  ggplot(., aes(x=Date, y=value, color=Bleach)) +
+  theme_classic() + xlab("") +
+  geom_point() + geom_line(aes(group = ColonyID), size=0.8) +
+  facet_grid(measurement~Pair, scales = "free")
+```
+
