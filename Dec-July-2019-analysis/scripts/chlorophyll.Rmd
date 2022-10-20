@@ -122,3 +122,42 @@ df %>%
   facet_grid(measurement~Pair, scales = "free")
 ```
 
+## Statistics 
+
+### Chlorophyll per cell
+
+```{r}
+df_stats <- df %>%
+  spread(measurement, value)
+  
+CHLcells_model <- lmer(chla.ug.cells~Date*Bleach + (1|Pair/ColonyID), data=df_stats) 
+  # boundary (singular) fit: see help('isSingular')
+summary(CHLcells_model)
+qqPlot(residuals(CHLcells_model))
+leveneTest(residuals(CHLcells_model)~Date*Bleach, data=df_stats)
+
+Anova(CHLcells_model, ddf="lme4", type='III')
+```
+
+### Chlorophyll per cm2 
+
+```{r}
+CHLcm2_model <- lmer(chla.ug.cm2~Date*Bleach + (1|Pair/ColonyID), data=df_stats) 
+summary(CHLcm2_model)
+qqPlot(residuals(CHLcm2_model))
+leveneTest(residuals(CHLcm2_model)~Date*Bleach, data=df_stats)
+
+Anova(CHLcm2_model, ddf="lme4", type='III')
+```
+
+### Cell density 
+
+```{r}
+cells_model <- lmer(haemo.cells.cm2~Date*Bleach + (1|Pair/ColonyID), data=df_stats) 
+summary(cells_model)
+qqPlot(residuals(cells_model))
+leveneTest(residuals(cells_model)~Date*Bleach, data=df_stats)
+
+Anova(cells_model, ddf="lme4", type='III')
+```
+
