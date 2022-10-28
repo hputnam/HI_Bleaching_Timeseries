@@ -169,6 +169,11 @@ rel.change %>%
   facet_wrap(~measurement, scales = "free")
 ```
 
+Statistics on the above
+
+```{r}
+rel.change
+```
 
 
 
