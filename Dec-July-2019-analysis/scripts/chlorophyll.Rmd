@@ -172,9 +172,35 @@ rel.change %>%
 Statistics on the above
 
 ```{r}
-rel.change
+rel.change <- rel.change %>%
+  spread(measurement, value)
+
+t.test(chlcell_change~Bleach, data = rel.change, var.equal = FALSE)
+t.test(chlcm2_change~Bleach, data = rel.change, var.equal = FALSE)
+t.test(density_change~Bleach, data = rel.change, var.equal = FALSE)
 ```
 
+## CD ratio vs cell density and chlorophyll 
+
+```{r}
+library(ggpmisc)
+
+CD_ratio <- read.csv("Dec-July-2019-analysis/output/ITS2/CD_ratio.csv") %>%
+  select(ColonyID, C, D, CD_ratio) 
+CD_ratio$ColonyID <- as.character(CD_ratio$ColonyID)
+
+CD_ratio <- full_join(CD_ratio, df, by = c("ColonyID")) %>%
+  select(ColonyID, Date, Bleach, Pair, C, D, CD_ratio, measurement, value)
+
+CD_ratio %>%
+  subset(measurement == "haemo.cells.cm2") %>%
+  ggplot(., aes(x=C, y=value, color=Bleach)) + 
+  geom_point(alpha=0.35) + theme_classic() + xlab("proportion C") + ylab("cell density") +
+  #geom_smooth(method=lm, se = TRUE, size=2, alpha=0.5) +
+  stat_poly_line(size=2, alpha=0.1) +
+  stat_poly_eq() +
+  facet_wrap(~Date, scales = "free_y")
+```
 
 
 ## Statistics 

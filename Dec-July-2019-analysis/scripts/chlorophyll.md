@@ -102,6 +102,11 @@ library(car)
 
 ``` r
 library(sjPlot)
+```
+
+    ## Learn more about sjPlot with 'browseVignettes("sjPlot")'.
+
+``` r
 library(ggstatsplot)
 ```
 
@@ -324,6 +329,100 @@ rel.change %>%
 
 ![](chlorophyll_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
+Statistics on the above
+
+``` r
+rel.change <- rel.change %>%
+  spread(measurement, value)
+
+t.test(chlcell_change~Bleach, data = rel.change, var.equal = FALSE)
+```
+
+    ## 
+    ##  Welch Two Sample t-test
+    ## 
+    ## data:  chlcell_change by Bleach
+    ## t = 0.95279, df = 12.609, p-value = 0.3586
+    ## alternative hypothesis: true difference in means between group Bleach and group Non-bleach is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -1.244391e-06  3.197033e-06
+    ## sample estimates:
+    ##     mean in group Bleach mean in group Non-bleach 
+    ##             3.105138e-06             2.128817e-06
+
+``` r
+t.test(chlcm2_change~Bleach, data = rel.change, var.equal = FALSE)
+```
+
+    ## 
+    ##  Welch Two Sample t-test
+    ## 
+    ## data:  chlcm2_change by Bleach
+    ## t = 1.2238, df = 13.244, p-value = 0.2423
+    ## alternative hypothesis: true difference in means between group Bleach and group Non-bleach is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -0.7414442  2.6876351
+    ## sample estimates:
+    ##     mean in group Bleach mean in group Non-bleach 
+    ##                 2.400512                 1.427416
+
+``` r
+t.test(density_change~Bleach, data = rel.change, var.equal = FALSE)
+```
+
+    ## 
+    ##  Welch Two Sample t-test
+    ## 
+    ## data:  density_change by Bleach
+    ## t = 1.2476, df = 13.398, p-value = 0.2335
+    ## alternative hypothesis: true difference in means between group Bleach and group Non-bleach is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -250213.6  939116.7
+    ## sample estimates:
+    ##     mean in group Bleach mean in group Non-bleach 
+    ##                 169726.9                -174724.6
+
+## CD ratio vs cell density and chlorophyll
+
+``` r
+library(ggpmisc)
+```
+
+    ## Loading required package: ggpp
+
+    ## 
+    ## Attaching package: 'ggpp'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     annotate
+
+``` r
+CD_ratio <- read.csv("Dec-July-2019-analysis/output/ITS2/CD_ratio.csv") %>%
+  select(ColonyID, C, D, CD_ratio) 
+CD_ratio$ColonyID <- as.character(CD_ratio$ColonyID)
+
+CD_ratio <- full_join(CD_ratio, df, by = c("ColonyID")) %>%
+  select(ColonyID, Date, Bleach, Pair, C, D, CD_ratio, measurement, value)
+
+CD_ratio %>%
+  subset(measurement == "haemo.cells.cm2") %>%
+  ggplot(., aes(x=C, y=value, color=Bleach)) + 
+  geom_point(alpha=0.35) + theme_classic() + xlab("proportion C") + ylab("cell density") +
+  #geom_smooth(method=lm, se = TRUE, size=2, alpha=0.5) +
+  stat_poly_line(size=2, alpha=0.1) +
+  stat_poly_eq() +
+  facet_wrap(~Date, scales = "free_y")
+```
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_poly_line).
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_poly_eq).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+![](chlorophyll_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
 ## Statistics
 
 ### Chlorophyll per cell
@@ -378,7 +477,7 @@ summary(CHLcells_model)
 qqPlot(residuals(CHLcells_model))
 ```
 
-![](chlorophyll_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](chlorophyll_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
     ## [1] 29 17
 
@@ -447,7 +546,7 @@ summary(CHLcm2_model)
 qqPlot(residuals(CHLcm2_model))
 ```
 
-![](chlorophyll_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](chlorophyll_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
     ## [1] 29 12
 
@@ -516,7 +615,7 @@ summary(cells_model)
 qqPlot(residuals(cells_model))
 ```
 
-![](chlorophyll_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](chlorophyll_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
     ## [1] 4 6
 
