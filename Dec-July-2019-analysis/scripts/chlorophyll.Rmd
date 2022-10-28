@@ -90,7 +90,9 @@ df <- full_join(df, meta, by = c("ColonyID", "Date")) %>%
          chlc2.ug.cells = (chlc2.ug.ml * `volume (mL)`) / cells) %>%
   gather(measurement, value, 13:18) %>%
   filter(!is.na(value)) %>%
-  subset(measurement == "chla.ug.cells" | measurement == "chla.ug.cm2" | measurement == "haemo.cells.cm2")
+  subset(measurement == "chla.ug.cells" | 
+           measurement == "chla.ug.cm2" | 
+           measurement == "haemo.cells.cm2")
 
 df$Date <- as.character(df$Date)
 
@@ -106,21 +108,69 @@ df %>%
   geom_boxplot() + geom_point() +
   facet_grid(measurement~Bleach, scales = "free")
 
-df2 %>%
-  ggplot(., aes(x=Date, y=value, color=Bleach)) + 
-  geom_errorbar(aes(ymin=value-se, ymax=value+se), size=0.8, width=.1) +
-  theme_classic() + xlab("") + geom_point(size=4) +
-  geom_line(aes(group = Bleach), size=0.8) +
-  facet_wrap(~measurement, scales = "free")
-
 df %>%
   subset(!Pair == "2" & !Pair == "3" & !Pair == "9") %>%
-  subset(!measurement == "chla.ug.cm2") %>%
+  #subset(!measurement == "chla.ug.cm2") %>%
   ggplot(., aes(x=Date, y=value, color=Bleach)) +
   theme_classic() + xlab("") +
   geom_point() + geom_line(aes(group = ColonyID), size=0.8) +
   facet_grid(measurement~Pair, scales = "free")
+
+
+df %>%
+  ggplot(., aes(x=Date, y=value, color=Bleach)) +
+  geom_point(alpha=0.2) +
+  theme_classic() + xlab("") + ylab("") +
+  geom_point(data = df2, aes(x=Date, y=value), size=3) +
+  geom_errorbar(data = df2, aes(ymin=value-se, ymax=value+se), size=0.8, width=.1) +
+  geom_line(data=df2, aes(group = Bleach), size=0.8) +
+  facet_wrap(~measurement, scales = "free")
+
+df2 %>%
+  ggplot(., aes(x=Date, y=value, color=Bleach)) + 
+  theme_classic() + xlab("") + geom_point(size=4) +
+  geom_errorbar(aes(ymin=value-se, ymax=value+se), size=0.8, width=.1) +
+  geom_line(aes(group = Bleach), size=0.8) +
+  facet_wrap(~measurement, scales = "free")
 ```
+
+## Relative Change
+
+```{r}
+rel.change <- df %>% 
+  select(ColonyID, Date, Site, Pair, Bleach, measurement, value) %>%
+  pivot_wider(id_cols = c("ColonyID", "Site", "Pair", "Bleach"),
+            names_from = c("measurement", "Date"),
+            values_from = value) %>%
+  mutate(density_change = `haemo.cells.cm2_2019-12-04`-`haemo.cells.cm2_2019-07-16`,
+         chlcm2_change = `chla.ug.cm2_2019-12-04` - `chla.ug.cm2_2019-07-16`,
+         chlcell_change = `chla.ug.cells_2019-12-04` - `chla.ug.cells_2019-07-16`) %>%
+  select(ColonyID, Site, Pair, Bleach, density_change, chlcm2_change, chlcell_change) %>%
+  na.omit() %>%
+  gather(measurement, value, 5:7)
+
+rel.change %>%
+  ggplot(., aes(x=Bleach, y=value, color=Bleach)) + 
+  geom_boxplot() + geom_point() +
+  ylab("Relative change") +
+  geom_hline(yintercept = 0, lty = "dotted", size=1.2, color="grey2") +
+  theme_classic() + facet_wrap(~measurement, scales = "free")
+
+rel.change2 <- summarySE(rel.change, measurevar = c("value"), groupvars = c("Bleach", "measurement"))
+
+rel.change %>% 
+  ggplot(., aes(x=Bleach, y=value, color=Bleach)) + 
+  geom_point(alpha=0.2) +
+  geom_point(data = rel.change2, aes(x=Bleach, y=value), size=3) +
+  geom_errorbar(data = rel.change2, aes(ymin=value-se, ymax=value+se), size=0.5, width=.1) +
+  theme_classic() + xlab("") + 
+  ylab("Relative change") +
+  geom_hline(yintercept = 0, lty = "dotted", size=1.2, color="grey2") +
+  facet_wrap(~measurement, scales = "free")
+```
+
+
+
 
 ## Statistics 
 
