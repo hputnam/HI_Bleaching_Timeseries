@@ -193,13 +193,13 @@ CD_ratio <- full_join(CD_ratio, df, by = c("ColonyID")) %>%
   select(ColonyID, Date, Bleach, Pair, C, D, CD_ratio, measurement, value)
 
 CD_ratio %>%
-  subset(measurement == "haemo.cells.cm2") %>%
+  subset(!measurement == "haemo.cells.cm2") %>%
   ggplot(., aes(x=C, y=value, color=Bleach)) + 
   geom_point(alpha=0.35) + theme_classic() + xlab("proportion C") + ylab("cell density") +
   #geom_smooth(method=lm, se = TRUE, size=2, alpha=0.5) +
   stat_poly_line(size=2, alpha=0.1) +
   stat_poly_eq() +
-  facet_wrap(~Date, scales = "free_y")
+  facet_grid(measurement~Date, scales = "free_y")
 ```
 
 

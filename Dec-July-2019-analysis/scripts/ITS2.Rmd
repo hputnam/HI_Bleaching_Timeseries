@@ -273,8 +273,50 @@ seq.rel.abundance.raw <- read.delim("~/MyProjects/HI_Bleaching_Timeseries/Dec-Ju
 Didn't scale because these are already relative abundance values and therefore scaled. 
 
 ```{r}
+## all 
+rel.matrix2 <- absolute.abundance2 %>% filter(!Relative.Abundance == "NaN") %>%
+  unite(Sample.ID, ColonyID, Timepoint, remove = TRUE) %>%
+  select(Sample.ID, Type.Profile, Relative.Abundance) %>%
+  spread(Type.Profile, Relative.Abundance)
+rownames(rel.matrix2) <- rel.matrix2[,1]
+rel.matrix2 <- rel.matrix2 %>% select(-Sample.ID)
+
+rel.meta2 <- absolute.abundance2 %>% 
+  unite(Sample.ID, ColonyID, Timepoint, remove = FALSE) %>%
+  filter(!Sample.ID == "220_2019-07-19") %>%
+  select(Sample.ID, ColonyID, Timepoint, Bleach) %>%
+  distinct() %>%
+  arrange(Sample.ID)
+
+adonis2(rel.matrix2 ~ Timepoint*Bleach, data = rel.meta2, method='eu')
+
+## Timepoint 
+rel.matrix2.bleach <- absolute.abundance2 %>% 
+  filter(!Relative.Abundance == "NaN") %>%
+  subset(Bleach == "Non-bleach") %>%
+  unite(Sample.ID, ColonyID, Timepoint, remove = TRUE) %>%
+  select(Sample.ID, Type.Profile, Relative.Abundance) %>%
+  spread(Type.Profile, Relative.Abundance)
+rownames(rel.matrix2.bleach) <- rel.matrix2.bleach[,1]
+rel.matrix2.bleach <- rel.matrix2.bleach %>% select(-Sample.ID)
+
+rel.meta2.bleach <- absolute.abundance2 %>% 
+  subset(Bleach == "Non-bleach") %>%
+  unite(Sample.ID, ColonyID, Timepoint, remove = FALSE) %>%
+  filter(!Sample.ID == "220_2019-07-19") %>%
+  select(Sample.ID, ColonyID, Timepoint, Bleach) %>%
+  distinct() %>%
+  arrange(Sample.ID)
+
+adonis2(rel.matrix2.bleach ~ Timepoint, data = rel.meta2.bleach, method='eu')
+```
+
+
+```{r}
 # all 
-rel.matrix <- relative.abundance %>% select(Sample.ID, Type.Profile, Relative.Abundance) %>% spread(Type.Profile, Relative.Abundance)
+rel.matrix <- relative.abundance %>% 
+  select(Sample.ID, Type.Profile, Relative.Abundance) %>% 
+  spread(Type.Profile, Relative.Abundance)
 rownames(rel.matrix) <- rel.matrix[,1]
 rel.matrix <- rel.matrix %>% select(-Sample.ID)
 
