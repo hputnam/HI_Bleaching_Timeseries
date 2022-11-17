@@ -1,0 +1,27 @@
+---
+title: "Genome Annotation"
+author: "EL Strand"
+output:
+  github_document: default
+  pdf_document:
+    keep_tex: yes
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Merging files for full genome annotation 
+
+Bioinformation protocol here: https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-11-02-M.capitata-Genome-v3-Functional-Annotation.md. 
+
+Modeled after Jill Ashey's protocol here: https://github.com/JillAshey/FunctionalAnnotation/blob/main/RAnalysis/annotation_20211102.Rmd
+
+
+
